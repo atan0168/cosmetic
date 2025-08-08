@@ -10,6 +10,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // Companies table
 export const companies = pgTable(
@@ -67,6 +68,7 @@ export const products = pgTable(
       precision: 3,
       scale: 2,
     }).notNull(), // 0-1 normalized within this category
+    searchVector: text("search_vector"), // PostgreSQL tsvector for full-text search
   },
   (table) => [
     uniqueIndex("idx_products_notif_no").on(table.notifNo),

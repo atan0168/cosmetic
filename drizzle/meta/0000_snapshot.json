@@ -1,0 +1,655 @@
+{
+  "id": "7bec3fe5-82bb-44ec-93e1-3a6d46c20011",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.banned_ingredient_metrics": {
+      "name": "banned_ingredient_metrics",
+      "schema": "",
+      "columns": {
+        "ingredient_id": {
+          "name": "ingredient_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "occurrences_count": {
+          "name": "occurrences_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_appearance_date": {
+          "name": "first_appearance_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_appearance_date": {
+          "name": "last_appearance_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "risk_score": {
+          "name": "risk_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "banned_ingredient_metrics_ingredient_id_banned_ingredients_id_fk": {
+          "name": "banned_ingredient_metrics_ingredient_id_banned_ingredients_id_fk",
+          "tableFrom": "banned_ingredient_metrics",
+          "tableTo": "banned_ingredients",
+          "columnsFrom": [
+            "ingredient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.banned_ingredients": {
+      "name": "banned_ingredients",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "alternative_names": {
+          "name": "alternative_names",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_risk_description": {
+          "name": "health_risk_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "regulatory_status": {
+          "name": "regulatory_status",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_url": {
+          "name": "source_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_banned_ingredients_name": {
+          "name": "idx_banned_ingredients_name",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "banned_ingredients_name_unique": {
+          "name": "banned_ingredients_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.cancelled_product_ingredients": {
+      "name": "cancelled_product_ingredients",
+      "schema": "",
+      "columns": {
+        "cancelled_product_id": {
+          "name": "cancelled_product_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "banned_ingredient_id": {
+          "name": "banned_ingredient_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_cpi_product": {
+          "name": "idx_cpi_product",
+          "columns": [
+            {
+              "expression": "cancelled_product_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_cpi_ingredient": {
+          "name": "idx_cpi_ingredient",
+          "columns": [
+            {
+              "expression": "banned_ingredient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "cancelled_product_ingredients_cancelled_product_id_products_id_fk": {
+          "name": "cancelled_product_ingredients_cancelled_product_id_products_id_fk",
+          "tableFrom": "cancelled_product_ingredients",
+          "tableTo": "products",
+          "columnsFrom": [
+            "cancelled_product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "cancelled_product_ingredients_banned_ingredient_id_banned_ingredients_id_fk": {
+          "name": "cancelled_product_ingredients_banned_ingredient_id_banned_ingredients_id_fk",
+          "tableFrom": "cancelled_product_ingredients",
+          "tableTo": "banned_ingredients",
+          "columnsFrom": [
+            "banned_ingredient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.category_metrics": {
+      "name": "category_metrics",
+      "schema": "",
+      "columns": {
+        "product_category": {
+          "name": "product_category",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "total_notifs": {
+          "name": "total_notifs",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cancelled_count": {
+          "name": "cancelled_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "risk_score": {
+          "name": "risk_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.companies": {
+      "name": "companies",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_companies_name": {
+          "name": "idx_companies_name",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "companies_name_unique": {
+          "name": "companies_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.company_metrics": {
+      "name": "company_metrics",
+      "schema": "",
+      "columns": {
+        "company_id": {
+          "name": "company_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "total_notifs": {
+          "name": "total_notifs",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_notified_date": {
+          "name": "first_notified_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cancelled_count": {
+          "name": "cancelled_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reputation_score": {
+          "name": "reputation_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "company_metrics_company_id_companies_id_fk": {
+          "name": "company_metrics_company_id_companies_id_fk",
+          "tableFrom": "company_metrics",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.products": {
+      "name": "products",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "notif_no": {
+          "name": "notif_no",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "applicant_company_id": {
+          "name": "applicant_company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "manufacturer_company_id": {
+          "name": "manufacturer_company_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_notified": {
+          "name": "date_notified",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reason_for_cancellation": {
+          "name": "reason_for_cancellation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_vertically_integrated": {
+          "name": "is_vertically_integrated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "recency_score": {
+          "name": "recency_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_products_notif_no": {
+          "name": "idx_products_notif_no",
+          "columns": [
+            {
+              "expression": "notif_no",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_products_category": {
+          "name": "idx_products_category",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_products_status": {
+          "name": "idx_products_status",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "products_applicant_company_id_companies_id_fk": {
+          "name": "products_applicant_company_id_companies_id_fk",
+          "tableFrom": "products",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "applicant_company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "products_manufacturer_company_id_companies_id_fk": {
+          "name": "products_manufacturer_company_id_companies_id_fk",
+          "tableFrom": "products",
+          "tableTo": "companies",
+          "columnsFrom": [
+            "manufacturer_company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "products_notif_no_unique": {
+          "name": "products_notif_no_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "notif_no"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recommended_alternatives": {
+      "name": "recommended_alternatives",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "cancelled_product_id": {
+          "name": "cancelled_product_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recommended_product_id": {
+          "name": "recommended_product_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "brand_score": {
+          "name": "brand_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_risk_score": {
+          "name": "category_risk_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_vertically_integrated": {
+          "name": "is_vertically_integrated",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recency_score": {
+          "name": "recency_score",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relevance_score": {
+          "name": "relevance_score",
+          "type": "numeric(5, 4)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "idx_reco_cancelled": {
+          "name": "idx_reco_cancelled",
+          "columns": [
+            {
+              "expression": "cancelled_product_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_reco_recommended": {
+          "name": "idx_reco_recommended",
+          "columns": [
+            {
+              "expression": "recommended_product_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "recommended_alternatives_cancelled_product_id_products_id_fk": {
+          "name": "recommended_alternatives_cancelled_product_id_products_id_fk",
+          "tableFrom": "recommended_alternatives",
+          "tableTo": "products",
+          "columnsFrom": [
+            "cancelled_product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "recommended_alternatives_recommended_product_id_products_id_fk": {
+          "name": "recommended_alternatives_recommended_product_id_products_id_fk",
+          "tableFrom": "recommended_alternatives",
+          "tableTo": "products",
+          "columnsFrom": [
+            "recommended_product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

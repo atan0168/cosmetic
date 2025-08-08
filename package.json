@@ -13,7 +13,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:load": "tsx scripts/parse_and_load.ts",
+    "db:setup": "tsx scripts/setup_database.ts",
+    "db:test": "tsx scripts/test_database.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
