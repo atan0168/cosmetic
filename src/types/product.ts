@@ -1,7 +1,6 @@
 export enum ProductStatus {
-  APPROVED = 'approved',
-  CANCELLED = 'cancelled',
-  NOT_FOUND = 'not_found'
+  NOTIFIED = 'Notified',
+  CANCELLED = 'Cancelled'
 }
 
 export enum RiskLevel {
@@ -10,17 +9,72 @@ export enum RiskLevel {
   UNKNOWN = 'unknown'
 }
 
+export interface Company {
+  id: number;
+  name: string;
+}
+
 export interface Product {
-  id: string
-  name: string
-  notificationNumber?: string
-  status: ProductStatus
-  riskLevel: RiskLevel
-  cancellationReason?: string
-  category?: string
-  brand?: string
-  createdAt: Date
-  updatedAt: Date
+  id: number;
+  name: string;
+  notifNo: string;
+  category: string;
+  status: ProductStatus;
+  riskLevel: RiskLevel;
+  reasonForCancellation?: string;
+  dateNotified: string;
+  applicantCompany?: Company;
+  manufacturerCompany?: Company;
+  isVerticallyIntegrated: boolean;
+  recencyScore: number;
+}
+
+export interface CompanyMetrics {
+  companyId: number;
+  totalNotifs: number;
+  firstNotifiedDate: string;
+  cancelledCount: number;
+  reputationScore: number;
+}
+
+export interface CategoryMetrics {
+  productCategory: string;
+  totalNotifs: number;
+  cancelledCount: number;
+  riskScore: number;
+}
+
+export interface RecommendedAlternative {
+  id: number;
+  cancelledProductId: number;
+  recommendedProductId: number;
+  brandScore: number;
+  categoryRiskScore: number;
+  isVerticallyIntegrated: boolean;
+  recencyScore: number;
+  relevanceScore: number;
+}
+
+export interface BannedIngredient {
+  id: number;
+  name: string;
+  alternativeNames?: string;
+  healthRiskDescription: string;
+  regulatoryStatus?: string;
+  sourceUrl?: string;
+}
+
+export interface CancelledProductIngredient {
+  cancelledProductId: number;
+  bannedIngredientId: number;
+}
+
+export interface BannedIngredientMetrics {
+  ingredientId: number;
+  occurrencesCount: number;
+  firstAppearanceDate: string;
+  lastAppearanceDate: string;
+  riskScore: number;
 }
 
 export interface SearchQuery {

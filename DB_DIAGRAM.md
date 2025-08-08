@@ -1,54 +1,105 @@
-Table manufacturers {
-  id int [pk, increment]
-  name varchar
-  country varchar
-  total_cancelled_products int [note: 'Calculated field for risk scoring']
+Table companies {
+  id   int     [pk, increment]
+  name varchar [not null, unique]
+
+  Indexes {
+    name [unique, name: "idx_companies_name"]
+  }
+}
+
+Table company_metrics {
+  company_id          int     [pk, ref: > companies.id]
+  total_notifs        int     [not null, note: "COUNT of all notifications"]
+  first_notified_date date    [not null, note: "earliest date_notified"]
+  cancelled_count     int     [not null, note: "COUNT of status='Cancelled'"]
+  reputation_score    decimal [not null, note: "0–1 composite brand score"]
+
+  Note: "Computed nightly from products → company history"
+}
+
+Table category_metrics {
+  product_category varchar [pk, note: "matches products.category"]
+  total_notifs     int     [not null]
+  cancelled_count  int     [not null]
+  risk_score       decimal [not null, note: "cancelled_count/total_notifs, 0–1"]
+
+  Note: "Computed nightly from products → category history"
 }
 
 Table products {
-  id int [pk, increment]
-  product_name varchar
-  notification_number varchar [unique]
-  notification_status varchar [note: 'Approved, Cancelled']
-  manufacturer_id int [ref: > manufacturers.id]
-  category varchar
-  form varchar
-  intended_use varchar
-  date_notified date
-  date_cancelled date
-  cancellation_reason text
+  id                      int       [pk, increment]
+  notif_no                varchar   [not null, unique]
+  name                    varchar   [not null]
+  category                varchar   [not null]
+  applicant_company_id    int       [ref: > companies.id]
+  manufacturer_company_id int       [ref: > companies.id, null]
+  date_notified           date      [not null]
+  status                  varchar   [not null, note: "'Notified' or 'Cancelled'"]
+  reason_for_cancellation text      [null, note: "populated when status='Cancelled'"]
+
+  is_vertically_integrated boolean  [not null, default: false, note: "applicant_company_id == manufacturer_company_id"]
+  recency_score           decimal  [not null, note: "0–1 normalized within this category"]
+
+  Indexes {
+    (notif_no)  [unique, name: "idx_products_notif_no"]
+    (category)  [name: "idx_products_category"]
+    (status)    [name: "idx_products_status"]
+  }
 }
 
-Table ingredients {
-  id int [pk, increment]
-  name varchar
-  cas_number varchar
-  risk_level varchar [note: 'Low, Moderate, High, Banned']
-  description text
-  total_appearances int [note: 'Calculated field for frequency']
+Table recommended_alternatives {
+  id                      int      [pk, increment]
+  cancelled_product_id    int      [ref: > products.id, not null]
+  recommended_product_id  int      [ref: > products.id, not null]
+
+  brand_score             decimal  [not null, note: "from company_metrics.reputation_score"]
+  category_risk_score     decimal  [not null, note: "from category_metrics.risk_score"]
+  is_vertically_integrated boolean [not null, note: "from products.is_vertically_integrated"]
+  recency_score           decimal  [not null, note: "snapshot of products.recency_score"]
+  relevance_score         decimal  [not null, note: "composite: w1*brand + w2*manuf + w3*recency – w4*risk + w5*vertical"]
+
+  Indexes {
+    (cancelled_product_id)    [name: "idx_reco_cancelled"]
+    (recommended_product_id)  [name: "idx_reco_recommended"]
+  }
 }
 
-Table product_ingredients {
-  product_id int [ref: > products.id]
-  ingredient_id int [ref: > ingredients.id]
-  concentration varchar
-  purpose varchar
-  primary key (product_id, ingredient_id)
+// Master list of all banned ingredients you care about
+Table banned_ingredients {
+  id                        int       [pk, increment]
+  name                      varchar   [not null, unique]
+  alternative_names         text      [note: "Comma-separated INCI/synonyms"]
+  health_risk_description   text      [not null]
+  regulatory_status         varchar   [note: "e.g. Prohibited, Restricted"]
+  source_url                varchar   [note: "Link to MOH regulation or ref"]
+  
+  Indexes {
+    name [unique, name: "idx_banned_ingredients_name"]
+  }
+  
+  Note: "Master metadata for each banned substance"
 }
 
-Table regulations {
-  id int [pk, increment]
-  ingredient_id int [ref: > ingredients.id]
-  region varchar
-  status varchar [note: 'Banned, Restricted, Allowed']
-  notes text
-  source_url varchar
+// Only link cancelled products to the banned ingredients they contained
+Table cancelled_product_ingredients {
+  cancelled_product_id   int  [ref: > products.id]
+  banned_ingredient_id   int  [ref: > banned_ingredients.id]
+  
+  Indexes {
+    (cancelled_product_id) [name: "idx_cpi_product"]
+    (banned_ingredient_id) [name: "idx_cpi_ingredient"]
+  }
+  
+  Note: "Populate from MOH CSV: one row per (notif_no, banned-ingredient)"
 }
 
-Table risk_alerts {
-  id int [pk, increment]
-  product_id int [ref: > products.id]
-  alert_level varchar [note: 'Info, Warning, High Risk']
-  reason text [note: 'E.g., contains banned ingredient; high cancellation rate; frequent problematic substance']
-  date_created date
+// Nightly metrics on each banned ingredient’s appearance in your cancelled set
+Table banned_ingredient_metrics {
+  ingredient_id           int      [pk, ref: > banned_ingredients.id]
+  occurrences_count       int      [not null, note: "How many cancelled notifications contained it"]
+  first_appearance_date   date     [not null]
+  last_appearance_date    date     [not null]
+  risk_score              decimal  [not null, note: "Normalized 0–1 by frequency or severity"]
+  
+  Note: "Recomputed nightly from cancelled_product_ingredients → products"
 }

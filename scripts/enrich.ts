@@ -1,3 +1,9 @@
+interface PubChemData {
+  cas_number?: string;
+  pubchem_cid?: number;
+  scientific_description?: string;
+}
+
 /**
  * Fetches additional data for a chemical from the PubChem API.
  * @param name The name of the ingredient.
