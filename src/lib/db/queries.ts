@@ -118,7 +118,7 @@ export async function searchProducts(
       )
     );
 
-  const total = countResult[0]?.count || 0;
+  const total = Number(countResult[0]?.count ?? 0);
 
   const searchResults: ProductSummary[] = results.map((row) => ({
     id: row.id,
