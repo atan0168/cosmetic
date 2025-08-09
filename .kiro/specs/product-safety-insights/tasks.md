@@ -18,7 +18,7 @@
   - Set up PostgreSQL full-text search indexes for product names and notification numbers
   - _Requirements: 5.1, 5.2_
 
-- [ ] 3. Implement core data models and validation
+- [x] 3. Implement core data models and validation
 
   - Create Product interface with ProductStatus and RiskLevel enums
   - Implement Zod schemas for runtime validation of search queries and products

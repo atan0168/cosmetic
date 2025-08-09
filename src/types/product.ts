@@ -83,8 +83,13 @@ export interface SearchQuery {
   offset?: number
 }
 
-export interface SearchResult {
-  products: Product[]
-  total: number
-  alternatives?: Product[]
+export interface ProductSummary {
+  id: number;
+  notifNo: string;
+  name: string;
+  category: string;
+  status: ProductStatus;
+  reasonForCancellation: string | null;
+  applicantCompany?: Company;
+  manufacturerCompany?: Company;
 }

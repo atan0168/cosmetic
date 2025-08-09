@@ -1,23 +1,8 @@
 import { db } from "./index";
 import { products, companies } from "./schema";
-import { eq, ilike, or, sql, desc, asc } from "drizzle-orm";
-
-export interface SearchResult {
-  id: number;
-  notifNo: string;
-  name: string;
-  category: string;
-  status: string;
-  reasonForCancellation: string | null;
-  applicantCompany?: {
-    id: number;
-    name: string;
-  };
-  manufacturerCompany?: {
-    id: number;
-    name: string;
-  };
-}
+import { eq, ilike, or, sql, asc, and } from "drizzle-orm";
+import { ProductSummary, ProductStatus } from "@/types/product";
+import { ProductFullTextRow, CountRow } from "@/types/db";
 
 /**
  * Search products using full-text search when available, fallback to ILIKE
@@ -26,7 +11,7 @@ export async function searchProducts(
   query: string,
   limit: number = 10,
   offset: number = 0
-): Promise<{ products: SearchResult[]; total: number }> {
+): Promise<{ products: ProductSummary[]; total: number }> {
   try {
     // First try full-text search if the search_vector column exists
     const fullTextResults = await db.execute(sql`
@@ -50,34 +35,39 @@ export async function searchProducts(
       LIMIT ${limit} OFFSET ${offset}
     `);
 
-    if (fullTextResults.length > 0) {
+    const fullTextRows = fullTextResults.rows as unknown as Array<ProductFullTextRow>;
+
+    if (fullTextRows.length > 0) {
       const countResult = await db.execute(sql`
         SELECT COUNT(*) as total
         FROM products p
         WHERE p.search_vector @@ plainto_tsquery('english', ${query})
       `);
 
-      const total = Number(countResult[0]?.total || 0);
+      const totalRows = countResult.rows as unknown as Array<CountRow>;
+      const total = Number(totalRows[0]?.total ?? 0);
 
-      const searchResults: SearchResult[] = fullTextResults.map((row: any) => ({
+      const searchResults: ProductSummary[] = fullTextRows.map((row) => ({
         id: row.id,
         notifNo: row.notif_no,
         name: row.name,
         category: row.category,
-        status: row.status,
+        status: row.status as ProductStatus,
         reasonForCancellation: row.reason_for_cancellation,
-        applicantCompany: row.applicant_company_id
-          ? {
-              id: row.applicant_company_id,
-              name: row.applicant_company_name,
-            }
-          : undefined,
-        manufacturerCompany: row.manufacturer_company_id
-          ? {
-              id: row.manufacturer_company_id,
-              name: row.manufacturer_company_name,
-            }
-          : undefined,
+        applicantCompany:
+          row.applicant_company_id && row.applicant_company_name
+            ? {
+                id: row.applicant_company_id,
+                name: row.applicant_company_name,
+              }
+            : undefined,
+        manufacturerCompany:
+          row.manufacturer_company_id && row.manufacturer_company_name
+            ? {
+                id: row.manufacturer_company_id,
+                name: row.manufacturer_company_name,
+              }
+            : undefined,
       }));
 
       return { products: searchResults, total };
@@ -130,14 +120,16 @@ export async function searchProducts(
 
   const total = countResult[0]?.count || 0;
 
-  const searchResults: SearchResult[] = results.map((row) => ({
+  const searchResults: ProductSummary[] = results.map((row) => ({
     id: row.id,
     notifNo: row.notifNo,
     name: row.name,
     category: row.category,
-    status: row.status,
+    status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
-    applicantCompany: row.applicantCompany,
+    applicantCompany: row.applicantCompany
+      ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
+      : undefined,
   }));
 
   return { products: searchResults, total };
@@ -146,7 +138,7 @@ export async function searchProducts(
 /**
  * Get product by ID with company information
  */
-export async function getProductById(id: number): Promise<SearchResult | null> {
+export async function getProductById(id: number): Promise<ProductSummary | null> {
   const result = await db
     .select({
       id: products.id,
@@ -173,9 +165,11 @@ export async function getProductById(id: number): Promise<SearchResult | null> {
     notifNo: row.notifNo,
     name: row.name,
     category: row.category,
-    status: row.status,
+    status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
-    applicantCompany: row.applicantCompany,
+    applicantCompany: row.applicantCompany
+      ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
+      : undefined,
   };
 }
 
@@ -185,8 +179,12 @@ export async function getProductById(id: number): Promise<SearchResult | null> {
 export async function getSaferAlternatives(
   excludeId?: number,
   limit: number = 3
-): Promise<SearchResult[]> {
-  let query = db
+): Promise<ProductSummary[]> {
+  const baseWhere = excludeId
+    ? and(eq(products.status, "Notified"), sql`${products.id} != ${excludeId}`)
+    : eq(products.status, "Notified");
+
+  const results = await db
     .select({
       id: products.id,
       notifNo: products.notifNo,
@@ -201,22 +199,20 @@ export async function getSaferAlternatives(
     })
     .from(products)
     .leftJoin(companies, eq(products.applicantCompanyId, companies.id))
-    .where(eq(products.status, "Notified"));
-
-  if (excludeId) {
-    query = query.where(sql`${products.id} != ${excludeId}`);
-  }
-
-  const results = await query.orderBy(sql`RANDOM()`).limit(limit);
+    .where(baseWhere)
+    .orderBy(sql`RANDOM()`)
+    .limit(limit);
 
   return results.map((row) => ({
     id: row.id,
     notifNo: row.notifNo,
     name: row.name,
     category: row.category,
-    status: row.status,
+    status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
-    applicantCompany: row.applicantCompany,
+    applicantCompany: row.applicantCompany
+      ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
+      : undefined,
   }));
 }
 
@@ -234,7 +230,7 @@ export async function getProductsByStatus(
   status: "Notified" | "Cancelled",
   limit: number = 10,
   offset: number = 0
-) {
+): Promise<{ products: ProductSummary[]; total: number }> {
   const results = await db
     .select({
       id: products.id,
@@ -262,14 +258,16 @@ export async function getProductsByStatus(
 
   const total = countResult[0]?.count || 0;
 
-  const searchResults: SearchResult[] = results.map((row) => ({
+  const searchResults: ProductSummary[] = results.map((row) => ({
     id: row.id,
     notifNo: row.notifNo,
     name: row.name,
     category: row.category,
-    status: row.status,
+    status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
-    applicantCompany: row.applicantCompany,
+    applicantCompany: row.applicantCompany
+      ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
+      : undefined,
   }));
 
   return { products: searchResults, total };

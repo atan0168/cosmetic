@@ -58,3 +58,27 @@ export function formatCancellationReason(reason?: string): string {
   const formatted = reason.charAt(0).toUpperCase() + reason.slice(1);
   return formatted.endsWith('.') ? formatted : formatted + '.';
 }
+
+/**
+ * Sanitize search query input
+ */
+export function sanitizeSearchQuery(query: string): string {
+  return query.trim().replace(/[<>]/g, '');
+}
+
+/**
+ * Transform raw product data to include computed risk level
+ */
+export function transformProductData(rawProduct: Record<string, unknown> & { status: ProductStatus }): Record<string, unknown> {
+  return {
+    ...rawProduct,
+    riskLevel: calculateRiskLevel(rawProduct.status),
+  };
+}
+
+/**
+ * Validate and transform search results
+ */
+export function validateSearchResults(results: (Record<string, unknown> & { status: ProductStatus })[]): Record<string, unknown>[] {
+  return results.map(transformProductData);
+}

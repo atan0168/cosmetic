@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ProductStatus, RiskLevel } from "@/types/product";
 
 // Company validation schema
 export const CompanySchema = z.object({
@@ -59,7 +58,7 @@ export const BannedIngredientSchema = z.object({
   alternativeNames: z.string().optional(),
   healthRiskDescription: z.string().min(1),
   regulatoryStatus: z.string().max(100).optional(),
-  sourceUrl: z.string().url().max(500).optional(),
+  sourceUrl: z.string().url({ message: "Invalid URL format" }).max(500).optional(),
 });
 
 // Cancelled product ingredient validation schema
@@ -84,8 +83,8 @@ export const SearchQuerySchema = z.object({
   offset: z.number().min(0).default(0),
 });
 
-// Search result validation schema
-export const SearchResultSchema = z.object({
+// Search response validation schema
+export const SearchResponseSchema = z.object({
   products: z.array(ProductSchema),
   total: z.number().min(0),
   alternatives: z.array(ProductSchema).optional(),
@@ -107,7 +106,7 @@ export const AlternativesRequestSchema = z.object({
 
 // Type exports for use in components
 export type SearchQuery = z.infer<typeof SearchQuerySchema>;
-export type SearchResult = z.infer<typeof SearchResultSchema>;
+export type SearchResponse = z.infer<typeof SearchResponseSchema>;
 export type ApiResponse = z.infer<typeof ApiResponseSchema>;
 export type AlternativesRequest = z.infer<typeof AlternativesRequestSchema>;
 export type CompanyMetrics = z.infer<typeof CompanyMetricsSchema>;
