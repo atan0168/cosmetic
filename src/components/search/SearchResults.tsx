@@ -3,7 +3,7 @@
 import { Product } from '@/types/product';
 import { ProductCard } from '@/components/ui/product-card';
 import { LoadingSpinner, ProductCardSkeleton } from '@/components/ui/loading-spinner';
-import { ErrorMessage } from '@/components/ui/error-message';
+import { SearchErrorMessage } from '@/components/ui/error-message';
 import { AlertCircle, Search } from 'lucide-react';
 
 interface SearchResultsProps {
@@ -40,7 +40,7 @@ export function SearchResults({
   if (error) {
     return (
       <div className={className}>
-        <ErrorMessage title="Search Error" message={error} className="mt-4" />
+        <SearchErrorMessage onRetry={() => window.location.reload()} />
       </div>
     );
   }

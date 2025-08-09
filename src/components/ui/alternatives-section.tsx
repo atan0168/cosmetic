@@ -3,7 +3,7 @@
 import { Product, ProductStatus, RiskLevel } from '@/types/product';
 import { ProductCard } from '@/components/ui/product-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { ErrorMessage } from '@/components/ui/error-message';
+import { AlternativesErrorMessage } from '@/components/ui/error-message';
 import { useAlternatives } from '@/hooks/useAlternatives';
 import { Shield, AlertTriangle } from 'lucide-react';
 
@@ -71,14 +71,7 @@ export function AlternativesSection({
         {/* Error State */}
         {error && !isLoading && (
           <div className="py-4">
-            <ErrorMessage
-              title="Unable to load alternatives"
-              message={error instanceof Error ? error.message : 'Please try again later.'}
-              variant="default"
-              onRetry={handleRetry}
-              retryText={isRefetching ? 'Retrying...' : 'Try Again'}
-              className="bg-yellow-50 border-yellow-200"
-            />
+            <AlternativesErrorMessage onRetry={handleRetry} />
           </div>
         )}
 

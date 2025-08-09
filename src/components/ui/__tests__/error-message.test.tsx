@@ -7,6 +7,11 @@ import {
   SearchErrorMessage,
   ValidationErrorMessage,
   NoResultsMessage,
+  DatabaseErrorMessage,
+  RateLimitErrorMessage,
+  TimeoutErrorMessage,
+  ServerErrorMessage,
+  AlternativesErrorMessage,
 } from '../error-message';
 
 describe('ErrorMessage', () => {
@@ -118,5 +123,105 @@ describe('NoResultsMessage', () => {
 
     const alert = screen.getByRole('alert');
     expect(alert).toHaveClass('border-yellow-200', 'bg-yellow-50');
+  });
+});
+
+describe('DatabaseErrorMessage', () => {
+  it('renders database error message', () => {
+    render(<DatabaseErrorMessage />);
+
+    expect(screen.getByText('Connection Error')).toBeInTheDocument();
+    expect(screen.getByText(/unable to connect to the product database/i)).toBeInTheDocument();
+  });
+
+  it('renders retry button when onRetry is provided', async () => {
+    const user = userEvent.setup();
+    const mockRetry = vi.fn();
+
+    render(<DatabaseErrorMessage onRetry={mockRetry} />);
+
+    const retryButton = screen.getByRole('button', { name: /retry connection/i });
+    await user.click(retryButton);
+    expect(mockRetry).toHaveBeenCalledOnce();
+  });
+});
+
+describe('RateLimitErrorMessage', () => {
+  it('renders rate limit error message', () => {
+    render(<RateLimitErrorMessage />);
+
+    expect(screen.getByText('Too Many Requests')).toBeInTheDocument();
+    expect(screen.getByText(/made too many requests/i)).toBeInTheDocument();
+  });
+
+  it('renders retry button when onRetry is provided', async () => {
+    const user = userEvent.setup();
+    const mockRetry = vi.fn();
+
+    render(<RateLimitErrorMessage onRetry={mockRetry} />);
+
+    const retryButton = screen.getByRole('button', { name: /try again/i });
+    await user.click(retryButton);
+    expect(mockRetry).toHaveBeenCalledOnce();
+  });
+});
+
+describe('TimeoutErrorMessage', () => {
+  it('renders timeout error message', () => {
+    render(<TimeoutErrorMessage />);
+
+    expect(screen.getByText('Request Timeout')).toBeInTheDocument();
+    expect(screen.getByText(/took too long to complete/i)).toBeInTheDocument();
+  });
+
+  it('renders retry button when onRetry is provided', async () => {
+    const user = userEvent.setup();
+    const mockRetry = vi.fn();
+
+    render(<TimeoutErrorMessage onRetry={mockRetry} />);
+
+    const retryButton = screen.getByRole('button', { name: /retry request/i });
+    await user.click(retryButton);
+    expect(mockRetry).toHaveBeenCalledOnce();
+  });
+});
+
+describe('ServerErrorMessage', () => {
+  it('renders server error message', () => {
+    render(<ServerErrorMessage />);
+
+    expect(screen.getByText('Server Error')).toBeInTheDocument();
+    expect(screen.getByText(/unexpected server error occurred/i)).toBeInTheDocument();
+  });
+
+  it('renders retry button when onRetry is provided', async () => {
+    const user = userEvent.setup();
+    const mockRetry = vi.fn();
+
+    render(<ServerErrorMessage onRetry={mockRetry} />);
+
+    const retryButton = screen.getByRole('button', { name: /try again/i });
+    await user.click(retryButton);
+    expect(mockRetry).toHaveBeenCalledOnce();
+  });
+});
+
+describe('AlternativesErrorMessage', () => {
+  it('renders alternatives error message', () => {
+    render(<AlternativesErrorMessage />);
+
+    expect(screen.getByText('Alternatives Unavailable')).toBeInTheDocument();
+    expect(screen.getByText(/couldn't load safer alternatives/i)).toBeInTheDocument();
+  });
+
+  it('renders retry button when onRetry is provided', async () => {
+    const user = userEvent.setup();
+    const mockRetry = vi.fn();
+
+    render(<AlternativesErrorMessage onRetry={mockRetry} />);
+
+    const retryButton = screen.getByRole('button', { name: /retry alternatives/i });
+    await user.click(retryButton);
+    expect(mockRetry).toHaveBeenCalledOnce();
   });
 });

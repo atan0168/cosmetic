@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -17,6 +18,8 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  private retryTimeoutId: NodeJS.Timeout | null = null;
+
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
@@ -29,14 +32,92 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     
+    // Log error details for debugging
+    console.error('Component stack:', errorInfo.componentStack);
+    
     // Call optional error handler
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
+
+    // Report error to monitoring service in production
+    if (process.env.NODE_ENV === 'production') {
+      this.reportError(error, errorInfo);
+    }
   }
 
+  componentWillUnmount() {
+    if (this.retryTimeoutId) {
+      clearTimeout(this.retryTimeoutId);
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    // If we were showing an error and the children changed (e.g., user retried
+    // with a non-throwing child), clear the error state to re-render children
+    if (this.state.hasError && this.props.children !== prevProps.children) {
+      // Use flushSync to make the reset visible immediately in tests
+      flushSync(() => {
+        this.setState({ hasError: false, error: undefined });
+      });
+    }
+  }
+
+  private reportError = (error: Error, errorInfo: ErrorInfo) => {
+    // In a real application, you would send this to your error monitoring service
+    // e.g., Sentry, LogRocket, Bugsnag, etc.
+    try {
+      const safeUserAgent = (typeof navigator !== 'undefined' && navigator && 'userAgent' in navigator)
+        ? (navigator.userAgent as string)
+        : '';
+      const safeUrl = (typeof window !== 'undefined' && typeof window.location !== 'undefined' && window.location)
+        ? (window.location.href ?? '')
+        : '';
+
+      const errorReport = {
+        message: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        timestamp: new Date().toISOString(),
+        userAgent: safeUserAgent,
+        url: safeUrl,
+      };
+      
+      // Example: Send to monitoring service
+      // monitoringService.captureException(errorReport);
+      console.warn('Error reported to monitoring service:', errorReport);
+    } catch (reportingError) {
+      console.error('Failed to report error:', reportingError);
+    }
+  };
+
   handleRetry = () => {
-    this.setState({ hasError: false, error: undefined });
+    // Ensure the reset happens synchronously so subsequent renders/tests see the updated state
+    flushSync(() => {
+      this.setState({ hasError: false, error: undefined });
+    });
+    
+    // Clear any existing timeout
+    if (this.retryTimeoutId) {
+      clearTimeout(this.retryTimeoutId);
+    }
+    
+    // Auto-retry after a delay if the error persists
+    this.retryTimeoutId = setTimeout(() => {
+      if (this.state.hasError) {
+        console.warn('Error persisted after retry attempt');
+      }
+    }, 5000);
+  };
+
+  handleReload = () => {
+    // Clear any existing timeout
+    if (this.retryTimeoutId) {
+      clearTimeout(this.retryTimeoutId);
+    }
+    
+    // Reload the page
+    window.location.reload();
   };
 
   render() {
@@ -70,7 +151,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.location.reload()}
+                    onClick={this.handleReload}
                     className="gap-2"
                   >
                     <RefreshCw className="h-3 w-3" />

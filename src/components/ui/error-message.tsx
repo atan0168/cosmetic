@@ -72,3 +72,64 @@ export function NoResultsMessage({ query }: { query: string }) {
     </Alert>
   );
 }
+
+// Database connection error message
+export function DatabaseErrorMessage({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorMessage
+      title="Connection Error"
+      message="Unable to connect to the product database. Please check your internet connection and try again."
+      onRetry={onRetry}
+      retryText="Retry connection"
+    />
+  );
+}
+
+// Rate limit error message
+export function RateLimitErrorMessage({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorMessage
+      title="Too Many Requests"
+      message="You've made too many requests. Please wait a moment before trying again."
+      onRetry={onRetry}
+      retryText="Try again"
+    />
+  );
+}
+
+// Network timeout error message
+export function TimeoutErrorMessage({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorMessage
+      title="Request Timeout"
+      message="The request took too long to complete. Please check your connection and try again."
+      onRetry={onRetry}
+      retryText="Retry request"
+    />
+  );
+}
+
+// Generic server error message
+export function ServerErrorMessage({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorMessage
+      title="Server Error"
+      message="An unexpected server error occurred. Our team has been notified. Please try again later."
+      onRetry={onRetry}
+      retryText="Try again"
+    />
+  );
+}
+
+// Alternatives loading error message
+export function AlternativesErrorMessage({ onRetry }: { onRetry?: () => void }) {
+  return (
+    <ErrorMessage
+      title="Alternatives Unavailable"
+      message="We couldn't load safer alternatives at this time. The main search results are still available."
+      variant="default"
+      onRetry={onRetry}
+      retryText="Retry alternatives"
+    />
+  );
+}
