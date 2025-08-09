@@ -183,7 +183,7 @@ describe('useAlternatives', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
-        json: async () => {
+        json: async (): Promise<unknown> => {
           throw new Error('Invalid JSON');
         },
       } as Response);

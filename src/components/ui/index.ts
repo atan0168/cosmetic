@@ -18,3 +18,4 @@ export {
   ValidationErrorMessage,
   NoResultsMessage,
 } from './error-message';
+export { ErrorBoundary, ErrorBoundaryWrapper, useErrorBoundary } from './error-boundary';

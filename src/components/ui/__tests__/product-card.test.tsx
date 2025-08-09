@@ -143,7 +143,7 @@ describe('ProductCard', () => {
   });
 
   it('handles missing date information gracefully', () => {
-    const productWithoutDate = { ...mockProduct, dateNotified: undefined };
+    const productWithoutDate = { ...mockProduct, dateNotified: '' };
     render(<ProductCard product={productWithoutDate} />);
 
     expect(screen.queryByText('Notified:')).not.toBeInTheDocument();

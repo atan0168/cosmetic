@@ -12,6 +12,10 @@ vi.mock('@/hooks/useAlternatives', () => ({
 import { useAlternatives } from '@/hooks/useAlternatives';
 const mockUseAlternatives = vi.mocked(useAlternatives);
 
+type UseAlternativesResult = ReturnType<typeof useAlternatives>;
+const asUseAlternativesResult = (value: unknown) =>
+  value as unknown as UseAlternativesResult;
+
 // Test data
 const mockCancelledProduct: Product = {
   id: 1,
@@ -75,13 +79,13 @@ describe('AlternativesSection', () => {
 
   describe('Visibility Logic', () => {
     it('should not render for safe products', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: undefined,
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       const { container } = render(
         <TestWrapper>
@@ -93,13 +97,13 @@ describe('AlternativesSection', () => {
     });
 
     it('should render for cancelled products', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: { alternatives: [], total: 0 },
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -113,13 +117,13 @@ describe('AlternativesSection', () => {
 
   describe('Loading State', () => {
     it('should display loading spinner and message', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: undefined,
         isLoading: true,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -137,13 +141,13 @@ describe('AlternativesSection', () => {
       const mockRefetch = vi.fn();
       const mockError = new Error('Failed to fetch alternatives');
 
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: undefined,
         isLoading: false,
         error: mockError,
         refetch: mockRefetch,
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -164,13 +168,13 @@ describe('AlternativesSection', () => {
 
   describe('Empty State', () => {
     it('should display no alternatives found message', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: { alternatives: [], total: 0, message: 'No safer alternatives found.' },
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -185,13 +189,13 @@ describe('AlternativesSection', () => {
 
   describe('Alternatives Display', () => {
     it('should display list of alternatives', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: { alternatives: mockAlternatives, total: 1 },
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -208,13 +212,13 @@ describe('AlternativesSection', () => {
     });
 
     it('should display additional safety note', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: { alternatives: mockAlternatives, total: 1 },
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -231,13 +235,13 @@ describe('AlternativesSection', () => {
     it('should call onAlternativeClick when alternative is clicked', () => {
       const mockOnAlternativeClick = vi.fn();
 
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: { alternatives: [mockAlternatives[0]], total: 1 },
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
@@ -257,13 +261,13 @@ describe('AlternativesSection', () => {
 
   describe('Hook Integration', () => {
     it('should call useAlternatives with correct parameters', () => {
-      mockUseAlternatives.mockReturnValue({
+      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
         data: { alternatives: [], total: 0 },
         isLoading: false,
         error: null,
         refetch: vi.fn(),
         isRefetching: false,
-      });
+      }));
 
       render(
         <TestWrapper>
