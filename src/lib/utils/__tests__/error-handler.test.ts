@@ -45,7 +45,9 @@ describe('error-handler', () => {
         const result = categorizeError(errorMessage);
         expect(result.type).toBe(ErrorType.NETWORK);
         expect(result.retryable).toBe(true);
-        expect(result.message).toBe('Network connection error. Please check your internet connection.');
+        expect(result.message).toBe(
+          'Network connection error. Please check your internet connection.',
+        );
       });
     });
 
@@ -66,11 +68,7 @@ describe('error-handler', () => {
     });
 
     it('should categorize rate limit errors correctly', () => {
-      const rateLimitErrors = [
-        'rate limit exceeded',
-        'too many requests',
-        'Error 429',
-      ];
+      const rateLimitErrors = ['rate limit exceeded', 'too many requests', 'Error 429'];
 
       rateLimitErrors.forEach((errorMessage) => {
         const result = categorizeError(errorMessage);
@@ -81,11 +79,7 @@ describe('error-handler', () => {
     });
 
     it('should categorize timeout errors correctly', () => {
-      const timeoutErrors = [
-        'request timeout',
-        'took too long to complete',
-        'Error 408',
-      ];
+      const timeoutErrors = ['request timeout', 'took too long to complete', 'Error 408'];
 
       timeoutErrors.forEach((errorMessage) => {
         const result = categorizeError(errorMessage);
@@ -96,12 +90,7 @@ describe('error-handler', () => {
     });
 
     it('should categorize server errors correctly', () => {
-      const serverErrors = [
-        'server error occurred',
-        'Error 500',
-        'Error 503',
-        'Error 502',
-      ];
+      const serverErrors = ['server error occurred', 'Error 500', 'Error 503', 'Error 502'];
 
       serverErrors.forEach((errorMessage) => {
         const result = categorizeError(errorMessage);
@@ -112,11 +101,7 @@ describe('error-handler', () => {
     });
 
     it('should categorize unknown errors correctly', () => {
-      const unknownErrors = [
-        'Something weird happened',
-        'Unexpected error',
-        '',
-      ];
+      const unknownErrors = ['Something weird happened', 'Unexpected error', ''];
 
       unknownErrors.forEach((errorMessage) => {
         const result = categorizeError(errorMessage);
@@ -129,7 +114,7 @@ describe('error-handler', () => {
     it('should handle Error objects correctly', () => {
       const error = new Error('network connection failed');
       const result = categorizeError(error);
-      
+
       expect(result.type).toBe(ErrorType.NETWORK);
       expect(result.originalError).toBe(error);
       expect(result.retryable).toBe(true);
@@ -205,7 +190,7 @@ describe('error-handler', () => {
           retryable: appError.retryable,
           context,
           timestamp: expect.any(String),
-        })
+        }),
       );
 
       process.env.NODE_ENV = originalEnv;
@@ -225,7 +210,7 @@ describe('error-handler', () => {
           message: appError.message,
           retryable: appError.retryable,
           timestamp: expect.any(String),
-        })
+        }),
       );
 
       process.env.NODE_ENV = originalEnv;
@@ -246,11 +231,11 @@ describe('error-handler', () => {
         },
         {
           type: ErrorType.DATABASE,
-          expected: 'We\'re having trouble accessing our database. Please try again in a moment.',
+          expected: "We're having trouble accessing our database. Please try again in a moment.",
         },
         {
           type: ErrorType.RATE_LIMIT,
-          expected: 'You\'re searching too quickly. Please wait a moment before trying again.',
+          expected: "You're searching too quickly. Please wait a moment before trying again.",
         },
         {
           type: ErrorType.TIMEOUT,
@@ -272,7 +257,7 @@ describe('error-handler', () => {
           message: input || 'test message',
           retryable: true,
         };
-        
+
         const result = getUserFriendlyMessage(appError);
         expect(result).toBe(expected);
       });
@@ -281,7 +266,12 @@ describe('error-handler', () => {
 
   describe('useErrorHandler', () => {
     it('should provide error handling utilities', () => {
-      const { handleError, getErrorMessage, shouldRetry, categorizeError: categorize } = useErrorHandler();
+      const {
+        handleError,
+        getErrorMessage,
+        shouldRetry,
+        categorizeError: categorize,
+      } = useErrorHandler();
 
       expect(typeof handleError).toBe('function');
       expect(typeof getErrorMessage).toBe('function');

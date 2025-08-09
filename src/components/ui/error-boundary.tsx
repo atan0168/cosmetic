@@ -31,10 +31,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     // Log error details for debugging
     console.error('Component stack:', errorInfo.componentStack);
-    
+
     // Call optional error handler
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
@@ -67,12 +67,14 @@ export class ErrorBoundary extends Component<Props, State> {
     // In a real application, you would send this to your error monitoring service
     // e.g., Sentry, LogRocket, Bugsnag, etc.
     try {
-      const safeUserAgent = (typeof navigator !== 'undefined' && navigator && 'userAgent' in navigator)
-        ? (navigator.userAgent as string)
-        : '';
-      const safeUrl = (typeof window !== 'undefined' && typeof window.location !== 'undefined' && window.location)
-        ? (window.location.href ?? '')
-        : '';
+      const safeUserAgent =
+        typeof navigator !== 'undefined' && navigator && 'userAgent' in navigator
+          ? (navigator.userAgent as string)
+          : '';
+      const safeUrl =
+        typeof window !== 'undefined' && typeof window.location !== 'undefined' && window.location
+          ? (window.location.href ?? '')
+          : '';
 
       const errorReport = {
         message: error.message,
@@ -82,7 +84,7 @@ export class ErrorBoundary extends Component<Props, State> {
         userAgent: safeUserAgent,
         url: safeUrl,
       };
-      
+
       // Example: Send to monitoring service
       // monitoringService.captureException(errorReport);
       console.warn('Error reported to monitoring service:', errorReport);
@@ -96,12 +98,12 @@ export class ErrorBoundary extends Component<Props, State> {
     flushSync(() => {
       this.setState({ hasError: false, error: undefined });
     });
-    
+
     // Clear any existing timeout
     if (this.retryTimeoutId) {
       clearTimeout(this.retryTimeoutId);
     }
-    
+
     // Auto-retry after a delay if the error persists
     this.retryTimeoutId = setTimeout(() => {
       if (this.state.hasError) {
@@ -115,7 +117,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.retryTimeoutId) {
       clearTimeout(this.retryTimeoutId);
     }
-    
+
     // Reload the page
     window.location.reload();
   };
@@ -136,24 +138,15 @@ export class ErrorBoundary extends Component<Props, State> {
               <AlertTitle>Something went wrong</AlertTitle>
               <AlertDescription className="mt-2">
                 <p className="mb-4">
-                  An unexpected error occurred while loading this page. Please try refreshing or contact support if the problem persists.
+                  An unexpected error occurred while loading this page. Please try refreshing or
+                  contact support if the problem persists.
                 </p>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={this.handleRetry}
-                    className="gap-2"
-                  >
+                  <Button variant="outline" size="sm" onClick={this.handleRetry} className="gap-2">
                     <RefreshCw className="h-3 w-3" />
                     Try again
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={this.handleReload}
-                    className="gap-2"
-                  >
+                  <Button variant="outline" size="sm" onClick={this.handleReload} className="gap-2">
                     <RefreshCw className="h-3 w-3" />
                     Refresh page
                   </Button>
@@ -163,7 +156,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     <summary className="cursor-pointer text-sm font-medium">
                       Error details (development only)
                     </summary>
-                    <pre className="mt-2 whitespace-pre-wrap text-xs text-muted-foreground">
+                    <pre className="text-muted-foreground mt-2 text-xs whitespace-pre-wrap">
                       {this.state.error.stack}
                     </pre>
                   </details>
@@ -207,11 +200,7 @@ interface ErrorBoundaryWrapperProps {
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
-export function ErrorBoundaryWrapper({ 
-  children, 
-  fallback, 
-  onError 
-}: ErrorBoundaryWrapperProps) {
+export function ErrorBoundaryWrapper({ children, fallback, onError }: ErrorBoundaryWrapperProps) {
   return (
     <ErrorBoundary fallback={fallback} onError={onError}>
       {children}

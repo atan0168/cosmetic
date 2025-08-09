@@ -83,13 +83,7 @@ describe('SearchResults', () => {
 
   describe('Loading State', () => {
     it('displays loading spinner and skeleton when isLoading is true', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          isLoading={true}
-          query="lipstick"
-        />
-      );
+      render(<SearchResults {...defaultProps} isLoading={true} query="lipstick" />);
 
       expect(screen.getByRole('status')).toHaveAttribute('aria-label', 'Loading search results');
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
@@ -98,13 +92,7 @@ describe('SearchResults', () => {
     });
 
     it('displays loading spinner with correct size', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          isLoading={true}
-          query="test"
-        />
-      );
+      render(<SearchResults {...defaultProps} isLoading={true} query="test" />);
 
       const spinner = screen.getByTestId('loading-spinner');
       expect(spinner).toHaveAttribute('data-size', 'sm');
@@ -114,14 +102,8 @@ describe('SearchResults', () => {
   describe('Error State', () => {
     it('displays error message when error is provided', () => {
       const errorMessage = 'Search unavailable. Please try again later.';
-      
-      render(
-        <SearchResults
-          {...defaultProps}
-          error={errorMessage}
-          query="lipstick"
-        />
-      );
+
+      render(<SearchResults {...defaultProps} error={errorMessage} query="lipstick" />);
 
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
       expect(screen.getByTestId('error-title')).toHaveTextContent('Search Error');
@@ -135,7 +117,7 @@ describe('SearchResults', () => {
           error="Some error"
           query="lipstick"
           products={mockProducts}
-        />
+        />,
       );
 
       expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
@@ -168,44 +150,32 @@ describe('SearchResults', () => {
 
   describe('Empty Results State', () => {
     it('displays no results message when products array is empty but query exists', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="nonexistent product"
-          products={[]}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="nonexistent product" products={[]} />);
 
       expect(screen.getByTestId('alert-circle-icon')).toBeInTheDocument();
       expect(screen.getByText('No Products Found')).toBeInTheDocument();
-      expect(screen.getByText('No products found for "nonexistent product". Try a different name or notification number.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'No products found for "nonexistent product". Try a different name or notification number.',
+        ),
+      ).toBeInTheDocument();
     });
 
     it('displays search tips in empty results state', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="test"
-          products={[]}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="test" products={[]} />);
 
       expect(screen.getByText('Search tips:')).toBeInTheDocument();
       expect(screen.getByText('• Try using fewer or different keywords')).toBeInTheDocument();
       expect(screen.getByText('• Check the spelling of product names')).toBeInTheDocument();
-      expect(screen.getByText('• Use the full notification number if available')).toBeInTheDocument();
+      expect(
+        screen.getByText('• Use the full notification number if available'),
+      ).toBeInTheDocument();
     });
   });
 
   describe('Results State', () => {
     it('displays search results with correct header information', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="lipstick"
-          products={mockProducts}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="lipstick" products={mockProducts} />);
 
       expect(screen.getByText('Search Results')).toBeInTheDocument();
       expect(screen.getByText('(2 products found)')).toBeInTheDocument();
@@ -213,25 +183,13 @@ describe('SearchResults', () => {
     });
 
     it('displays singular product count correctly', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="lipstick"
-          products={[mockProducts[0]]}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="lipstick" products={[mockProducts[0]]} />);
 
       expect(screen.getByText('(1 product found)')).toBeInTheDocument();
     });
 
     it('renders all products as ProductCard components', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="lipstick"
-          products={mockProducts}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="lipstick" products={mockProducts} />);
 
       const productCards = screen.getAllByTestId('product-card');
       expect(productCards).toHaveLength(2);
@@ -241,13 +199,7 @@ describe('SearchResults', () => {
     });
 
     it('sets up proper accessibility attributes for results list', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="lipstick"
-          products={mockProducts}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="lipstick" products={mockProducts} />);
 
       const resultsList = screen.getByRole('list');
       expect(resultsList).toHaveAttribute('aria-label', 'Search results');
@@ -257,30 +209,28 @@ describe('SearchResults', () => {
     });
 
     it('displays safety information footer', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="lipstick"
-          products={mockProducts}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="lipstick" products={mockProducts} />);
 
       expect(screen.getByText('Safety Information')).toBeInTheDocument();
-      expect(screen.getByText(/Product safety status is based on official cosmetic notification databases/)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Product safety status is based on official cosmetic notification databases/,
+        ),
+      ).toBeInTheDocument();
     });
   });
 
   describe('Product Click Handling', () => {
     it('passes onProductClick handler to ProductCard components', () => {
       const mockOnProductClick = vi.fn();
-      
+
       render(
         <SearchResults
           {...defaultProps}
           query="lipstick"
           products={mockProducts}
           onProductClick={mockOnProductClick}
-        />
+        />,
       );
 
       const productCards = screen.getAllByTestId('product-card');
@@ -289,13 +239,7 @@ describe('SearchResults', () => {
     });
 
     it('does not set role=button when onProductClick is not provided', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query="lipstick"
-          products={mockProducts}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="lipstick" products={mockProducts} />);
 
       const productCards = screen.getAllByTestId('product-card');
       expect(productCards[0]).not.toHaveAttribute('role', 'button');
@@ -311,7 +255,7 @@ describe('SearchResults', () => {
           className="custom-class"
           query="test"
           products={mockProducts}
-        />
+        />,
       );
 
       expect(container.firstChild).toHaveClass('custom-class');
@@ -319,12 +263,7 @@ describe('SearchResults', () => {
 
     it('applies className in loading state', () => {
       const { container } = render(
-        <SearchResults
-          {...defaultProps}
-          className="loading-class"
-          isLoading={true}
-          query="test"
-        />
+        <SearchResults {...defaultProps} className="loading-class" isLoading={true} query="test" />,
       );
 
       expect(container.firstChild).toHaveClass('loading-class');
@@ -332,12 +271,7 @@ describe('SearchResults', () => {
 
     it('applies className in error state', () => {
       const { container } = render(
-        <SearchResults
-          {...defaultProps}
-          className="error-class"
-          error="Some error"
-          query="test"
-        />
+        <SearchResults {...defaultProps} className="error-class" error="Some error" query="test" />,
       );
 
       expect(container.firstChild).toHaveClass('error-class');
@@ -353,7 +287,7 @@ describe('SearchResults', () => {
           error="Some error"
           query="test"
           products={mockProducts}
-        />
+        />,
       );
 
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
@@ -363,12 +297,7 @@ describe('SearchResults', () => {
 
     it('shows error state over results when error is present', () => {
       render(
-        <SearchResults
-          {...defaultProps}
-          error="Some error"
-          query="test"
-          products={mockProducts}
-        />
+        <SearchResults {...defaultProps} error="Some error" query="test" products={mockProducts} />,
       );
 
       expect(screen.getByTestId('error-message')).toBeInTheDocument();
@@ -376,13 +305,7 @@ describe('SearchResults', () => {
     });
 
     it('shows empty query state over empty results', () => {
-      render(
-        <SearchResults
-          {...defaultProps}
-          query=""
-          products={[]}
-        />
-      );
+      render(<SearchResults {...defaultProps} query="" products={[]} />);
 
       expect(screen.getByText('Search for Products')).toBeInTheDocument();
       expect(screen.queryByText('No Products Found')).not.toBeInTheDocument();

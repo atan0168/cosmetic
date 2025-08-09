@@ -10,7 +10,6 @@ import {
   index,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
 
 // Companies table
 export const companies = pgTable(
@@ -115,6 +114,10 @@ export const bannedIngredients = pgTable(
     healthRiskDescription: text('health_risk_description').notNull(),
     regulatoryStatus: varchar('regulatory_status', { length: 100 }), // e.g. Prohibited, Restricted
     sourceUrl: varchar('source_url', { length: 500 }), // Link to MOH regulation or ref
+    // Additional metadata fields sourced from ingredient-information.csv
+    ewgRating: integer('ewg_rating'),
+    pubchemCid: varchar('pubchem_cid', { length: 50 }),
+    pubchemUrl: varchar('pubchem_url', { length: 500 }),
   },
   (table) => [uniqueIndex('idx_banned_ingredients_name').on(table.name)],
 );

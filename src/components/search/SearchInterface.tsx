@@ -14,7 +14,7 @@ interface SearchInterfaceProps {
 
 export function SearchInterface({ className, onProductSelect }: SearchInterfaceProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Use React Query for search functionality
   const { data, isLoading, error } = useProductSearch(searchQuery);
 
@@ -24,11 +24,14 @@ export function SearchInterface({ className, onProductSelect }: SearchInterfaceP
   }, []);
 
   // Handle product selection
-  const handleProductClick = useCallback((product: Product) => {
-    if (onProductSelect) {
-      onProductSelect(product);
-    }
-  }, [onProductSelect]);
+  const handleProductClick = useCallback(
+    (product: Product) => {
+      if (onProductSelect) {
+        onProductSelect(product);
+      }
+    },
+    [onProductSelect],
+  );
 
   return (
     <ErrorBoundaryWrapper>

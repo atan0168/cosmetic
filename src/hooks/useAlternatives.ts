@@ -15,16 +15,19 @@ interface UseAlternativesOptions {
   enabled?: boolean;
 }
 
-async function fetchAlternatives(excludeId?: number, limit: number = 3): Promise<AlternativesResponse> {
+async function fetchAlternatives(
+  excludeId?: number,
+  limit: number = 3,
+): Promise<AlternativesResponse> {
   const params = new URLSearchParams();
-  
+
   if (excludeId) {
     params.append('excludeId', excludeId.toString());
   }
   params.append('limit', limit.toString());
 
   const response = await fetch(`/api/products/alternatives?${params.toString()}`);
-  
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.error || 'Failed to fetch alternatives');
@@ -33,7 +36,11 @@ async function fetchAlternatives(excludeId?: number, limit: number = 3): Promise
   return response.json();
 }
 
-export function useAlternatives({ excludeId, limit = 3, enabled = true }: UseAlternativesOptions = {}) {
+export function useAlternatives({
+  excludeId,
+  limit = 3,
+  enabled = true,
+}: UseAlternativesOptions = {}) {
   return useQuery({
     queryKey: ['alternatives', excludeId, limit],
     queryFn: () => fetchAlternatives(excludeId, limit),

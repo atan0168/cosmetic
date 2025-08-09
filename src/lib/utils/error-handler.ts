@@ -139,18 +139,18 @@ export function getRetryStrategy(errorType: ErrorType): {
   switch (errorType) {
     case ErrorType.VALIDATION:
       return { shouldRetry: false, maxRetries: 0, delayMs: 0 };
-    
+
     case ErrorType.NETWORK:
     case ErrorType.TIMEOUT:
       return { shouldRetry: true, maxRetries: 3, delayMs: 1000 };
-    
+
     case ErrorType.DATABASE:
     case ErrorType.SERVER:
       return { shouldRetry: true, maxRetries: 2, delayMs: 2000 };
-    
+
     case ErrorType.RATE_LIMIT:
       return { shouldRetry: true, maxRetries: 1, delayMs: 5000 };
-    
+
     case ErrorType.UNKNOWN:
     default:
       return { shouldRetry: true, maxRetries: 1, delayMs: 1000 };
@@ -190,22 +190,22 @@ export function getUserFriendlyMessage(appError: AppError): string {
   switch (appError.type) {
     case ErrorType.VALIDATION:
       return appError.message; // Validation messages are already user-friendly
-    
+
     case ErrorType.NETWORK:
       return 'Please check your internet connection and try again.';
-    
+
     case ErrorType.DATABASE:
-      return 'We\'re having trouble accessing our database. Please try again in a moment.';
-    
+      return "We're having trouble accessing our database. Please try again in a moment.";
+
     case ErrorType.RATE_LIMIT:
-      return 'You\'re searching too quickly. Please wait a moment before trying again.';
-    
+      return "You're searching too quickly. Please wait a moment before trying again.";
+
     case ErrorType.TIMEOUT:
       return 'The request is taking longer than expected. Please try again.';
-    
+
     case ErrorType.SERVER:
       return 'Our servers are experiencing issues. Please try again later.';
-    
+
     case ErrorType.UNKNOWN:
     default:
       return 'Something unexpected happened. Please try again.';

@@ -16,9 +16,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:load": "tsx scripts/parse_and_load.ts",
-    "db:setup": "tsx scripts/setup_database.ts",
-    "db:test": "tsx scripts/test_database.ts"
+    "db:load": "NODE_ENV=development tsx --env-file .env.local scripts/parse_and_load.ts",
+    "db:setup": "NODE_ENV=development tsx scripts/setup_database.ts",
+    "db:test": "NODE_ENV=development tsx scripts/test_database.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
@@ -58,6 +58,7 @@
     "eslint-config-next": "15.4.5",
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^26.1.0",
+    "postgres": "^3.4.7",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4",

@@ -15,54 +15,48 @@ export default function Home() {
 
   return (
     <ErrorBoundaryWrapper>
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="bg-background flex min-h-screen flex-col">
         {/* Skip to main content link for screen readers */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium"
+          className="bg-primary text-primary-foreground sr-only z-50 rounded-md px-4 py-2 font-medium focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
         >
           Skip to main content
         </a>
 
         {/* Header */}
-        <Header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" />
+        <Header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 border-b backdrop-blur" />
 
         {/* Main Content */}
-        <main 
+        <main
           id="main-content"
-          className="flex-1 container mx-auto px-4 py-6 sm:py-8 lg:py-12"
+          className="container mx-auto flex-1 px-4 py-6 sm:py-8 lg:py-12"
           role="main"
           aria-label="Product safety search"
         >
           {/* Hero Section */}
-          <div className="mb-6 sm:mb-8 lg:mb-12 text-center">
-            <h1 className="mb-3 sm:mb-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight">
+          <div className="mb-6 text-center sm:mb-8 lg:mb-12">
+            <h1 className="text-foreground mb-3 text-2xl leading-tight font-bold tracking-tight sm:mb-4 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
               Check Product Safety
             </h1>
-            <p className="mx-auto max-w-2xl lg:max-w-3xl text-sm text-muted-foreground sm:text-base md:text-lg lg:text-xl px-4 leading-relaxed">
-              Search for cosmetic products to check their safety status, understand risks, 
-              and discover safer alternatives from trusted sources.
+            <p className="text-muted-foreground mx-auto max-w-2xl px-4 text-sm leading-relaxed sm:text-base md:text-lg lg:max-w-3xl lg:text-xl">
+              Search for cosmetic products to check their safety status, understand risks, and
+              discover safer alternatives from trusted sources.
             </p>
           </div>
 
           {/* Search Interface */}
-          <div className="mx-auto max-w-2xl lg:max-w-4xl px-2 sm:px-4 lg:px-0">
-            <SearchInterface 
-              onProductSelect={handleProductSelect}
-              className="w-full"
-            />
+          <div className="mx-auto max-w-2xl px-2 sm:px-4 lg:max-w-4xl lg:px-0">
+            <SearchInterface onProductSelect={handleProductSelect} className="w-full" />
           </div>
 
           {/* Features Section */}
-          <section 
-            className="mt-12 sm:mt-16 lg:mt-20"
-            aria-labelledby="features-heading"
-          >
+          <section className="mt-12 sm:mt-16 lg:mt-20" aria-labelledby="features-heading">
             <h2 id="features-heading" className="sr-only">
               Key Features
             </h2>
-            <div className="grid gap-4 sm:gap-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-3 px-2 sm:px-4 lg:px-0">
-              <div className="text-center p-4 sm:p-6 rounded-lg hover:bg-muted/50 transition-colors">
+            <div className="grid gap-4 px-2 sm:gap-6 sm:px-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:px-0">
+              <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400">
                   <svg
                     className="h-6 w-6"
@@ -80,12 +74,13 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Safety Status</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Get instant safety status with color-coded indicators for approved, cancelled, or unknown products.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Get instant safety status with color-coded indicators for approved, cancelled, or
+                  unknown products.
                 </p>
               </div>
 
-              <div className="text-center p-4 sm:p-6 rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
                   <svg
                     className="h-6 w-6"
@@ -103,12 +98,13 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Detailed Information</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Understand why products were cancelled and learn about potential risks and safety concerns.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Understand why products were cancelled and learn about potential risks and safety
+                  concerns.
                 </p>
               </div>
 
-              <div className="text-center p-4 sm:p-6 rounded-lg hover:bg-muted/50 transition-colors md:col-span-2 lg:col-span-1">
+              <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6 md:col-span-2 lg:col-span-1">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
                   <svg
                     className="h-6 w-6"
@@ -126,8 +122,9 @@ export default function Home() {
                   </svg>
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Safer Alternatives</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Discover approved alternative products from trusted brands when safer options are needed.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Discover approved alternative products from trusted brands when safer options are
+                  needed.
                 </p>
               </div>
             </div>
@@ -135,7 +132,7 @@ export default function Home() {
         </main>
 
         {/* Footer */}
-        <Footer className="border-t bg-muted/50" />
+        <Footer className="bg-muted/50 border-t" />
       </div>
     </ErrorBoundaryWrapper>
   );

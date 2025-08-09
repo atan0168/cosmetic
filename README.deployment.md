@@ -24,17 +24,20 @@ NEXT_PUBLIC_APP_URL=https://your-app-domain.vercel.app
 3. **Deploy**: Vercel will automatically deploy on push to main branch
 
 #### Vercel Environment Variables Setup:
+
 - `DATABASE_URL`: Your Neon database connection string
 - `SSL`: Set to `true` for production
 
 ### Manual Deployment Steps
 
 1. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Build the Application**:
+
    ```bash
    npm run build
    ```
@@ -49,11 +52,13 @@ NEXT_PUBLIC_APP_URL=https://your-app-domain.vercel.app
 ### Initial Database Setup
 
 1. **Generate Database Schema**:
+
    ```bash
    npm run db:generate
    ```
 
 2. **Run Migrations**:
+
    ```bash
    npm run db:migrate
    ```
@@ -66,6 +71,7 @@ NEXT_PUBLIC_APP_URL=https://your-app-domain.vercel.app
 ### Database Health Check
 
 The application includes a health check endpoint at `/api/health` that verifies:
+
 - Database connectivity
 - Basic application status
 - Environment information
@@ -73,12 +79,14 @@ The application includes a health check endpoint at `/api/health` that verifies:
 ## Performance Optimization
 
 ### Build Optimizations
+
 - Bundle analysis with `npm run build`
 - Tree shaking for unused code
 - Image optimization with Next.js Image component
 - Static generation for improved performance
 
 ### Caching Strategy
+
 - API responses cached with `s-maxage=60, stale-while-revalidate=300`
 - React Query caching for client-side data
 - Static asset caching via CDN
@@ -86,12 +94,14 @@ The application includes a health check endpoint at `/api/health` that verifies:
 ## Security Configuration
 
 ### Headers
+
 - Content Security Policy headers
 - XSS Protection
 - Frame Options (DENY)
 - Content Type Options (nosniff)
 
 ### Environment Security
+
 - Environment variables validation
 - Database connection encryption (SSL)
 - API rate limiting (if needed)
@@ -99,11 +109,13 @@ The application includes a health check endpoint at `/api/health` that verifies:
 ## Monitoring and Logging
 
 ### Health Monitoring
+
 - Health check endpoint: `/health`
 - Database connectivity monitoring
 - Application uptime tracking
 
 ### Error Handling
+
 - Comprehensive error boundaries
 - API error responses with proper status codes
 - Client-side error recovery
@@ -111,6 +123,7 @@ The application includes a health check endpoint at `/api/health` that verifies:
 ## Testing in Production
 
 ### Pre-deployment Checklist
+
 - [ ] All tests passing (`npm test` and `npm run test:frontend`)
 - [ ] Build successful (`npm run build`)
 - [ ] Environment variables configured
@@ -118,6 +131,7 @@ The application includes a health check endpoint at `/api/health` that verifies:
 - [ ] Health check endpoint responding
 
 ### Post-deployment Verification
+
 - [ ] Application loads correctly
 - [ ] Search functionality working
 - [ ] Database queries executing
@@ -159,17 +173,23 @@ npm run build -- --debug
 ## Scaling Considerations
 
 ### Performance
+
 - Consider implementing Redis for caching
 - Database connection pooling
 - CDN for static assets
 
 ### Monitoring
+
 - Application performance monitoring (APM)
 - Database query performance
 - Error tracking and alerting
 
 ### Security
+
 - Regular dependency updates
 - Security scanning
 - Access logging and monitoring
+
+```
+
 ```

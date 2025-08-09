@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-slot'],
   },
-  
+
   // Security headers
   async headers() {
     return [

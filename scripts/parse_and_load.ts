@@ -16,12 +16,14 @@
  *   - Place the CSV files in the data/ directory.
  *   - npm run tsx scripts/parse_and_load.ts
  */
+import dotenv from 'dotenv';
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 import { parse } from 'csv-parse';
 import fs from 'fs';
 import path from 'path';
-import dotenv from 'dotenv';
 import { db } from '../src/lib/db/index';
+import { sql, inArray } from 'drizzle-orm';
 import {
   companies,
   products,
@@ -32,10 +34,6 @@ import {
   companyMetrics,
   categoryMetrics,
 } from '../src/lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
-
-// Load environment variables from .env.local
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 const NOTIFIED_PRODUCTS_CSV = '../data/cosmetic_notifications.csv';
 const CANCELLED_PRODUCTS_CSV = '../data/cosmetic_notifications_cancelled.csv';
@@ -139,9 +137,34 @@ async function clearTables() {
   }
 }
 
+async function ensureSchemaUpgrades() {
+  // Add new columns to banned_ingredients if they don't exist
+  await db.execute(sql`
+    ALTER TABLE banned_ingredients
+      ADD COLUMN IF NOT EXISTS ewg_rating integer,
+      ADD COLUMN IF NOT EXISTS pubchem_cid varchar(50),
+      ADD COLUMN IF NOT EXISTS pubchem_url varchar(500);
+  `);
+}
+
+function computeRegulatoryStatus(row: IngredientRow): string {
+  const banned = (row['Banned in Malaysia'] || '').trim().toLowerCase();
+  if (banned === 'yes') return 'Prohibited';
+  return 'Restricted';
+}
+
+function normalizeIngredientAlias(alias: string): string {
+  // Normalize common typos and trim/case-fold
+  const a = alias.trim().toLowerCase();
+  if (a === 'tretnon' || a === 'tretnoin' || a === 'tretinon') return 'tretinoin';
+  if (a === 'hq') return 'hydroquinone';
+  return a;
+}
+
 async function main() {
   try {
     await clearTables();
+    await ensureSchemaUpgrades();
 
     // 1) Load data from CSV files
     console.log('--- Step 1: Loading CSV files ---');
@@ -216,17 +239,28 @@ async function main() {
     const companyIdMap = new Map(allCompanies.map((c) => [c.name, c.id]));
     console.log(`Processed ${companyIdMap.size} unique companies.\n`);
 
-    // 3) Process and insert banned ingredients
-    console.log('--- Step 3: Processing banned ingredients ---');
-    const ingredientInserts = ingredientInfo
-      .filter(ingredient => ingredient['Banned in Malaysia']?.toLowerCase() === 'yes')
-      .map(ingredient => ({
+    // 3) Process and insert ingredient metadata (prohibited/restricted/permitted)
+    console.log('--- Step 3: Processing ingredient metadata ---');
+    const ingredientInserts = ingredientInfo.map((ingredient) => {
+      const ewgRaw = (ingredient['EWG Rating'] || '').trim();
+      const ewgRating = ewgRaw ? Number.parseInt(ewgRaw, 10) : null;
+      const pubchemCid = (ingredient['PubChem CID'] || '').trim() || null;
+      const pubchemUrl = (ingredient['PubChem URL'] || '').trim() || null;
+      return {
         name: ingredient.Ingredient,
         alternativeNames: ingredient['Synonyms/INCI'] || null,
         healthRiskDescription: ingredient['Key Health Risks'] || 'No description available',
-        regulatoryStatus: ingredient['Risk Level'] || 'Unknown',
-        sourceUrl: ingredient['NPRA Link'] || ingredient['ASEAN Annex II URL'] || null,
-      }));
+        regulatoryStatus: computeRegulatoryStatus(ingredient),
+        sourceUrl:
+          ingredient['NPRA Link'] ||
+          ingredient['ASEAN Annex II URL'] ||
+          ingredient['ASEAN Annex III URL'] ||
+          null,
+        ewgRating: Number.isFinite(ewgRating) ? (ewgRating as unknown as number | null) : null,
+        pubchemCid,
+        pubchemUrl,
+      };
+    });
 
     // Insert banned ingredients in batches
     const insertedIngredients: { id: number; name: string }[] = [];
@@ -240,10 +274,22 @@ async function main() {
       insertedIngredients.push(...result);
     }
 
-    // Get all banned ingredients to build the mapping
-    const allBannedIngredients = await db.select().from(bannedIngredients);
-    const ingredientIdMap = new Map(allBannedIngredients.map((i) => [i.name.toLowerCase(), i.id]));
-    console.log(`Processed ${ingredientIdMap.size} banned ingredients.\n`);
+    // Get all ingredients to build the mapping, including synonyms
+    const allIngredients = await db.select().from(bannedIngredients);
+    const ingredientIdMap = new Map<string, number>();
+    for (const i of allIngredients) {
+      ingredientIdMap.set(i.name.toLowerCase(), i.id);
+      if (i.alternativeNames) {
+        const aliases = i.alternativeNames
+          .split(/[;,]/)
+          .map((s) => s.trim())
+          .filter(Boolean);
+        for (const alias of aliases) {
+          ingredientIdMap.set(alias.toLowerCase(), i.id);
+        }
+      }
+    }
+    console.log(`Processed ${ingredientIdMap.size} ingredient aliases for matching.\n`);
 
     // 4) Prepare and insert all products
     console.log('--- Step 4: Preparing and inserting all products ---');
@@ -298,7 +344,7 @@ async function main() {
         name: p.product,
         category: p.product_category || 'General',
         applicantCompanyId,
-        manufacturerCompanyId,
+        manufacturerCompanyId: manufacturerCompanyId || null,
         dateNotified: '1970-01-01', // Default date - this info isn't in the cancelled CSV
         status: 'Cancelled',
         reasonForCancellation: p.substance_detected,
@@ -323,16 +369,21 @@ async function main() {
 
     // 5) Link cancelled products with banned ingredients
     console.log('--- Step 5: Linking cancelled products with banned ingredients ---');
-    
-    // Get all products to build the mapping
-    const allProducts = await db.select().from(products);
-    const productIdMap = new Map(allProducts.map((p) => [p.notifNo, p.id]));
-    
+
+    // Build mapping only for cancelled products to avoid large responses
+    const cancelledNotifNos = Array.from(new Set(cancelledProducts.map((cp) => cp.notif_no)));
+    const cancelledProductRows = await db
+      .select({ id: products.id, notifNo: products.notifNo })
+      .from(products)
+      .where(inArray(products.notifNo, cancelledNotifNos));
+    const productIdMap = new Map(cancelledProductRows.map((p) => [p.notifNo, p.id]));
+
     const ingredientLinks: Array<{
       cancelledProductId: number;
       bannedIngredientId: number;
     }> = [];
 
+    const linkPairs = new Set<string>();
     for (const cancelledProduct of cancelledProducts) {
       const productId = productIdMap.get(cancelledProduct.notif_no);
       if (!productId) {
@@ -340,29 +391,38 @@ async function main() {
         continue;
       }
 
-      // Try to match the substance_detected with banned ingredients
-      const substanceDetected = cancelledProduct.substance_detected.toLowerCase();
-      
-      // Look for exact match first
-      let ingredientId = ingredientIdMap.get(substanceDetected);
-      
-      // If no exact match, try to find partial matches
-      if (!ingredientId) {
-        for (const [ingredientName, id] of ingredientIdMap.entries()) {
-          if (substanceDetected.includes(ingredientName) || ingredientName.includes(substanceDetected)) {
-            ingredientId = id;
-            break;
+      // Split multi-ingredient strings and normalize tokens
+      const tokens = (cancelledProduct.substance_detected || '')
+        .split(/[;,]/)
+        .map((t) => normalizeIngredientAlias(t))
+        .filter(Boolean);
+
+      for (const token of tokens) {
+        // Exact/alias match
+        let ingredientId = ingredientIdMap.get(token);
+        if (!ingredientId) {
+          // Fallback to partial match
+          for (const [ingredientName, id] of ingredientIdMap.entries()) {
+            if (token.includes(ingredientName) || ingredientName.includes(token)) {
+              ingredientId = id;
+              break;
+            }
           }
         }
-      }
-
-      if (ingredientId) {
-        ingredientLinks.push({
-          cancelledProductId: productId,
-          bannedIngredientId: ingredientId,
-        });
-      } else {
-        console.warn(`No banned ingredient found for substance: ${cancelledProduct.substance_detected}`);
+        if (ingredientId) {
+          const k = `${productId}:${ingredientId}`;
+          if (!linkPairs.has(k)) {
+            linkPairs.add(k);
+            ingredientLinks.push({
+              cancelledProductId: productId,
+              bannedIngredientId: ingredientId,
+            });
+          }
+        } else {
+          console.warn(
+            `No ingredient metadata found for substance token: '${token}' (raw: ${cancelledProduct.substance_detected})`,
+          );
+        }
       }
     }
 
@@ -378,7 +438,112 @@ async function main() {
     }
 
     // 6) Placeholder for Recommended Alternatives
-    console.log('--- Step 6: Recommended Alternatives (Placeholder) ---');
+    // 6) Compute and insert metrics tables
+    console.log('--- Step 6: Computing metrics ---');
+    // 6a) category_metrics
+    await db.execute(sql`
+      INSERT INTO category_metrics (product_category, total_notifs, cancelled_count, risk_score)
+      SELECT
+        category AS product_category,
+        COUNT(*) AS total_notifs,
+        SUM(CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END) AS cancelled_count,
+        COALESCE(SUM(CASE WHEN status = 'Cancelled' THEN 1 ELSE 0 END)::float
+                 / NULLIF(COUNT(*), 0), 0)::numeric(3,2) AS risk_score
+      FROM products
+      GROUP BY category;
+    `);
+
+    // 6b) company_metrics
+    const companyAgg = await db.execute(sql`
+      SELECT
+        c.id AS company_id,
+        COUNT(p.id)::int AS total_notifs,
+        MIN(p.date_notified) AS first_date,
+        SUM(CASE WHEN p.status = 'Cancelled' THEN 1 ELSE 0 END)::int AS cancelled_count
+      FROM products p
+      JOIN companies c ON p.applicant_company_id = c.id
+      GROUP BY c.id;
+    `);
+    type CompanyAgg = {
+      company_id: number;
+      total_notifs: number;
+      first_date: string;
+      cancelled_count: number;
+    };
+    const compRows = companyAgg.rows as unknown as CompanyAgg[];
+    if (compRows.length > 0) {
+      const maxTotal = Math.max(...compRows.map((r) => r.total_notifs));
+      // tenure in years since earliest notification
+      const today = new Date();
+      const years = compRows.map((r) => {
+        const first = new Date(r.first_date);
+        return (today.getTime() - first.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+      });
+      const maxYears = Math.max(...years, 0);
+      const toInsert = compRows.map((r, idx) => {
+        const notifScore = maxTotal > 0 ? Math.log(1 + r.total_notifs) / Math.log(1 + maxTotal) : 0;
+        const tenureYears = years[idx] || 0;
+        const tenureScore = maxYears > 0 ? Math.min(1, tenureYears / maxYears) : 0;
+        const cleanScore = r.total_notifs > 0 ? 1 - r.cancelled_count / r.total_notifs : 0;
+        const reputation = 0.5 * notifScore + 0.3 * tenureScore + 0.2 * cleanScore;
+        const firstDate = new Date(r.first_date);
+        const yyyy = firstDate.getFullYear();
+        const mm = String(firstDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(firstDate.getDate()).padStart(2, '0');
+        return {
+          companyId: r.company_id,
+          totalNotifs: r.total_notifs,
+          firstNotifiedDate: `${yyyy}-${mm}-${dd}`,
+          cancelledCount: r.cancelled_count,
+          reputationScore: reputation.toFixed(2),
+        };
+      });
+
+      // Insert in batches
+      for (let i = 0; i < toInsert.length; i += batchSize) {
+        const batch = toInsert.slice(i, i + batchSize);
+        await db.insert(companyMetrics).values(batch);
+      }
+    }
+
+    // 6c) banned_ingredient_metrics
+    const ingredientAgg = await db.execute(sql`
+      SELECT
+        b.id AS ingredient_id,
+        COALESCE(COUNT(cpi.cancelled_product_id), 0)::int AS occurrences_count,
+        MIN(p.date_notified) AS first_date,
+        MAX(p.date_notified) AS last_date
+      FROM banned_ingredients b
+      LEFT JOIN cancelled_product_ingredients cpi ON cpi.banned_ingredient_id = b.id
+      LEFT JOIN products p ON p.id = cpi.cancelled_product_id
+      GROUP BY b.id;
+    `);
+    type IngredientAgg = {
+      ingredient_id: number;
+      occurrences_count: number;
+      first_date: string | null;
+      last_date: string | null;
+    };
+    const ingRows = ingredientAgg.rows as unknown as IngredientAgg[];
+    if (ingRows.length > 0) {
+      const maxOcc = Math.max(...ingRows.map((r) => r.occurrences_count));
+      const todayIso = new Date().toISOString().slice(0, 10);
+      const toInsert = ingRows.map((r) => ({
+        ingredientId: r.ingredient_id,
+        occurrencesCount: r.occurrences_count,
+        firstAppearanceDate: (r.first_date || todayIso) as string,
+        lastAppearanceDate: (r.last_date || todayIso) as string,
+        riskScore: maxOcc > 0 ? (r.occurrences_count / maxOcc).toFixed(2) : '0.00',
+      }));
+      for (let i = 0; i < toInsert.length; i += batchSize) {
+        const batch = toInsert.slice(i, i + batchSize);
+        await db.insert(bannedIngredientMetrics).values(batch);
+      }
+    }
+
+    console.log('Metrics computed and inserted.\n');
+
+    console.log('--- Step 7: Recommended Alternatives (Placeholder) ---');
     console.log(
       "The 'recommended_alternatives' table should be populated by a separate backend process",
     );

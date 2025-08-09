@@ -75,10 +75,9 @@ describe('useAlternatives', () => {
         json: async () => mockResponse,
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1, limit: 3 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1, limit: 3 }), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -100,10 +99,9 @@ describe('useAlternatives', () => {
         json: async () => mockResponse,
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ limit: 5 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ limit: 5 }), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -125,10 +123,7 @@ describe('useAlternatives', () => {
         json: async () => mockResponse,
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({}),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({}), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -142,10 +137,9 @@ describe('useAlternatives', () => {
     it('should handle network errors', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1 }), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true);
@@ -167,10 +161,9 @@ describe('useAlternatives', () => {
         json: async () => errorResponse,
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1 }), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true);
@@ -188,10 +181,9 @@ describe('useAlternatives', () => {
         },
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1 }), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isError).toBe(true);
@@ -208,20 +200,18 @@ describe('useAlternatives', () => {
         json: async () => ({ alternatives: [], total: 0 }),
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1 }), {
+        wrapper: createWrapper(),
+      });
 
       // Query should start loading immediately
       expect(result.current.isLoading || result.current.isFetching).toBe(true);
     });
 
     it('should respect enabled option', () => {
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1, enabled: false }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1, enabled: false }), {
+        wrapper: createWrapper(),
+      });
 
       // Query should not start when disabled
       expect(result.current.isLoading).toBe(false);
@@ -235,10 +225,9 @@ describe('useAlternatives', () => {
         json: async () => ({ alternatives: [], total: 0 }),
       } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 5, limit: 10 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 5, limit: 10 }), {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -257,10 +246,7 @@ describe('useAlternatives', () => {
         json: async () => ({ alternatives: [], total: 0 }),
       } as Response);
 
-      renderHook(
-        () => useAlternatives({ excludeId: 123, limit: 5 }),
-        { wrapper: createWrapper() }
-      );
+      renderHook(() => useAlternatives({ excludeId: 123, limit: 5 }), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/products/alternatives?excludeId=123&limit=5');
@@ -273,10 +259,7 @@ describe('useAlternatives', () => {
         json: async () => ({ alternatives: [], total: 0 }),
       } as Response);
 
-      renderHook(
-        () => useAlternatives({ limit: 8 }),
-        { wrapper: createWrapper() }
-      );
+      renderHook(() => useAlternatives({ limit: 8 }), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/products/alternatives?limit=8');
@@ -289,10 +272,7 @@ describe('useAlternatives', () => {
         json: async () => ({ alternatives: [], total: 0 }),
       } as Response);
 
-      renderHook(
-        () => useAlternatives({ excludeId: 0, limit: 3 }),
-        { wrapper: createWrapper() }
-      );
+      renderHook(() => useAlternatives({ excludeId: 0, limit: 3 }), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/products/alternatives?excludeId=0&limit=3');
@@ -303,22 +283,22 @@ describe('useAlternatives', () => {
   describe('Retry behavior', () => {
     it('should retry failed requests', async () => {
       // First call fails, second succeeds
-      mockFetch
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({ alternatives: mockAlternatives, total: 2 }),
-        } as Response);
+      mockFetch.mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ alternatives: mockAlternatives, total: 2 }),
+      } as Response);
 
-      const { result } = renderHook(
-        () => useAlternatives({ excludeId: 1 }),
-        { wrapper: createWrapper() }
-      );
+      const { result } = renderHook(() => useAlternatives({ excludeId: 1 }), {
+        wrapper: createWrapper(),
+      });
 
       // Wait for the retry to complete
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      }, { timeout: 5000 });
+      await waitFor(
+        () => {
+          expect(result.current.isSuccess).toBe(true);
+        },
+        { timeout: 5000 },
+      );
 
       expect(result.current.data?.alternatives).toEqual(mockAlternatives);
       expect(mockFetch).toHaveBeenCalledTimes(2);

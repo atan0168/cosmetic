@@ -7,11 +7,14 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
-    include: [
-      'src/app/api/**/*.{test,spec}.ts',
-      'src/lib/**/*.{test,spec}.ts',
+    include: ['src/app/api/**/*.{test,spec}.ts', 'src/lib/**/*.{test,spec}.ts'],
+    exclude: [
+      'node_modules/**/*',
+      'dist/**/*',
+      'build/**/*',
+      'src/components/**/*',
+      'src/hooks/**/*',
     ],
-    exclude: ['node_modules/**/*', 'dist/**/*', 'build/**/*', 'src/components/**/*', 'src/hooks/**/*'],
   },
   resolve: {
     alias: {

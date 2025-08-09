@@ -21,8 +21,8 @@ const mockProducts: Product[] = [
     riskLevel: RiskLevel.SAFE,
     applicantCompany: {
       id: '1',
-      name: 'Safe Company'
-    }
+      name: 'Safe Company',
+    },
   },
   {
     id: '2',
@@ -34,9 +34,9 @@ const mockProducts: Product[] = [
     reasonForCancellation: 'Safety concerns identified',
     applicantCompany: {
       id: '2',
-      name: 'Test Company'
-    }
-  }
+      name: 'Test Company',
+    },
+  },
 ];
 
 const mockAlternatives: Product[] = [
@@ -49,8 +49,8 @@ const mockAlternatives: Product[] = [
     riskLevel: RiskLevel.SAFE,
     applicantCompany: {
       id: '3',
-      name: 'Alternative Company'
-    }
+      name: 'Alternative Company',
+    },
   },
   {
     id: '4',
@@ -61,9 +61,9 @@ const mockAlternatives: Product[] = [
     riskLevel: RiskLevel.SAFE,
     applicantCompany: {
       id: '4',
-      name: 'Another Company'
-    }
-  }
+      name: 'Another Company',
+    },
+  },
 ];
 
 // Test wrapper with React Query
@@ -77,11 +77,7 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
     },
   });
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
 describe('Integration Tests', () => {
@@ -92,7 +88,7 @@ describe('Integration Tests', () => {
   describe('SearchInterface with React Query', () => {
     it('should handle successful search with loading states', async () => {
       const user = userEvent.setup();
-      
+
       // Mock successful API response
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -100,23 +96,23 @@ describe('Integration Tests', () => {
           products: mockProducts,
           total: mockProducts.length,
           page: 1,
-          limit: 10
+          limit: 10,
         }),
       } as Response);
 
       const handleProductSelect = jest.fn();
-      
+
       render(
         <TestWrapper>
           <SearchInterface onProductSelect={handleProductSelect} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
-      
+
       // Type search query
       await user.type(searchInput, 'test product');
-      
+
       // Should show loading state initially
       await waitFor(() => {
         expect(screen.getByText('Searching...')).toBeInTheDocument();
@@ -130,24 +126,24 @@ describe('Integration Tests', () => {
       // Check that products are displayed
       expect(screen.getByText('Safe Product')).toBeInTheDocument();
       expect(screen.getByText('Cancelled Product')).toBeInTheDocument();
-      
+
       // Verify API was called correctly
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/products/search?query=test%20product'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
     it('should handle search errors gracefully', async () => {
       const user = userEvent.setup();
-      
+
       // Mock API error
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
@@ -161,7 +157,7 @@ describe('Integration Tests', () => {
 
     it('should handle empty search results', async () => {
       const user = userEvent.setup();
-      
+
       // Mock empty response
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -169,14 +165,14 @@ describe('Integration Tests', () => {
           products: [],
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
         }),
       } as Response);
 
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
@@ -191,21 +187,21 @@ describe('Integration Tests', () => {
     it('should handle product selection', async () => {
       const user = userEvent.setup();
       const handleProductSelect = jest.fn();
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           products: mockProducts,
           total: mockProducts.length,
           page: 1,
-          limit: 10
+          limit: 10,
         }),
       } as Response);
 
       render(
         <TestWrapper>
           <SearchInterface onProductSelect={handleProductSelect} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
@@ -231,7 +227,7 @@ describe('Integration Tests', () => {
         ok: true,
         json: async () => ({
           alternatives: mockAlternatives,
-          total: mockAlternatives.length
+          total: mockAlternatives.length,
         }),
       } as Response);
 
@@ -239,11 +235,8 @@ describe('Integration Tests', () => {
 
       render(
         <TestWrapper>
-          <AlternativesSection 
-            productId="2" 
-            onAlternativeClick={handleAlternativeClick}
-          />
-        </TestWrapper>
+          <AlternativesSection productId="2" onAlternativeClick={handleAlternativeClick} />
+        </TestWrapper>,
       );
 
       // Should show loading state initially
@@ -261,7 +254,7 @@ describe('Integration Tests', () => {
       // Verify API was called correctly
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/products/alternatives?productId=2'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -272,7 +265,7 @@ describe('Integration Tests', () => {
       render(
         <TestWrapper>
           <AlternativesSection productId="2" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Wait for error state
@@ -287,14 +280,14 @@ describe('Integration Tests', () => {
         ok: true,
         json: async () => ({
           alternatives: [],
-          total: 0
+          total: 0,
         }),
       } as Response);
 
       render(
         <TestWrapper>
           <AlternativesSection productId="2" />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Wait for empty state
@@ -311,17 +304,14 @@ describe('Integration Tests', () => {
         ok: true,
         json: async () => ({
           alternatives: mockAlternatives,
-          total: mockAlternatives.length
+          total: mockAlternatives.length,
         }),
       } as Response);
 
       render(
         <TestWrapper>
-          <AlternativesSection 
-            productId="2" 
-            onAlternativeClick={handleAlternativeClick}
-          />
-        </TestWrapper>
+          <AlternativesSection productId="2" onAlternativeClick={handleAlternativeClick} />
+        </TestWrapper>,
       );
 
       // Wait for alternatives to load
@@ -330,7 +320,9 @@ describe('Integration Tests', () => {
       });
 
       // Click on an alternative
-      const alternativeCard = screen.getByRole('button', { name: /View details for Alternative Product 1/i });
+      const alternativeCard = screen.getByRole('button', {
+        name: /View details for Alternative Product 1/i,
+      });
       await user.click(alternativeCard);
 
       expect(handleAlternativeClick).toHaveBeenCalledWith(mockAlternatives[0]);
@@ -349,7 +341,7 @@ describe('Integration Tests', () => {
             products: [mockProducts[1]], // Only cancelled product
             total: 1,
             page: 1,
-            limit: 10
+            limit: 10,
           }),
         } as Response)
         // Mock alternatives response
@@ -357,14 +349,14 @@ describe('Integration Tests', () => {
           ok: true,
           json: async () => ({
             alternatives: mockAlternatives,
-            total: mockAlternatives.length
+            total: mockAlternatives.length,
           }),
         } as Response);
 
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
@@ -389,22 +381,20 @@ describe('Integration Tests', () => {
       const user = userEvent.setup();
 
       // First call fails, second succeeds
-      mockFetch
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce({
-          ok: true,
-          json: async () => ({
-            products: mockProducts,
-            total: mockProducts.length,
-            page: 1,
-            limit: 10
-          }),
-        } as Response);
+      mockFetch.mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          products: mockProducts,
+          total: mockProducts.length,
+          page: 1,
+          limit: 10,
+        }),
+      } as Response);
 
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
@@ -436,18 +426,18 @@ describe('Integration Tests', () => {
           products: mockProducts,
           total: mockProducts.length,
           page: 1,
-          limit: 10
+          limit: 10,
         }),
       } as Response);
 
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
-      
+
       // First search
       await user.type(searchInput, 'test');
       await waitFor(() => {
@@ -476,18 +466,18 @@ describe('Integration Tests', () => {
           products: mockProducts,
           total: mockProducts.length,
           page: 1,
-          limit: 10
+          limit: 10,
         }),
       } as Response);
 
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const searchInput = screen.getByRole('textbox');
-      
+
       // Type quickly
       await user.type(searchInput, 'test', { delay: 50 });
 

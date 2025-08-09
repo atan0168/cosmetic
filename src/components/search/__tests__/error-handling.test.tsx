@@ -41,7 +41,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const retryButton = screen.getByRole('button', { name: /retry search/i });
@@ -88,7 +88,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -141,7 +141,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -159,7 +159,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -178,7 +178,7 @@ describe('SearchInterface Error Handling', () => {
       const { rerender } = render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -193,7 +193,7 @@ describe('SearchInterface Error Handling', () => {
       rerender(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByText('Search Unavailable')).not.toBeInTheDocument();
@@ -203,7 +203,7 @@ describe('SearchInterface Error Handling', () => {
       const { rerender } = render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       // Enter search query
@@ -220,7 +220,7 @@ describe('SearchInterface Error Handling', () => {
       rerender(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -241,7 +241,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <ErrorComponent />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -262,7 +262,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const errorAlert = screen.getByRole('alert');
@@ -280,7 +280,7 @@ describe('SearchInterface Error Handling', () => {
       render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const retryButton = screen.getByRole('button', { name: /retry search/i });
@@ -300,7 +300,7 @@ describe('SearchInterface Error Handling', () => {
       const { rerender } = render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByLabelText('Loading search results')).toBeInTheDocument();
@@ -315,7 +315,7 @@ describe('SearchInterface Error Handling', () => {
       rerender(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByLabelText('Loading search results')).not.toBeInTheDocument();
@@ -333,7 +333,7 @@ describe('SearchInterface Error Handling', () => {
       const { rerender } = render(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Search Unavailable')).toBeInTheDocument();
@@ -348,7 +348,7 @@ describe('SearchInterface Error Handling', () => {
       rerender(
         <TestWrapper>
           <SearchInterface />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByText('Search Unavailable')).not.toBeInTheDocument();

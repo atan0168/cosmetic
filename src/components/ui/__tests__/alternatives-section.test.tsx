@@ -13,8 +13,7 @@ import { useAlternatives } from '@/hooks/useAlternatives';
 const mockUseAlternatives = vi.mocked(useAlternatives);
 
 type UseAlternativesResult = ReturnType<typeof useAlternatives>;
-const asUseAlternativesResult = (value: unknown) =>
-  value as unknown as UseAlternativesResult;
+const asUseAlternativesResult = (value: unknown) => value as unknown as UseAlternativesResult;
 
 // Test data
 const mockCancelledProduct: Product = {
@@ -79,36 +78,40 @@ describe('AlternativesSection', () => {
 
   describe('Visibility Logic', () => {
     it('should not render for safe products', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: undefined,
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: undefined,
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       const { container } = render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockSafeProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(container.firstChild).toBeNull();
     });
 
     it('should render for cancelled products', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: { alternatives: [], total: 0 },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: { alternatives: [], total: 0 },
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Safer Alternatives')).toBeInTheDocument();
@@ -117,18 +120,20 @@ describe('AlternativesSection', () => {
 
   describe('Loading State', () => {
     it('should display loading spinner and message', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: undefined,
-        isLoading: true,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: undefined,
+          isLoading: true,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByRole('status', { name: /loading alternatives/i })).toBeInTheDocument();
@@ -141,23 +146,25 @@ describe('AlternativesSection', () => {
       const mockRefetch = vi.fn();
       const mockError = new Error('Failed to fetch alternatives');
 
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: undefined,
-        isLoading: false,
-        error: mockError,
-        refetch: mockRefetch,
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: undefined,
+          isLoading: false,
+          error: mockError,
+          refetch: mockRefetch,
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Unable to load alternatives')).toBeInTheDocument();
       expect(screen.getByText('Failed to fetch alternatives')).toBeInTheDocument();
-      
+
       const retryButton = screen.getByRole('button', { name: /try again/i });
       expect(retryButton).toBeInTheDocument();
 
@@ -168,18 +175,20 @@ describe('AlternativesSection', () => {
 
   describe('Empty State', () => {
     it('should display no alternatives found message', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: { alternatives: [], total: 0, message: 'No safer alternatives found.' },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: { alternatives: [], total: 0, message: 'No safer alternatives found.' },
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('No safer alternatives found.')).toBeInTheDocument();
@@ -189,44 +198,52 @@ describe('AlternativesSection', () => {
 
   describe('Alternatives Display', () => {
     it('should display list of alternatives', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: { alternatives: mockAlternatives, total: 1 },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: { alternatives: mockAlternatives, total: 1 },
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
-      expect(screen.getByText('Here are some safer alternatives you might consider:')).toBeInTheDocument();
+      expect(
+        screen.getByText('Here are some safer alternatives you might consider:'),
+      ).toBeInTheDocument();
       expect(screen.getByRole('list', { name: /safer alternatives/i })).toBeInTheDocument();
-      
+
       // Check that alternative is displayed
       expect(screen.getByText('Safe Alternative 1')).toBeInTheDocument();
       expect(screen.getByText('Notification: ALT001')).toBeInTheDocument();
     });
 
     it('should display additional safety note', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: { alternatives: mockAlternatives, total: 1 },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: { alternatives: mockAlternatives, total: 1 },
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
-      expect(screen.getByText(/these alternatives are currently approved products/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/these alternatives are currently approved products/i),
+      ).toBeInTheDocument();
       expect(screen.getByText(/always check the latest safety information/i)).toBeInTheDocument();
     });
   });
@@ -235,24 +252,28 @@ describe('AlternativesSection', () => {
     it('should call onAlternativeClick when alternative is clicked', () => {
       const mockOnAlternativeClick = vi.fn();
 
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: { alternatives: [mockAlternatives[0]], total: 1 },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: { alternatives: [mockAlternatives[0]], total: 1 },
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
-          <AlternativesSection 
+          <AlternativesSection
             currentProduct={mockCancelledProduct}
             onAlternativeClick={mockOnAlternativeClick}
           />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
-      const alternativeCard = screen.getByRole('button', { name: /view details for safe alternative 1/i });
+      const alternativeCard = screen.getByRole('button', {
+        name: /view details for safe alternative 1/i,
+      });
       fireEvent.click(alternativeCard);
 
       expect(mockOnAlternativeClick).toHaveBeenCalledWith(mockAlternatives[0]);
@@ -261,18 +282,20 @@ describe('AlternativesSection', () => {
 
   describe('Hook Integration', () => {
     it('should call useAlternatives with correct parameters', () => {
-      mockUseAlternatives.mockReturnValue(asUseAlternativesResult({
-        data: { alternatives: [], total: 0 },
-        isLoading: false,
-        error: null,
-        refetch: vi.fn(),
-        isRefetching: false,
-      }));
+      mockUseAlternatives.mockReturnValue(
+        asUseAlternativesResult({
+          data: { alternatives: [], total: 0 },
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+          isRefetching: false,
+        }),
+      );
 
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(mockUseAlternatives).toHaveBeenCalledWith({

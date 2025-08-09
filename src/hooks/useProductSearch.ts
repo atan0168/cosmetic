@@ -26,7 +26,7 @@ const searchProducts = async (query: string): Promise<SearchResponse> => {
   });
 
   const response = await fetch(`/api/products/search?${searchParams}`);
-  
+
   if (!response.ok) {
     const errorData: SearchError = await response.json();
     throw new Error(errorData.message || 'Search failed');

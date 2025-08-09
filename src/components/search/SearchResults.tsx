@@ -27,7 +27,7 @@ export function SearchResults({
   if (isLoading) {
     return (
       <div className={className} role="status" aria-label="Loading search results">
-        <div className="mb-4 flex items-center gap-2 text-muted-foreground">
+        <div className="text-muted-foreground mb-4 flex items-center gap-2">
           <LoadingSpinner size="sm" />
           <span className="text-sm">Searching for &quot;{query}&quot;...</span>
         </div>
@@ -49,12 +49,15 @@ export function SearchResults({
   if (!query.trim()) {
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center px-4">
-          <Search className="mb-4 h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50" aria-hidden="true" />
-          <h3 className="mb-2 text-base sm:text-lg font-semibold text-muted-foreground">
+        <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
+          <Search
+            className="text-muted-foreground/50 mb-4 h-10 w-10 sm:h-12 sm:w-12"
+            aria-hidden="true"
+          />
+          <h3 className="text-muted-foreground mb-2 text-base font-semibold sm:text-lg">
             Search for Products
           </h3>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-md leading-relaxed">
+          <p className="text-muted-foreground max-w-md text-sm leading-relaxed sm:text-base">
             Enter a product name or notification number to check safety status and find information
             about cosmetic products.
           </p>
@@ -67,15 +70,20 @@ export function SearchResults({
   if (products.length === 0) {
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center px-4">
-          <AlertCircle className="mb-4 h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50" aria-hidden="true" />
-          <h3 className="mb-2 text-base sm:text-lg font-semibold text-muted-foreground">
+        <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
+          <AlertCircle
+            className="text-muted-foreground/50 mb-4 h-10 w-10 sm:h-12 sm:w-12"
+            aria-hidden="true"
+          />
+          <h3 className="text-muted-foreground mb-2 text-base font-semibold sm:text-lg">
             No Products Found
           </h3>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-md leading-relaxed">
-            No products found for <span className="font-medium break-words">&quot;{query}&quot;</span>. Try a different name or notification number.
+          <p className="text-muted-foreground max-w-md text-sm leading-relaxed sm:text-base">
+            No products found for{' '}
+            <span className="font-medium break-words">&quot;{query}&quot;</span>. Try a different
+            name or notification number.
           </p>
-          <div className="mt-4 text-xs sm:text-sm text-muted-foreground max-w-sm">
+          <div className="text-muted-foreground mt-4 max-w-sm text-xs sm:text-sm">
             <p className="font-medium">Search tips:</p>
             <ul className="mt-2 space-y-1 text-left">
               <li>• Try using fewer or different keywords</li>
@@ -92,24 +100,24 @@ export function SearchResults({
   return (
     <div className={className}>
       {/* Results header */}
-      <div className="mb-4 sm:mb-6 px-1">
+      <div className="mb-4 px-1 sm:mb-6">
         <div>
-          <h2 className="text-base sm:text-lg font-semibold" id="search-results-heading">
+          <h2 className="text-base font-semibold sm:text-lg" id="search-results-heading">
             Search Results
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
+            <span className="text-muted-foreground ml-2 text-sm font-normal">
               ({products.length} {products.length === 1 ? 'product' : 'products'} found)
             </span>
           </h2>
-          <p className="text-sm text-muted-foreground break-words">
+          <p className="text-muted-foreground text-sm break-words">
             Results for <span className="font-medium">&quot;{query}&quot;</span>
           </p>
         </div>
       </div>
 
       {/* Product list */}
-      <div 
-        className="space-y-3 sm:space-y-4" 
-        role="list" 
+      <div
+        className="space-y-3 sm:space-y-4"
+        role="list"
         aria-labelledby="search-results-heading"
         aria-label={`${products.length} search results for ${query}`}
       >
@@ -118,21 +126,24 @@ export function SearchResults({
             <ProductCard
               product={product}
               onClick={onProductClick ? () => onProductClick(product) : undefined}
-              className="transition-all duration-200 hover:shadow-sm focus-within:shadow-sm"
+              className="transition-all duration-200 focus-within:shadow-sm hover:shadow-sm"
             />
           </div>
         ))}
       </div>
 
       {/* Results footer with additional info */}
-      <div className="mt-6 sm:mt-8 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-3 sm:p-4">
+      <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-3 sm:mt-8 sm:p-4 dark:border-blue-800 dark:bg-blue-950/20">
         <div className="flex items-start gap-3">
-          <AlertCircle className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" aria-hidden="true" />
+          <AlertCircle
+            className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600 dark:text-blue-400"
+            aria-hidden="true"
+          />
           <div className="text-sm">
             <p className="font-medium text-blue-900 dark:text-blue-100">Safety Information</p>
-            <p className="mt-1 text-blue-800 dark:text-blue-200 leading-relaxed">
-              Product safety status is based on official cosmetic notification databases. 
-              Always consult with healthcare professionals for specific safety concerns.
+            <p className="mt-1 leading-relaxed text-blue-800 dark:text-blue-200">
+              Product safety status is based on official cosmetic notification databases. Always
+              consult with healthcare professionals for specific safety concerns.
             </p>
           </div>
         </div>

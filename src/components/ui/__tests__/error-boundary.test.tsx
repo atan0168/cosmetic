@@ -34,7 +34,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <div>Test content</div>
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Test content')).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -59,7 +59,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary fallback={customFallback}>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Custom error message')).toBeInTheDocument();
@@ -72,14 +72,14 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary onError={onError}>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(onError).toHaveBeenCalledWith(
       expect.any(Error),
       expect.objectContaining({
         componentStack: expect.any(String),
-      })
+      }),
     );
   });
 
@@ -87,7 +87,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(console.error).toHaveBeenCalledWith(
@@ -95,13 +95,10 @@ describe('ErrorBoundary', () => {
       expect.any(Error),
       expect.objectContaining({
         componentStack: expect.any(String),
-      })
+      }),
     );
 
-    expect(console.error).toHaveBeenCalledWith(
-      'Component stack:',
-      expect.any(String)
-    );
+    expect(console.error).toHaveBeenCalledWith('Component stack:', expect.any(String));
   });
 
   it('shows error details in development mode', () => {
@@ -110,11 +107,10 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Error details (development only)')).toBeInTheDocument();
-
   });
 
   it('hides error details in production mode', () => {
@@ -123,18 +119,17 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.queryByText('Error details (development only)')).not.toBeInTheDocument();
-
   });
 
   it('resets error state when retry button is clicked', () => {
     const { rerender } = render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
@@ -146,7 +141,7 @@ describe('ErrorBoundary', () => {
     rerender(
       <ErrorBoundary>
         <ThrowError shouldThrow={false} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('No error')).toBeInTheDocument();
@@ -164,7 +159,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /refresh page/i }));
@@ -176,7 +171,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /try again/i }));
@@ -193,7 +188,7 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(console.warn).toHaveBeenCalledWith(
@@ -203,9 +198,8 @@ describe('ErrorBoundary', () => {
         timestamp: expect.any(String),
         userAgent: expect.any(String),
         url: expect.any(String),
-      })
+      }),
     );
-
   });
 
   it('handles reporting errors gracefully when reporting fails', () => {
@@ -222,21 +216,17 @@ describe('ErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
-    expect(console.error).toHaveBeenCalledWith(
-      'Failed to report error:',
-      expect.any(Error)
-    );
-
+    expect(console.error).toHaveBeenCalledWith('Failed to report error:', expect.any(Error));
   });
 
   it('clears timeout on unmount', () => {
     const { unmount } = render(
       <ErrorBoundary>
         <ThrowError />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /try again/i }));
@@ -264,7 +254,7 @@ describe('ErrorBoundaryWrapper', () => {
     render(
       <ErrorBoundaryWrapper onError={onError} fallback={fallback}>
         <ThrowErrorInWrapper />
-      </ErrorBoundaryWrapper>
+      </ErrorBoundaryWrapper>,
     );
 
     expect(screen.getByText('Custom fallback')).toBeInTheDocument();
@@ -311,7 +301,7 @@ describe('useErrorBoundary', () => {
     render(
       <ErrorBoundary>
         <TestComponent />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(screen.getByText('No error')).toBeInTheDocument();

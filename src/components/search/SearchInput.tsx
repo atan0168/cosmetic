@@ -84,7 +84,7 @@ export function SearchInput({
   // Handle form submission (Enter key)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (query.length < 3) {
       setError('Please enter at least 3 characters');
       return;
@@ -116,8 +116,8 @@ export function SearchInput({
     <div className={cn('w-full max-w-2xl', className)}>
       <form onSubmit={handleSubmit} className="relative">
         <div className="relative">
-          <Search 
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" 
+          <Search
+            className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
             aria-hidden="true"
           />
           <Input
@@ -128,9 +128,9 @@ export function SearchInput({
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              'pl-10 pr-10',
+              'pr-10 pl-10',
               error && 'border-destructive focus-visible:border-destructive',
-              'transition-colors duration-200'
+              'transition-colors duration-200',
             )}
             aria-label="Search for cosmetic products"
             aria-describedby={error ? 'search-error' : undefined}
@@ -143,34 +143,31 @@ export function SearchInput({
               size="icon"
               onClick={handleClear}
               disabled={disabled}
-              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 hover:bg-muted"
+              className="hover:bg-muted absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
               aria-label="Clear search"
             >
               <X className="h-3 w-3" />
             </Button>
           )}
         </div>
-        
+
         {/* Validation hint/error message */}
         {(showValidationHint || error) && (
-          <div 
+          <div
             id="search-error"
-            className={cn(
-              'mt-2 text-sm',
-              error ? 'text-destructive' : 'text-muted-foreground'
-            )}
+            className={cn('mt-2 text-sm', error ? 'text-destructive' : 'text-muted-foreground')}
             role="alert"
             aria-live="polite"
           >
             {error || 'Please enter at least 3 characters'}
           </div>
         )}
-        
+
         {/* Loading indicator */}
         {isTyping && (
-          <div className="mt-2 text-sm text-muted-foreground" aria-live="polite">
+          <div className="text-muted-foreground mt-2 text-sm" aria-live="polite">
             <span className="inline-flex items-center gap-2">
-              <div className="h-3 w-3 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+              <div className="border-muted-foreground h-3 w-3 animate-spin rounded-full border-2 border-t-transparent" />
               Searching...
             </span>
           </div>

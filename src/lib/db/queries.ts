@@ -122,9 +122,10 @@ export async function searchProducts(
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,
-    manufacturerCompany: row.manufacturerCompany?.id && row.manufacturerCompany?.name
-      ? { id: row.manufacturerCompany.id, name: row.manufacturerCompany.name }
-      : undefined,
+    manufacturerCompany:
+      row.manufacturerCompany?.id && row.manufacturerCompany?.name
+        ? { id: row.manufacturerCompany.id, name: row.manufacturerCompany.name }
+        : undefined,
   }));
 
   return { products: searchResults, total };
@@ -170,9 +171,10 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,
-    manufacturerCompany: row.manufacturerCompany?.id && row.manufacturerCompany?.name
-      ? { id: row.manufacturerCompany.id, name: row.manufacturerCompany.name }
-      : undefined,
+    manufacturerCompany:
+      row.manufacturerCompany?.id && row.manufacturerCompany?.name
+        ? { id: row.manufacturerCompany.id, name: row.manufacturerCompany.name }
+        : undefined,
   };
 }
 

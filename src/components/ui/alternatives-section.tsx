@@ -19,10 +19,10 @@ export function AlternativesSection({
   className,
 }: AlternativesSectionProps) {
   // Only show alternatives for cancelled or unknown products
-  const shouldShowAlternatives = 
-    currentProduct && 
-    (currentProduct.status === ProductStatus.CANCELLED || 
-     currentProduct.riskLevel === RiskLevel.UNKNOWN);
+  const shouldShowAlternatives =
+    currentProduct &&
+    (currentProduct.status === ProductStatus.CANCELLED ||
+      currentProduct.riskLevel === RiskLevel.UNKNOWN);
 
   const {
     data: alternativesData,
@@ -55,14 +55,16 @@ export function AlternativesSection({
         {/* Section Header */}
         <div className="mb-4 flex items-center gap-3">
           <Shield className="h-5 w-5 text-green-600" aria-hidden="true" />
-          <h3 className="text-lg font-semibold text-green-900">
-            Safer Alternatives
-          </h3>
+          <h3 className="text-lg font-semibold text-green-900">Safer Alternatives</h3>
         </div>
 
         {/* Loading State */}
         {isLoading && (
-          <div className="flex items-center gap-3 py-8" role="status" aria-label="Loading alternatives">
+          <div
+            className="flex items-center gap-3 py-8"
+            role="status"
+            aria-label="Loading alternatives"
+          >
             <LoadingSpinner size="sm" />
             <span className="text-sm text-green-800">Finding safer alternatives...</span>
           </div>
@@ -75,9 +77,7 @@ export function AlternativesSection({
             {/* Visible helper text for error context */}
             <p className="mt-2 text-sm text-green-800">Unable to load alternatives</p>
             <p className="text-sm text-green-800">{String((error as Error)?.message ?? error)}</p>
-            {isRefetching && (
-              <p className="mt-2 text-sm text-green-800">Retrying...</p>
-            )}
+            {isRefetching && <p className="mt-2 text-sm text-green-800">Retrying...</p>}
           </div>
         )}
 
@@ -85,9 +85,10 @@ export function AlternativesSection({
         {!isLoading && !error && !hasAlternatives && (
           <div className="py-8 text-center">
             <AlertTriangle className="mx-auto mb-3 h-8 w-8 text-green-600/60" aria-hidden="true" />
-            <p className="text-green-800 font-medium">No safer alternatives found.</p>
+            <p className="font-medium text-green-800">No safer alternatives found.</p>
             <p className="mt-1 text-sm text-green-700">
-              We couldn&apos;t find similar approved products at this time. Try searching for products in the same category.
+              We couldn&apos;t find similar approved products at this time. Try searching for
+              products in the same category.
             </p>
           </div>
         )}
@@ -98,14 +99,14 @@ export function AlternativesSection({
             <p className="mb-4 text-sm text-green-800">
               Here are some safer alternatives you might consider:
             </p>
-            
+
             <div className="space-y-3" role="list" aria-label="Safer alternatives">
               {alternatives.map((alternative) => (
                 <div key={alternative.id} role="listitem">
                   <ProductCard
                     product={alternative}
                     onClick={onAlternativeClick ? () => onAlternativeClick(alternative) : undefined}
-                    className="bg-white border-green-200 hover:border-green-300 hover:shadow-md transition-all duration-200"
+                    className="border-green-200 bg-white transition-all duration-200 hover:border-green-300 hover:shadow-md"
                   />
                 </div>
               ))}
@@ -114,8 +115,9 @@ export function AlternativesSection({
             {/* Additional Info */}
             <div className="mt-4 rounded-md border border-green-300 bg-green-100 p-3">
               <p className="text-xs text-green-800">
-                <strong>Note:</strong> These alternatives are currently approved products. 
-                Always check the latest safety information and consult with professionals if you have specific concerns.
+                <strong>Note:</strong> These alternatives are currently approved products. Always
+                check the latest safety information and consult with professionals if you have
+                specific concerns.
               </p>
             </div>
           </>

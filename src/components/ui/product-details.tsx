@@ -6,15 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Building2, 
-  Calendar, 
-  FileText, 
+import {
+  ChevronDown,
+  ChevronUp,
+  Building2,
+  Calendar,
+  FileText,
   AlertTriangle,
   Info,
-  Factory
+  Factory,
 } from 'lucide-react';
 import { RiskIndicator } from '@/components/ui/risk-indicator';
 
@@ -24,10 +24,10 @@ interface ProductDetailsProps {
   defaultExpanded?: boolean;
 }
 
-export function ProductDetails({ 
-  product, 
+export function ProductDetails({
+  product,
   className,
-  defaultExpanded = false 
+  defaultExpanded = false,
 }: ProductDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
@@ -35,13 +35,13 @@ export function ProductDetails({
     if (!reason || reason.trim() === '') {
       return 'Reason not specified';
     }
-    
+
     // Clean up the reason text for better readability
     const cleanedReason = reason
       .trim()
       .replace(/\s+/g, ' ') // Replace multiple spaces with single space
       .replace(/^\w/, (c) => c.toUpperCase()); // Capitalize first letter
-    
+
     return cleanedReason;
   };
 
@@ -54,7 +54,7 @@ export function ProductDetails({
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
-        day: 'numeric'
+        day: 'numeric',
       });
     } catch {
       return dateString;
@@ -65,11 +65,9 @@ export function ProductDetails({
     <Card className={className}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-xl leading-tight font-semibold">
-              {product.name}
-            </CardTitle>
-            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <CardTitle className="text-xl leading-tight font-semibold">{product.name}</CardTitle>
+            <div className="text-muted-foreground mt-2 flex items-center gap-2 text-sm">
               <FileText className="h-4 w-4" aria-hidden="true" />
               <span>Notification: {product.notifNo}</span>
             </div>
@@ -104,11 +102,12 @@ export function ProductDetails({
         {product.status === ProductStatus.CANCELLED && (
           <div className="rounded-md border border-red-200 bg-red-50 p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 text-red-600 flex-shrink-0" aria-hidden="true" />
+              <AlertTriangle
+                className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600"
+                aria-hidden="true"
+              />
               <div className="flex-1">
-                <p className="font-medium text-red-900 text-sm">
-                  Reason for Cancellation
-                </p>
+                <p className="text-sm font-medium text-red-900">Reason for Cancellation</p>
                 <p className="mt-1 text-sm text-red-800">
                   {formatCancellationReason(product.reasonForCancellation)}
                 </p>
@@ -122,7 +121,7 @@ export function ProductDetails({
           <CollapsibleTrigger asChild>
             <Button
               variant="ghost"
-              className="w-full justify-between p-0 h-auto font-normal text-sm hover:bg-transparent"
+              className="h-auto w-full justify-between p-0 text-sm font-normal hover:bg-transparent"
               aria-expanded={isExpanded}
               aria-controls="product-details-content"
             >
@@ -138,19 +137,19 @@ export function ProductDetails({
             </Button>
           </CollapsibleTrigger>
 
-          <CollapsibleContent 
-            id="product-details-content"
-            className="mt-4 space-y-4 border-t pt-4"
-          >
+          <CollapsibleContent id="product-details-content" className="mt-4 space-y-4 border-t pt-4">
             {/* Company Information */}
             <div className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+              <h4 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
                 Company Information
               </h4>
-              
+
               {product.applicantCompany && (
                 <div className="flex items-start gap-3 text-sm">
-                  <Building2 className="mt-0.5 h-4 w-4 text-muted-foreground flex-shrink-0" aria-hidden="true" />
+                  <Building2
+                    className="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0"
+                    aria-hidden="true"
+                  />
                   <div>
                     <span className="text-muted-foreground">Applicant Company:</span>
                     <p className="font-medium">{product.applicantCompany.name}</p>
@@ -160,7 +159,10 @@ export function ProductDetails({
 
               {product.manufacturerCompany && (
                 <div className="flex items-start gap-3 text-sm">
-                  <Factory className="mt-0.5 h-4 w-4 text-muted-foreground flex-shrink-0" aria-hidden="true" />
+                  <Factory
+                    className="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0"
+                    aria-hidden="true"
+                  />
                   <div>
                     <span className="text-muted-foreground">Manufacturer:</span>
                     <p className="font-medium">{product.manufacturerCompany.name}</p>
@@ -180,11 +182,14 @@ export function ProductDetails({
             {/* Date Information */}
             {product.dateNotified && (
               <div className="space-y-3">
-                <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+                <h4 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
                   Timeline
                 </h4>
                 <div className="flex items-start gap-3 text-sm">
-                  <Calendar className="mt-0.5 h-4 w-4 text-muted-foreground flex-shrink-0" aria-hidden="true" />
+                  <Calendar
+                    className="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0"
+                    aria-hidden="true"
+                  />
                   <div>
                     <span className="text-muted-foreground">Date Notified:</span>
                     <p className="font-medium">{formatDate(product.dateNotified)}</p>
@@ -196,20 +201,20 @@ export function ProductDetails({
             {/* Additional Information for Cancelled Products */}
             {product.status === ProductStatus.CANCELLED && (
               <div className="space-y-3">
-                <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+                <h4 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
                   Safety Information
                 </h4>
                 <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 flex-shrink-0" aria-hidden="true" />
+                    <AlertTriangle
+                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600"
+                      aria-hidden="true"
+                    />
                     <div className="text-sm">
-                      <p className="font-medium text-amber-900">
-                        Product Safety Notice
-                      </p>
+                      <p className="font-medium text-amber-900">Product Safety Notice</p>
                       <p className="mt-1 text-amber-800">
-                        This product has been cancelled and should not be used. 
-                        The cancellation indicates potential safety concerns identified 
-                        by regulatory authorities.
+                        This product has been cancelled and should not be used. The cancellation
+                        indicates potential safety concerns identified by regulatory authorities.
                       </p>
                     </div>
                   </div>
@@ -219,10 +224,10 @@ export function ProductDetails({
 
             {/* Metadata */}
             <div className="space-y-3">
-              <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+              <h4 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
                 Additional Information
               </h4>
-              <div className="grid gap-2 text-xs text-muted-foreground">
+              <div className="text-muted-foreground grid gap-2 text-xs">
                 <div className="flex justify-between">
                   <span>Product ID:</span>
                   <span className="font-mono">{product.id}</span>

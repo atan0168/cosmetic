@@ -12,15 +12,15 @@ async function searchProducts(query: string): Promise<SearchResponse> {
   }
 
   const response = await fetch(`/api/products/search?query=${encodeURIComponent(query)}&limit=10`);
-  
+
   if (!response.ok) {
     type ErrorPayload = { error?: string };
-    const errorData: ErrorPayload = await response.json().catch(() => ({} as ErrorPayload));
+    const errorData: ErrorPayload = await response.json().catch(() => ({}) as ErrorPayload);
     throw new Error(errorData.error || 'Search failed');
   }
 
   const data = (await response.json()) as { data?: SearchResponse } | SearchResponse;
-  return ('data' in data && data.data ? data.data : (data as SearchResponse)); // Handle both wrapped and direct responses
+  return 'data' in data && data.data ? data.data : (data as SearchResponse); // Handle both wrapped and direct responses
 }
 
 export default function SearchDemo() {

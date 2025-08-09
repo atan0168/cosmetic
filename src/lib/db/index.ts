@@ -1,4 +1,5 @@
 import { neon, neonConfig } from '@neondatabase/serverless';
+import 'dotenv/config';
 import { drizzle as drizzleHttp } from 'drizzle-orm/neon-http';
 import ws from 'ws';
 

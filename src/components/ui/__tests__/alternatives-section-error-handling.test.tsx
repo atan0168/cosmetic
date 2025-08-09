@@ -77,7 +77,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Alternatives Unavailable')).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const retryButton = screen.getByRole('button', { name: /retry alternatives/i });
@@ -118,7 +118,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Retrying...')).toBeInTheDocument();
@@ -136,7 +136,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Alternatives Unavailable')).toBeInTheDocument();
@@ -154,7 +154,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Alternatives Unavailable')).toBeInTheDocument();
@@ -172,7 +172,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Alternatives Unavailable')).toBeInTheDocument();
@@ -193,7 +193,7 @@ describe('AlternativesSection Error Handling', () => {
       const { rerender } = render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Alternatives Unavailable')).toBeInTheDocument();
@@ -210,7 +210,7 @@ describe('AlternativesSection Error Handling', () => {
       rerender(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByText('Alternatives Unavailable')).not.toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Safer Alternatives')).toBeInTheDocument();
@@ -250,7 +250,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByLabelText('Loading alternatives')).toBeInTheDocument();
@@ -269,7 +269,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByText('Alternatives Unavailable')).not.toBeInTheDocument();
@@ -289,7 +289,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('No safer alternatives found.')).toBeInTheDocument();
@@ -308,7 +308,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByText('Alternatives Unavailable')).not.toBeInTheDocument();
@@ -328,7 +328,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockSafeProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.queryByText('Safer Alternatives')).not.toBeInTheDocument();
@@ -346,7 +346,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Safer Alternatives')).toBeInTheDocument();
@@ -355,7 +355,7 @@ describe('AlternativesSection Error Handling', () => {
 
     it('renders for unknown risk products even with errors', () => {
       const unknownProduct = { ...mockSafeProduct, riskLevel: RiskLevel.UNKNOWN };
-      
+
       mockUseAlternatives.mockReturnValue({
         data: undefined,
         isLoading: false,
@@ -367,7 +367,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={unknownProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByText('Safer Alternatives')).toBeInTheDocument();
@@ -388,7 +388,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const errorAlert = screen.getByRole('alert');
@@ -408,7 +408,7 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       expect(screen.getByLabelText('Loading alternatives')).toBeInTheDocument();
@@ -426,11 +426,14 @@ describe('AlternativesSection Error Handling', () => {
       render(
         <TestWrapper>
           <AlternativesSection currentProduct={mockCancelledProduct} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const retryButton = screen.getByRole('button', { name: /retry alternatives/i });
-      expect(retryButton).toHaveAttribute('aria-label', expect.stringContaining('Retry alternatives'));
+      expect(retryButton).toHaveAttribute(
+        'aria-label',
+        expect.stringContaining('Retry alternatives'),
+      );
     });
   });
 });
