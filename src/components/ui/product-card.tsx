@@ -13,34 +13,34 @@ interface ProductCardProps {
 export function ProductCard({ product, onClick, className }: ProductCardProps) {
   const isClickable = !!onClick;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   return (
     <Card
       className={`transition-all duration-200 ${
-        isClickable ? 'hover:border-primary/20 cursor-pointer hover:shadow-md' : ''
+        isClickable ? 'hover:border-primary/20 focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer hover:shadow-md focus:shadow-md' : ''
       } ${className || ''}`}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
-      onKeyDown={
-        isClickable
-          ? (e) => {
-              if (e.key === ' ') {
-                // Prevent page scroll; rely on default click synthesized for role=button
-                e.preventDefault();
-              }
-            }
-          : undefined
-      }
       aria-label={isClickable ? `View details for ${product.name}` : undefined}
     >
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <CardTitle className="text-lg leading-tight font-semibold">{product.name}</CardTitle>
-          <RiskIndicator riskLevel={product.riskLevel} />
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <CardTitle className="text-lg leading-tight font-semibold break-words">{product.name}</CardTitle>
+          <div className="flex-shrink-0">
+            <RiskIndicator riskLevel={product.riskLevel} />
+          </div>
         </div>
         <div className="text-muted-foreground flex items-center gap-2 text-sm">
-          <FileText className="h-4 w-4" aria-hidden="true" />
-          <span>Notification: {product.notifNo}</span>
+          <FileText className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+          <span className="break-all">Notification: {product.notifNo}</span>
         </div>
       </CardHeader>
 

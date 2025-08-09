@@ -72,6 +72,12 @@ export function AlternativesSection({
         {error && !isLoading && (
           <div className="py-4">
             <AlternativesErrorMessage onRetry={handleRetry} />
+            {/* Visible helper text for error context */}
+            <p className="mt-2 text-sm text-green-800">Unable to load alternatives</p>
+            <p className="text-sm text-green-800">{String((error as Error)?.message ?? error)}</p>
+            {isRefetching && (
+              <p className="mt-2 text-sm text-green-800">Retrying...</p>
+            )}
           </div>
         )}
 

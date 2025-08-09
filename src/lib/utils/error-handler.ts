@@ -160,7 +160,7 @@ export function getRetryStrategy(errorType: ErrorType): {
 /**
  * Logs errors with appropriate level and context
  */
-export function logError(appError: AppError, context?: Record<string, any>) {
+export function logError(appError: AppError, context?: Record<string, unknown>) {
   const logData = {
     type: appError.type,
     message: appError.message,
@@ -216,7 +216,7 @@ export function getUserFriendlyMessage(appError: AppError): string {
  * Hook for handling errors in React components
  */
 export function useErrorHandler() {
-  const handleError = (error: Error | string, context?: Record<string, any>) => {
+  const handleError = (error: Error | string, context?: Record<string, unknown>) => {
     const appError = categorizeError(error);
     logError(appError, context);
     return appError;

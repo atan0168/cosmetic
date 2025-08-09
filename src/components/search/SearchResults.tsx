@@ -3,7 +3,7 @@
 import { Product } from '@/types/product';
 import { ProductCard } from '@/components/ui/product-card';
 import { LoadingSpinner, ProductCardSkeleton } from '@/components/ui/loading-spinner';
-import { SearchErrorMessage } from '@/components/ui/error-message';
+import { ErrorMessage } from '@/components/ui/error-message';
 import { AlertCircle, Search } from 'lucide-react';
 
 interface SearchResultsProps {
@@ -40,7 +40,7 @@ export function SearchResults({
   if (error) {
     return (
       <div className={className}>
-        <SearchErrorMessage onRetry={() => window.location.reload()} />
+        <ErrorMessage title="Search Error" message={error} />
       </div>
     );
   }
@@ -49,12 +49,12 @@ export function SearchResults({
   if (!query.trim()) {
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <Search className="mb-4 h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
-          <h3 className="mb-2 text-lg font-semibold text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center px-4">
+          <Search className="mb-4 h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50" aria-hidden="true" />
+          <h3 className="mb-2 text-base sm:text-lg font-semibold text-muted-foreground">
             Search for Products
           </h3>
-          <p className="text-sm text-muted-foreground max-w-md">
+          <p className="text-sm sm:text-base text-muted-foreground max-w-md leading-relaxed">
             Enter a product name or notification number to check safety status and find information
             about cosmetic products.
           </p>
@@ -67,16 +67,16 @@ export function SearchResults({
   if (products.length === 0) {
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <AlertCircle className="mb-4 h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
-          <h3 className="mb-2 text-lg font-semibold text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-center px-4">
+          <AlertCircle className="mb-4 h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/50" aria-hidden="true" />
+          <h3 className="mb-2 text-base sm:text-lg font-semibold text-muted-foreground">
             No Products Found
           </h3>
-          <p className="text-sm text-muted-foreground max-w-md">
-            No products found for &quot;{query}&quot;. Try a different name or notification number.
+          <p className="text-sm sm:text-base text-muted-foreground max-w-md leading-relaxed">
+            No products found for <span className="font-medium break-words">&quot;{query}&quot;</span>. Try a different name or notification number.
           </p>
-          <div className="mt-4 text-xs text-muted-foreground">
-            <p>Search tips:</p>
+          <div className="mt-4 text-xs sm:text-sm text-muted-foreground max-w-sm">
+            <p className="font-medium">Search tips:</p>
             <ul className="mt-2 space-y-1 text-left">
               <li>• Try using fewer or different keywords</li>
               <li>• Check the spelling of product names</li>
@@ -92,40 +92,45 @@ export function SearchResults({
   return (
     <div className={className}>
       {/* Results header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 sm:mb-6 px-1">
         <div>
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-base sm:text-lg font-semibold" id="search-results-heading">
             Search Results
             <span className="ml-2 text-sm font-normal text-muted-foreground">
               ({products.length} {products.length === 1 ? 'product' : 'products'} found)
             </span>
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Results for &quot;{query}&quot;
+          <p className="text-sm text-muted-foreground break-words">
+            Results for <span className="font-medium">&quot;{query}&quot;</span>
           </p>
         </div>
       </div>
 
       {/* Product list */}
-      <div className="space-y-4" role="list" aria-label="Search results">
-        {products.map((product) => (
+      <div 
+        className="space-y-3 sm:space-y-4" 
+        role="list" 
+        aria-labelledby="search-results-heading"
+        aria-label={`${products.length} search results for ${query}`}
+      >
+        {products.map((product, index) => (
           <div key={product.id} role="listitem">
             <ProductCard
               product={product}
               onClick={onProductClick ? () => onProductClick(product) : undefined}
-              className="transition-all duration-200 hover:shadow-sm"
+              className="transition-all duration-200 hover:shadow-sm focus-within:shadow-sm"
             />
           </div>
         ))}
       </div>
 
       {/* Results footer with additional info */}
-      <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
+      <div className="mt-6 sm:mt-8 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-3 sm:p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="mt-0.5 h-4 w-4 text-blue-600 flex-shrink-0" aria-hidden="true" />
+          <AlertCircle className="mt-0.5 h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" aria-hidden="true" />
           <div className="text-sm">
-            <p className="font-medium text-blue-900">Safety Information</p>
-            <p className="mt-1 text-blue-800">
+            <p className="font-medium text-blue-900 dark:text-blue-100">Safety Information</p>
+            <p className="mt-1 text-blue-800 dark:text-blue-200 leading-relaxed">
               Product safety status is based on official cosmetic notification databases. 
               Always consult with healthcare professionals for specific safety concerns.
             </p>
