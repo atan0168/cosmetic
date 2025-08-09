@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ProductStatus, RiskLevel } from '@/types/product';
 import { sanitizeInput, customRefinements } from '@/lib/utils/validation';
 
 // Company validation schema
@@ -32,10 +33,10 @@ export const ProductSchema = z.object({
     .min(1, 'Category is required')
     .max(255, 'Category name too long')
     .transform(sanitizeInput.string),
-  status: z.enum(['Notified', 'Cancelled'] as const, {
+  status: z.nativeEnum(ProductStatus, {
     message: "Status must be either 'Notified' or 'Cancelled'",
   }),
-  riskLevel: z.enum(['safe', 'unsafe', 'unknown'] as const, {
+  riskLevel: z.nativeEnum(RiskLevel, {
     message: "Risk level must be 'safe', 'unsafe', or 'unknown'",
   }),
   reasonForCancellation: z

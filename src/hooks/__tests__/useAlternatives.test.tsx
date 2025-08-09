@@ -46,9 +46,12 @@ function createWrapper() {
     },
   });
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  function QueryClientWrapper({ children }: { children: React.ReactNode }) {
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  }
+  QueryClientWrapper.displayName = 'QueryClientWrapper';
+
+  return QueryClientWrapper;
 }
 
 describe('useAlternatives', () => {

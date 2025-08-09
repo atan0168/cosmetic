@@ -29,7 +29,7 @@ export function SearchResults({
       <div className={className} role="status" aria-label="Loading search results">
         <div className="mb-4 flex items-center gap-2 text-muted-foreground">
           <LoadingSpinner size="sm" />
-          <span className="text-sm">Searching for "{query}"...</span>
+          <span className="text-sm">Searching for &quot;{query}&quot;...</span>
         </div>
         <ProductCardSkeleton />
       </div>
@@ -40,12 +40,7 @@ export function SearchResults({
   if (error) {
     return (
       <div className={className}>
-        <ErrorMessage
-          title="Search Error"
-          message={error}
-          icon={AlertCircle}
-          className="mt-4"
-        />
+        <ErrorMessage title="Search Error" message={error} className="mt-4" />
       </div>
     );
   }
@@ -78,7 +73,7 @@ export function SearchResults({
             No Products Found
           </h3>
           <p className="text-sm text-muted-foreground max-w-md">
-            No products found for "{query}". Try a different name or notification number.
+            No products found for &quot;{query}&quot;. Try a different name or notification number.
           </p>
           <div className="mt-4 text-xs text-muted-foreground">
             <p>Search tips:</p>
@@ -106,7 +101,7 @@ export function SearchResults({
             </span>
           </h2>
           <p className="text-sm text-muted-foreground">
-            Results for "{query}"
+            Results for &quot;{query}&quot;
           </p>
         </div>
       </div>

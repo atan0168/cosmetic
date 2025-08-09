@@ -8,18 +8,19 @@ import { Product, SearchResponse } from '@/types';
 // API function to search products
 async function searchProducts(query: string): Promise<SearchResponse> {
   if (!query.trim()) {
-    return { products: [], total: 0 };
+    return { products: [], total: 0 } as SearchResponse;
   }
 
   const response = await fetch(`/api/products/search?query=${encodeURIComponent(query)}&limit=10`);
   
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
+    type ErrorPayload = { error?: string };
+    const errorData: ErrorPayload = await response.json().catch(() => ({} as ErrorPayload));
     throw new Error(errorData.error || 'Search failed');
   }
 
-  const data = await response.json();
-  return data.data || data; // Handle both wrapped and direct responses
+  const data = (await response.json()) as { data?: SearchResponse } | SearchResponse;
+  return ('data' in data && data.data ? data.data : (data as SearchResponse)); // Handle both wrapped and direct responses
 }
 
 export default function SearchDemo() {

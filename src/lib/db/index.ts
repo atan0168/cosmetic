@@ -7,16 +7,13 @@ if (!connectionString) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Configuring Neon for local development
-if (process.env.NODE_ENV === 'development') {
+// Configuring Neon for local development and tests (via local proxy)
+if (process.env.NODE_ENV === 'development' || process.env.VITEST) {
   connectionString = 'postgres://postgres:postgres@db.localtest.me:5432/main';
-  neonConfig.fetchEndpoint = (host) => {
-    const [protocol, port] = host === 'db.localtest.me' ? ['http', 4444] : ['https', 443];
-    return `${protocol}://${host}:${port}/sql`;
-  };
-  const connectionStringUrl = new URL(connectionString);
-  neonConfig.useSecureWebSocket = connectionStringUrl.hostname !== 'db.localtest.me';
-  neonConfig.wsProxy = (host) => (host === 'db.localtest.me' ? `${host}:4444/v2` : `${host}/v2`);
+  // Always route HTTP SQL over local proxy to avoid https:443 during tests
+  neonConfig.fetchEndpoint = () => `http://db.localtest.me:4444/sql`;
+  neonConfig.useSecureWebSocket = false;
+  neonConfig.wsProxy = () => `db.localtest.me:4444/v2`;
 }
 neonConfig.webSocketConstructor = ws;
 

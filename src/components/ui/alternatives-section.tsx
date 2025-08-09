@@ -5,8 +5,7 @@ import { ProductCard } from '@/components/ui/product-card';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { useAlternatives } from '@/hooks/useAlternatives';
-import { Shield, AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Shield, AlertTriangle } from 'lucide-react';
 
 interface AlternativesSectionProps {
   currentProduct?: Product;
@@ -89,7 +88,7 @@ export function AlternativesSection({
             <AlertTriangle className="mx-auto mb-3 h-8 w-8 text-green-600/60" aria-hidden="true" />
             <p className="text-green-800 font-medium">No safer alternatives found.</p>
             <p className="mt-1 text-sm text-green-700">
-              We couldn't find similar approved products at this time. Try searching for products in the same category.
+              We couldn&apos;t find similar approved products at this time. Try searching for products in the same category.
             </p>
           </div>
         )}

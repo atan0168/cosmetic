@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -29,34 +29,15 @@ export function SearchInput({
   const [error, setError] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    (() => {
-      let timeoutId: NodeJS.Timeout;
-      
-      return (searchQuery: string) => {
-        clearTimeout(timeoutId);
-        setIsTyping(true);
-        
-        timeoutId = setTimeout(() => {
-          setIsTyping(false);
-          
-          // Validate the query
-          try {
-            const validatedQuery = SearchQuerySchema.parse({ query: searchQuery });
-            setError('');
-            onSearch(validatedQuery.query);
-          } catch (validationError) {
-            if (validationError instanceof z.ZodError) {
-              const firstError = validationError.issues[0];
-              setError(firstError.message);
-            }
-          }
-        }, debounceMs);
-      };
-    })(),
-    [onSearch, debounceMs]
-  );
+  // Debounce timer stored across renders
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +51,21 @@ export function SearchInput({
 
     // Only trigger search if query has minimum length
     if (value.length >= 3) {
-      debouncedSearch(value);
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      setIsTyping(true);
+      debounceTimerRef.current = setTimeout(() => {
+        setIsTyping(false);
+        try {
+          const validated = SearchQuerySchema.parse({ query: value });
+          setError('');
+          onSearch(validated.query);
+        } catch (validationError) {
+          if (validationError instanceof z.ZodError) {
+            const firstError = validationError.issues[0];
+            setError(firstError.message);
+          }
+        }
+      }, debounceMs);
     } else if (value.length === 0) {
       // Clear results when input is empty
       setIsTyping(false);

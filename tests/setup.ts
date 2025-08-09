@@ -2,14 +2,13 @@
 import { vi, beforeAll, beforeEach } from 'vitest';
 import '@testing-library/jest-dom';
 
-// Make React available globally for JSX
-import React from 'react';
-global.React = React;
-
 // Set up environment variables for local Docker database
 // @ts-expect-error - This is a workaround for Vitest not recognizing process.env in this context
-process.env.NODE_ENV = 'development';
-process.env.DATABASE_URL = 'postgres://postgres:postgres@db.localtest.me:5432/main';
+process.env.NODE_ENV = process.env.NODE_ENV ?? 'development';
+// Signal test environment for db config
+process.env.VITEST = 'true';
+process.env.DATABASE_URL =
+  process.env.DATABASE_URL ?? 'postgres://postgres:postgres@db.localtest.me:5432/main';
 
 // Global test setup
 let dbInitialized = false;

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { searchProducts, getSaferAlternatives } from '@/lib/db/queries';
 import { SearchQuerySchema, validationUtils } from '@/lib/validations';
 import {
