@@ -9,6 +9,8 @@ export { Skeleton } from './skeleton';
 // Custom Product Safety Components
 export { RiskIndicator } from './risk-indicator';
 export { ProductCard } from './product-card';
+export { ProductDetails } from './product-details';
+export { AlternativesSection } from './alternatives-section';
 export { LoadingSpinner, ProductCardSkeleton } from './loading-spinner';
 export {
   ErrorMessage,

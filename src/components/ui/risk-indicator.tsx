@@ -42,6 +42,7 @@ export function RiskIndicator({ riskLevel, className }: RiskIndicatorProps) {
       className={cn(config.className, 'flex items-center gap-1 font-semibold', className)}
       aria-label={config.ariaLabel}
       role="status"
+      data-testid="risk-indicator"
     >
       <Icon className="h-3 w-3" aria-hidden="true" />
       <span>{config.label}</span>

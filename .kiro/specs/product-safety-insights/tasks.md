@@ -63,14 +63,14 @@
   - Write component tests for different result states
   - _Requirements: 1.3, 1.4, 2.1, 2.2, 2.3, 6.4_
 
-- [ ] 10. Build product details and cancellation reasons
+- [x] 10. Build product details and cancellation reasons
   - Create ProductDetails component for expandable product information
   - Implement display of cancellation reasons with fallback for missing data
   - Add proper formatting for user-friendly cancellation reason display
   - Write tests for product details rendering
   - _Requirements: 3.1, 3.2, 3.4, 3.5_
 
-- [ ] 11. Implement safer alternatives section
+- [x] 11. Implement safer alternatives section
   - Create AlternativesSection component for displaying safer product options
   - Integrate with alternatives API to fetch and display alternative products
   - Handle empty alternatives state with "No safer alternatives found" message
