@@ -28,14 +28,14 @@
   - Add input sanitization and error handling utilities
   - _Requirements: 1.2, 1.6, 5.6_
 
-- [ ] 5. Build search API endpoint
+- [x] 5. Build search API endpoint
   - Create /api/products/search route with proper error handling
   - Implement full-text search query using Drizzle ORM against Neon products table
   - Add input validation using Zod schemas with proper error responses
   - Write unit tests for API endpoint functionality
   - _Requirements: 1.1, 1.3, 1.4, 5.2, 5.3_
 
-- [ ] 6. Create alternatives API endpoint
+- [x] 6. Create alternatives API endpoint
   - Implement /api/products/alternatives route for safer product suggestions
   - Add logic to randomly select 3+ approved products excluding current product
   - Handle cases where no alternatives are found with appropriate responses
