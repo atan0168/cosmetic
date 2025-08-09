@@ -1,12 +1,34 @@
 // Test setup file for vitest
-import { vi, beforeAll } from 'vitest';
+import { vi, beforeAll, beforeEach } from 'vitest';
 
 // Set up environment variables for local Docker database
+// @ts-expect-error - This is a workaround for Vitest not recognizing process.env in this context
 process.env.NODE_ENV = 'development';
 process.env.DATABASE_URL = 'postgres://postgres:postgres@db.localtest.me:5432/main';
 
 // Global test setup
 let dbInitialized = false;
+
+function getRowsArray(value: unknown): Array<Record<string, unknown>> {
+  if (Array.isArray(value)) {
+    return value as Array<Record<string, unknown>>;
+  }
+  if (typeof value === 'object' && value !== null) {
+    const rows = (value as Record<string, unknown>)['rows'];
+    if (Array.isArray(rows)) {
+      return rows as Array<Record<string, unknown>>;
+    }
+  }
+  return [];
+}
+
+function getCountFromResult(value: unknown): number {
+  const directArray = Array.isArray(value) ? (value as Array<Record<string, unknown>>) : undefined;
+  const rowsArray = getRowsArray(value);
+  const candidate = directArray?.[0] ?? rowsArray[0];
+  const countValue = candidate ? (candidate as Record<string, unknown>)['count'] : undefined;
+  return typeof countValue === 'string' || typeof countValue === 'number' ? Number(countValue) : 0;
+}
 
 beforeAll(async () => {
   if (dbInitialized) return;
@@ -44,9 +66,7 @@ beforeAll(async () => {
 
   // Seed minimal data if empty
   const productCount = await db.execute(sql`SELECT COUNT(*) as count FROM products`);
-  const count = Number(
-    (productCount as any)[0]?.count ?? (productCount as any).rows?.[0]?.count ?? 0,
-  );
+  const count = getCountFromResult(productCount);
 
   if (count === 0) {
     // Seed companies
@@ -59,15 +79,11 @@ beforeAll(async () => {
 
     // Get company ids
     const companiesRes = await db.execute(sql`SELECT id, name FROM companies`);
-    const acme =
-      (companiesRes as any).rows?.find((r: any) => r.name === 'Acme Co') ??
-      (companiesRes as any)[0];
-    const bravo =
-      (companiesRes as any).rows?.find((r: any) => r.name === 'Bravo Labs') ??
-      (companiesRes as any)[1] ??
-      acme;
-    const acmeId = acme.id;
-    const bravoId = bravo.id;
+    const companyRows = getRowsArray(companiesRes);
+    const acme = companyRows.find((r) => r['name'] === 'Acme Co') ?? companyRows[0];
+    const bravo = companyRows.find((r) => r['name'] === 'Bravo Labs') ?? companyRows[1] ?? acme;
+    const acmeId = Number(acme?.['id']);
+    const bravoId = Number(bravo?.['id']);
 
     // Seed products (Notified)
     await db.execute(sql`
