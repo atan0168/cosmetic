@@ -2,13 +2,19 @@ export * from './product';
 export * from './db';
 export type {
   SearchQuery,
+  SearchResponse,
+  ApiResponse,
+  ErrorResponse,
+  AlternativesRequest,
   CompanyMetrics,
   CategoryMetrics,
   RecommendedAlternative,
   BannedIngredient,
   CancelledProductIngredient,
   BannedIngredientMetrics,
-  SearchResponse,
+  ProductId,
+  NotificationNumber,
+  Pagination,
 } from '@/lib/validations';
 
 

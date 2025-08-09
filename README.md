@@ -94,10 +94,36 @@ The project includes data loading scripts in the `scripts/` directory.
 
 To set up the database:
 
-1. Create a Neon database and get your connection string
+1. Create a Neon database and get your connection string (or run the local Docker DB below)
 2. Update the scripts to use Drizzle ORM
 3. Run the migration scripts to create the schema
 4. Load the CSV data using the updated scripts
+
+### Local Postgres (Docker) for testing
+
+If you prefer a local Postgres for development/tests:
+
+```bash
+# Start Postgres locally
+docker compose up -d
+
+# Point your local env to the Docker Postgres
+cp .env.docker .env.local
+
+# Apply migrations to the local DB
+npm run db:migrate
+
+# Optional: open Drizzle Studio
+npm run db:studio
+```
+
+Local DB connection:
+
+```
+postgresql://postgres:postgres@localhost:5432/cosmetic
+```
+
+Note: runtime code currently targets Neon via HTTP. The CLI tools (migrate/studio) work fine with local Postgres, but scripts that import `src/lib/db/index.ts` expect Neon. Use Neon for those scripts, or adapt the DB client to support `pg` when using local Postgres.
 
 ## Additional Scripts
 
