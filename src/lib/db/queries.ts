@@ -91,9 +91,14 @@ export async function searchProducts(
         id: companies.id,
         name: companies.name,
       },
+      manufacturerCompany: {
+        id: sql<number | null>`mc.id`,
+        name: sql<string | null>`mc.name`,
+      },
     })
     .from(products)
     .leftJoin(companies, eq(products.applicantCompanyId, companies.id))
+    .leftJoin(sql`companies mc`, sql`products.manufacturer_company_id = mc.id`)
     .where(or(ilike(products.name, searchPattern), ilike(products.notifNo, searchPattern)))
     .orderBy(asc(products.name))
     .limit(limit)
@@ -117,6 +122,9 @@ export async function searchProducts(
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,
+    manufacturerCompany: row.manufacturerCompany?.id && row.manufacturerCompany?.name
+      ? { id: row.manufacturerCompany.id, name: row.manufacturerCompany.name }
+      : undefined,
   }));
 
   return { products: searchResults, total };
@@ -138,9 +146,14 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
         id: companies.id,
         name: companies.name,
       },
+      manufacturerCompany: {
+        id: sql<number | null>`mc.id`,
+        name: sql<string | null>`mc.name`,
+      },
     })
     .from(products)
     .leftJoin(companies, eq(products.applicantCompanyId, companies.id))
+    .leftJoin(sql`companies mc`, sql`products.manufacturer_company_id = mc.id`)
     .where(eq(products.id, id))
     .limit(1);
 
@@ -156,6 +169,9 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
     reasonForCancellation: row.reasonForCancellation,
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
+      : undefined,
+    manufacturerCompany: row.manufacturerCompany?.id && row.manufacturerCompany?.name
+      ? { id: row.manufacturerCompany.id, name: row.manufacturerCompany.name }
       : undefined,
   };
 }

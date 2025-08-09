@@ -39,13 +39,16 @@ dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 const NOTIFIED_PRODUCTS_CSV = '../data/cosmetic_notifications.csv';
 const CANCELLED_PRODUCTS_CSV = '../data/cosmetic_notifications_cancelled.csv';
+const INGREDIENT_INFO_CSV = '../data/ingredient-information.csv';
 
 // --- Type Definitions for CSV Rows ---
 interface NotifiedRow {
+  custom_id: string;
   notif_no: string;
   product: string;
   company: string;
   date_notif: string;
+  product_category: string;
 }
 
 interface CancelledRow {
@@ -54,6 +57,27 @@ interface CancelledRow {
   holder: string;
   manufacturer: string;
   substance_detected: string;
+  product_category: string;
+}
+
+interface IngredientRow {
+  Ingredient: string;
+  'Synonyms/INCI': string;
+  'EWG Rating': string;
+  'Risk Level': string;
+  'Banned in Malaysia': string;
+  'Banned Country Codes': string;
+  'Basis (Malaysia/ASEAN)': string;
+  'Primary Cosmetic Use': string;
+  'Key Health Risks': string;
+  'Source Notes': string;
+  'PubChem CID': string;
+  'PubChem URL': string;
+  'Annex III / Restrictions': string;
+  'NPRA Link': string;
+  'ASEAN Annex II URL': string;
+  'ASEAN Annex III URL': string;
+  'Regulation Links': string;
 }
 
 // --- Helper Functions ---
@@ -122,10 +146,12 @@ async function main() {
     // 1) Load data from CSV files
     console.log('--- Step 1: Loading CSV files ---');
     const notifiedProducts = await loadCSV<NotifiedRow>(NOTIFIED_PRODUCTS_CSV, [
+      'custom_id',
       'notif_no',
       'product',
       'company',
       'date_notif',
+      'product_category',
     ]);
     const cancelledProducts = await loadCSV<CancelledRow>(CANCELLED_PRODUCTS_CSV, [
       'notif_no',
@@ -133,9 +159,30 @@ async function main() {
       'holder',
       'manufacturer',
       'substance_detected',
+      'product_category',
+    ]);
+    const ingredientInfo = await loadCSV<IngredientRow>(INGREDIENT_INFO_CSV, [
+      'Ingredient',
+      'Synonyms/INCI',
+      'EWG Rating',
+      'Risk Level',
+      'Banned in Malaysia',
+      'Banned Country Codes',
+      'Basis (Malaysia/ASEAN)',
+      'Primary Cosmetic Use',
+      'Key Health Risks',
+      'Source Notes',
+      'PubChem CID',
+      'PubChem URL',
+      'Annex III / Restrictions',
+      'NPRA Link',
+      'ASEAN Annex II URL',
+      'ASEAN Annex III URL',
+      'Regulation Links',
     ]);
     console.log(`Loaded ${notifiedProducts.length} notified products.`);
-    console.log(`Loaded ${cancelledProducts.length} cancelled products.\n`);
+    console.log(`Loaded ${cancelledProducts.length} cancelled products.`);
+    console.log(`Loaded ${ingredientInfo.length} ingredient records.\n`);
 
     // 2) Collect, upsert, and map all unique companies
     console.log('--- Step 2: Processing all companies ---');
@@ -169,13 +216,43 @@ async function main() {
     const companyIdMap = new Map(allCompanies.map((c) => [c.name, c.id]));
     console.log(`Processed ${companyIdMap.size} unique companies.\n`);
 
-    // 3) Prepare and insert all products
-    console.log('--- Step 3: Preparing and inserting all products ---');
+    // 3) Process and insert banned ingredients
+    console.log('--- Step 3: Processing banned ingredients ---');
+    const ingredientInserts = ingredientInfo
+      .filter(ingredient => ingredient['Banned in Malaysia']?.toLowerCase() === 'yes')
+      .map(ingredient => ({
+        name: ingredient.Ingredient,
+        alternativeNames: ingredient['Synonyms/INCI'] || null,
+        healthRiskDescription: ingredient['Key Health Risks'] || 'No description available',
+        regulatoryStatus: ingredient['Risk Level'] || 'Unknown',
+        sourceUrl: ingredient['NPRA Link'] || ingredient['ASEAN Annex II URL'] || null,
+      }));
+
+    // Insert banned ingredients in batches
+    const insertedIngredients: { id: number; name: string }[] = [];
+    for (let i = 0; i < ingredientInserts.length; i += batchSize) {
+      const batch = ingredientInserts.slice(i, i + batchSize);
+      const result = await db
+        .insert(bannedIngredients)
+        .values(batch)
+        .onConflictDoNothing({ target: bannedIngredients.name })
+        .returning({ id: bannedIngredients.id, name: bannedIngredients.name });
+      insertedIngredients.push(...result);
+    }
+
+    // Get all banned ingredients to build the mapping
+    const allBannedIngredients = await db.select().from(bannedIngredients);
+    const ingredientIdMap = new Map(allBannedIngredients.map((i) => [i.name.toLowerCase(), i.id]));
+    console.log(`Processed ${ingredientIdMap.size} banned ingredients.\n`);
+
+    // 4) Prepare and insert all products
+    console.log('--- Step 4: Preparing and inserting all products ---');
     const productInserts: Array<{
       notifNo: string;
       name: string;
       category: string;
       applicantCompanyId: number;
+      manufacturerCompanyId: number | null;
       dateNotified: string;
       status: string;
       reasonForCancellation: string | null;
@@ -194,8 +271,9 @@ async function main() {
       productInserts.push({
         notifNo: p.notif_no,
         name: p.product,
-        category: 'General', // Default category - can be enhanced later
+        category: p.product_category || 'General',
         applicantCompanyId,
+        manufacturerCompanyId: null, // Not provided in notified products CSV
         dateNotified: p.date_notif || '1970-01-01',
         status: 'Notified',
         reasonForCancellation: null,
@@ -218,8 +296,9 @@ async function main() {
       productInserts.push({
         notifNo: p.notif_no,
         name: p.product,
-        category: 'General', // Default category - can be enhanced later
+        category: p.product_category || 'General',
         applicantCompanyId,
+        manufacturerCompanyId,
         dateNotified: '1970-01-01', // Default date - this info isn't in the cancelled CSV
         status: 'Cancelled',
         reasonForCancellation: p.substance_detected,
@@ -242,8 +321,64 @@ async function main() {
 
     console.log(`Inserted ${insertedCount} products successfully.\n`);
 
-    // 4) Placeholder for Recommended Alternatives
-    console.log('--- Step 4: Recommended Alternatives (Placeholder) ---');
+    // 5) Link cancelled products with banned ingredients
+    console.log('--- Step 5: Linking cancelled products with banned ingredients ---');
+    
+    // Get all products to build the mapping
+    const allProducts = await db.select().from(products);
+    const productIdMap = new Map(allProducts.map((p) => [p.notifNo, p.id]));
+    
+    const ingredientLinks: Array<{
+      cancelledProductId: number;
+      bannedIngredientId: number;
+    }> = [];
+
+    for (const cancelledProduct of cancelledProducts) {
+      const productId = productIdMap.get(cancelledProduct.notif_no);
+      if (!productId) {
+        console.warn(`Product not found for linking: ${cancelledProduct.notif_no}`);
+        continue;
+      }
+
+      // Try to match the substance_detected with banned ingredients
+      const substanceDetected = cancelledProduct.substance_detected.toLowerCase();
+      
+      // Look for exact match first
+      let ingredientId = ingredientIdMap.get(substanceDetected);
+      
+      // If no exact match, try to find partial matches
+      if (!ingredientId) {
+        for (const [ingredientName, id] of ingredientIdMap.entries()) {
+          if (substanceDetected.includes(ingredientName) || ingredientName.includes(substanceDetected)) {
+            ingredientId = id;
+            break;
+          }
+        }
+      }
+
+      if (ingredientId) {
+        ingredientLinks.push({
+          cancelledProductId: productId,
+          bannedIngredientId: ingredientId,
+        });
+      } else {
+        console.warn(`No banned ingredient found for substance: ${cancelledProduct.substance_detected}`);
+      }
+    }
+
+    // Insert ingredient links in batches
+    if (ingredientLinks.length > 0) {
+      for (let i = 0; i < ingredientLinks.length; i += batchSize) {
+        const batch = ingredientLinks.slice(i, i + batchSize);
+        await db.insert(cancelledProductIngredients).values(batch);
+      }
+      console.log(`Linked ${ingredientLinks.length} cancelled products with banned ingredients.\n`);
+    } else {
+      console.log('No ingredient links created.\n');
+    }
+
+    // 6) Placeholder for Recommended Alternatives
+    console.log('--- Step 6: Recommended Alternatives (Placeholder) ---');
     console.log(
       "The 'recommended_alternatives' table should be populated by a separate backend process",
     );
