@@ -4,23 +4,32 @@ import { Product } from '@/types/product';
 import { ProductCard } from '@/components/ui/product-card';
 import { LoadingSpinner, ProductCardSkeleton } from '@/components/ui/loading-spinner';
 import { ErrorMessage } from '@/components/ui/error-message';
-import { AlertCircle, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Search, ChevronDown } from 'lucide-react';
 
 interface SearchResultsProps {
   products: Product[];
   isLoading: boolean;
+  isLoadingMore?: boolean;
   error: string | null;
   query: string;
   onProductClick?: (product: Product) => void;
+  onLoadMore?: () => void;
+  hasMoreResults?: boolean;
+  totalResults?: number;
   className?: string;
 }
 
 export function SearchResults({
   products,
   isLoading,
+  isLoadingMore = false,
   error,
   query,
   onProductClick,
+  onLoadMore,
+  hasMoreResults = false,
+  totalResults = 0,
   className,
 }: SearchResultsProps) {
   // Loading state with skeleton screens
@@ -105,7 +114,12 @@ export function SearchResults({
           <h2 className="text-base font-semibold sm:text-lg" id="search-results-heading">
             Search Results
             <span className="text-muted-foreground ml-2 text-sm font-normal">
-              ({products.length} {products.length === 1 ? 'product' : 'products'} found)
+              ({products.length}
+              {totalResults > 0 && totalResults !== products.length
+                ? ` of ${totalResults}`
+                : ''}{' '}
+              {products.length === 1 ? 'product' : 'products'}{' '}
+              {totalResults > 0 && totalResults !== products.length ? 'shown' : 'found'})
             </span>
           </h2>
           <p className="text-muted-foreground text-sm break-words">
@@ -131,6 +145,30 @@ export function SearchResults({
           </div>
         ))}
       </div>
+
+      {/* View More Button */}
+      {hasMoreResults && onLoadMore && (
+        <div className="mt-6 flex justify-center">
+          <Button
+            onClick={onLoadMore}
+            disabled={isLoadingMore}
+            variant="outline"
+            className="min-w-[140px] transition-all duration-200 hover:shadow-sm"
+          >
+            {isLoadingMore ? (
+              <>
+                <LoadingSpinner size="sm" className="mr-2" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <ChevronDown className="mr-2 h-4 w-4" />
+                View More ({totalResults - products.length} remaining)
+              </>
+            )}
+          </Button>
+        </div>
+      )}
 
       {/* Results footer with additional info */}
       <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-3 sm:mt-8 sm:p-4 dark:border-blue-800 dark:bg-blue-950/20">

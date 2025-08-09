@@ -17,6 +17,7 @@ import {
   Factory,
 } from 'lucide-react';
 import { RiskIndicator } from '@/components/ui/risk-indicator';
+import { toTitleCase } from '@/lib/utils/product';
 
 interface ProductDetailsProps {
   product: Product;
@@ -152,7 +153,7 @@ export function ProductDetails({
                   />
                   <div>
                     <span className="text-muted-foreground">Applicant Company:</span>
-                    <p className="font-medium">{product.applicantCompany.name}</p>
+                    <p className="font-medium">{toTitleCase(product.applicantCompany.name)}</p>
                   </div>
                 </div>
               )}
@@ -165,7 +166,7 @@ export function ProductDetails({
                   />
                   <div>
                     <span className="text-muted-foreground">Manufacturer:</span>
-                    <p className="font-medium">{product.manufacturerCompany.name}</p>
+                    <p className="font-medium">{toTitleCase(product.manufacturerCompany.name)}</p>
                   </div>
                 </div>
               )}

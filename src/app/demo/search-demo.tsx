@@ -35,7 +35,8 @@ export default function SearchDemo() {
     queryKey: ['products', 'search', searchQuery],
     queryFn: () => searchProducts(searchQuery),
     enabled: searchQuery.length >= 3, // Only search when query is long enough
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
     retry: 2,
   });
 

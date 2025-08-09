@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     // Perform database search
     const searchResult = await searchProducts(query, limit, offset);
 
-    // Transform products to include risk level based on status
+    // Transform products to include risk level and missing fields
     const productsWithRiskLevel = searchResult.products.map((product) => ({
       ...product,
       riskLevel:
@@ -72,6 +72,9 @@ export async function GET(request: NextRequest) {
           : product.status === ProductStatus.NOTIFIED
             ? RiskLevel.SAFE
             : RiskLevel.UNKNOWN,
+      dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
+      isVerticallyIntegrated: false, // Default value
+      recencyScore: 0.5, // Default value
     }));
 
     // Get safer alternatives if any cancelled products are found
@@ -83,10 +86,12 @@ export async function GET(request: NextRequest) {
     if (hasCancelledProducts) {
       try {
         alternatives = await getSaferAlternatives(undefined, 3);
-        // Add risk level to alternatives
         alternatives = alternatives.map((alt) => ({
           ...alt,
           riskLevel: alt.status === ProductStatus.NOTIFIED ? RiskLevel.SAFE : RiskLevel.UNKNOWN,
+          dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
+          isVerticallyIntegrated: false, // Default value
+          recencyScore: 0.5, // Default value
         }));
       } catch (error) {
         console.warn('Failed to fetch alternatives:', error);

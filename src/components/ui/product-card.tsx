@@ -3,6 +3,7 @@ import { RiskIndicator } from '@/components/ui/risk-indicator';
 import { Badge } from '@/components/ui/badge';
 import { Building2, Calendar, FileText } from 'lucide-react';
 import { Product, ProductStatus } from '@/types/product';
+import { toTitleCase } from '@/lib/utils/product';
 
 interface ProductCardProps {
   product: Product;
@@ -36,7 +37,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <CardTitle className="text-lg leading-tight font-semibold break-words">
-            {product.name}
+            {toTitleCase(product.name)}
           </CardTitle>
           <div className="flex-shrink-0">
             <RiskIndicator riskLevel={product.riskLevel} />
@@ -54,7 +55,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
           <div className="flex items-center gap-2 text-sm">
             <Building2 className="text-muted-foreground h-4 w-4" aria-hidden="true" />
             <span className="text-muted-foreground">Company:</span>
-            <span className="font-medium">{product.applicantCompany.name}</span>
+            <span className="font-medium">{toTitleCase(product.applicantCompany.name)}</span>
           </div>
         )}
 
@@ -82,7 +83,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
           <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
             <p className="text-sm text-red-800">
               <span className="font-medium">Reason for cancellation:</span>{' '}
-              {product.reasonForCancellation}
+              {toTitleCase(product.reasonForCancellation)}
             </p>
           </div>
         )}

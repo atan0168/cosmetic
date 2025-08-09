@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
 import { useProductSearch } from '@/hooks/useProductSearch';
@@ -14,14 +14,54 @@ interface SearchInterfaceProps {
 
 export function SearchInterface({ className, onProductSelect }: SearchInterfaceProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const limit = 10;
 
   // Use React Query for search functionality
-  const { data, isLoading, error } = useProductSearch(searchQuery);
+  const { data, isLoading, error } = useProductSearch(searchQuery, limit, currentOffset);
+
+  // Reset pagination when search query changes
+  useEffect(() => {
+    if (searchQuery.length >= 3) {
+      setCurrentOffset(0);
+      setAllProducts([]);
+    }
+  }, [searchQuery]);
+
+  // Accumulate products when new data arrives
+  useEffect(() => {
+    if (data?.products) {
+      if (currentOffset === 0) {
+        // New search - replace all products
+        setAllProducts(data.products);
+      } else {
+        // Loading more - append to existing products
+        setAllProducts((prev) => {
+          // Avoid duplicates by filtering out products that already exist
+          const existingIds = new Set(prev.map((p) => p.id));
+          const newProducts = data.products.filter((p) => !existingIds.has(p.id));
+          return [...prev, ...newProducts];
+        });
+      }
+      setIsLoadingMore(false);
+    }
+  }, [data, currentOffset]);
 
   // Handle search input changes
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query.trim());
   }, []);
+
+  // Handle loading more results
+  const handleLoadMore = useCallback(() => {
+    if (data?.total && allProducts.length < data.total && !isLoading && !isLoadingMore) {
+      setIsLoadingMore(true);
+      setCurrentOffset((prev) => prev + limit);
+    }
+  }, [data?.total, allProducts.length, isLoading, isLoadingMore, limit]);
 
   // Handle product selection
   const handleProductClick = useCallback(
@@ -32,6 +72,11 @@ export function SearchInterface({ className, onProductSelect }: SearchInterfaceP
     },
     [onProductSelect],
   );
+
+  // Calculate if there are more results to load
+  const hasMoreResults = useMemo(() => {
+    return data?.total ? allProducts.length < data.total : false;
+  }, [data?.total, allProducts.length]);
 
   return (
     <ErrorBoundaryWrapper>
@@ -47,11 +92,15 @@ export function SearchInterface({ className, onProductSelect }: SearchInterfaceP
 
         {/* Search Results Section */}
         <SearchResults
-          products={data?.products || []}
-          isLoading={isLoading}
+          products={allProducts}
+          isLoading={isLoading && currentOffset === 0}
+          isLoadingMore={isLoadingMore}
           error={error?.message || null}
           query={searchQuery}
           onProductClick={handleProductClick}
+          onLoadMore={handleLoadMore}
+          hasMoreResults={hasMoreResults}
+          totalResults={data?.total || 0}
           className="w-full"
         />
       </div>

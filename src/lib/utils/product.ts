@@ -86,3 +86,16 @@ export function validateSearchResults(
 ): Record<string, unknown>[] {
   return results.map(transformProductData);
 }
+
+/**
+ * Convert a string to title case
+ * @param str - The input string
+ * @returns The string in title case
+ */
+export function toTitleCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(/\s+/) // split on whitespace
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
