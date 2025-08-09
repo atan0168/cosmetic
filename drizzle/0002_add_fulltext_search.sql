@@ -1,14 +1,15 @@
 -- Full-text search setup for products table
 -- Run this SQL script in your Neon database console after running migrations
 
--- Add a search vector column for full-text search
+-- Add a search vector column for full-text search if it doesn't exist
 ALTER TABLE products ADD COLUMN IF NOT EXISTS search_vector tsvector;
 
--- Create a GIN index for fast full-text search
-CREATE INDEX IF NOT EXISTS idx_products_search ON products USING gin(search_vector);
+-- Ensure the column is of the correct type (tsvector) and populate it from existing data
+ALTER TABLE products ALTER COLUMN search_vector TYPE tsvector USING (to_tsvector('english', name || ' ' || notif_no));
 
--- Update the search vector for existing data
-UPDATE products SET search_vector = to_tsvector('english', name || ' ' || notif_no);
+-- Create a GIN index for fast full-text search
+DROP INDEX IF EXISTS idx_products_search;
+CREATE INDEX idx_products_search ON products USING gin(search_vector);
 
 -- Create a function to automatically update search_vector on insert/update
 CREATE OR REPLACE FUNCTION update_products_search_vector()
