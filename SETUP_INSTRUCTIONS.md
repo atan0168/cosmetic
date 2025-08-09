@@ -9,10 +9,11 @@
    - Update the `DATABASE_URL` in `.env.local` with your actual connection string
 
 2. **Run the complete setup**
+
    ```bash
    npm run db:setup
    ```
-   
+
    This single command will:
    - Apply all database migrations
    - Set up full-text search indexes and triggers
@@ -23,11 +24,13 @@
 If you prefer to run each step manually:
 
 1. **Apply Database Migrations**
+
    ```bash
    npm run db:migrate
    ```
 
 2. **Load CSV Data**
+
    ```bash
    npm run db:load
    ```

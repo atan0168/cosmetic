@@ -16,9 +16,7 @@ export async function fetchPubChemData(name: string): Promise<PubChemData> {
       `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(name)}/cids/JSON`,
     );
     if (!cidRes.ok) {
-      console.warn(
-        `PubChem CID lookup failed for "${name}" with status: ${cidRes.status}`,
-      );
+      console.warn(`PubChem CID lookup failed for "${name}" with status: ${cidRes.status}`);
       return {};
     }
     const cidData = await cidRes.json();
@@ -33,8 +31,7 @@ export async function fetchPubChemData(name: string): Promise<PubChemData> {
       `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/synonyms/JSON`,
     );
     const synData = await synRes.json();
-    const allSyns: string[] =
-      synData.InformationList.Information[0].Synonym || [];
+    const allSyns: string[] = synData.InformationList.Information[0].Synonym || [];
     const cas_number = allSyns.find((s) => /^\d{2,7}-\d{2}-\d$/.test(s)); // simple CAS regex
 
     // 3) Fetch a description
@@ -42,8 +39,7 @@ export async function fetchPubChemData(name: string): Promise<PubChemData> {
       `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/${cid}/description/JSON`,
     );
     const descData = await descRes.json();
-    const scientific_description =
-      descData.InformationList.Information[0].Description;
+    const scientific_description = descData.InformationList.Information[0].Description;
 
     console.log(`-> Successfully fetched data for "${name}" (CID: ${cid})`);
     return { cas_number, pubchem_cid: cid, scientific_description };
@@ -54,14 +50,11 @@ export async function fetchPubChemData(name: string): Promise<PubChemData> {
 }
 
 // A toy risk‐level rule: “High” if banned anywhere in your regulations table
-export function inferRiskLevel(
-  totalAppearances: number,
-  isBanned: boolean,
-): string {
-  if (isBanned) return "Banned";
-  if (totalAppearances >= 10) return "High";
-  if (totalAppearances >= 3) return "Moderate";
-  return "Low";
+export function inferRiskLevel(totalAppearances: number, isBanned: boolean): string {
+  if (isBanned) return 'Banned';
+  if (totalAppearances >= 10) return 'High';
+  if (totalAppearances >= 3) return 'Moderate';
+  return 'Low';
 }
 
 export const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));

@@ -53,7 +53,7 @@ export function formatCancellationReason(reason?: string): string {
   if (!reason) {
     return 'Reason not specified';
   }
-  
+
   // Basic formatting - capitalize first letter and ensure proper punctuation
   const formatted = reason.charAt(0).toUpperCase() + reason.slice(1);
   return formatted.endsWith('.') ? formatted : formatted + '.';
@@ -69,7 +69,9 @@ export function sanitizeSearchQuery(query: string): string {
 /**
  * Transform raw product data to include computed risk level
  */
-export function transformProductData(rawProduct: Record<string, unknown> & { status: ProductStatus }): Record<string, unknown> {
+export function transformProductData(
+  rawProduct: Record<string, unknown> & { status: ProductStatus },
+): Record<string, unknown> {
   return {
     ...rawProduct,
     riskLevel: calculateRiskLevel(rawProduct.status),
@@ -79,6 +81,8 @@ export function transformProductData(rawProduct: Record<string, unknown> & { sta
 /**
  * Validate and transform search results
  */
-export function validateSearchResults(results: (Record<string, unknown> & { status: ProductStatus })[]): Record<string, unknown>[] {
+export function validateSearchResults(
+  results: (Record<string, unknown> & { status: ProductStatus })[],
+): Record<string, unknown>[] {
   return results.map(transformProductData);
 }

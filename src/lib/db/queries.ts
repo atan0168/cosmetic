@@ -1,8 +1,8 @@
-import { db } from "./index";
-import { products, companies } from "./schema";
-import { eq, ilike, or, sql, asc, and } from "drizzle-orm";
-import { ProductSummary, ProductStatus } from "@/types/product";
-import { ProductFullTextRow, CountRow } from "@/types/db";
+import { db } from './index';
+import { products, companies } from './schema';
+import { eq, ilike, or, sql, asc, and } from 'drizzle-orm';
+import { ProductSummary, ProductStatus } from '@/types/product';
+import { ProductFullTextRow, CountRow } from '@/types/db';
 
 /**
  * Search products using full-text search when available, fallback to ILIKE
@@ -10,7 +10,7 @@ import { ProductFullTextRow, CountRow } from "@/types/db";
 export async function searchProducts(
   query: string,
   limit: number = 10,
-  offset: number = 0
+  offset: number = 0,
 ): Promise<{ products: ProductSummary[]; total: number }> {
   try {
     // First try full-text search if the search_vector column exists
@@ -73,10 +73,7 @@ export async function searchProducts(
       return { products: searchResults, total };
     }
   } catch (error) {
-    console.warn(
-      "Full-text search failed, falling back to ILIKE search:",
-      error
-    );
+    console.warn('Full-text search failed, falling back to ILIKE search:', error);
   }
 
   // Fallback to ILIKE search
@@ -97,12 +94,7 @@ export async function searchProducts(
     })
     .from(products)
     .leftJoin(companies, eq(products.applicantCompanyId, companies.id))
-    .where(
-      or(
-        ilike(products.name, searchPattern),
-        ilike(products.notifNo, searchPattern)
-      )
-    )
+    .where(or(ilike(products.name, searchPattern), ilike(products.notifNo, searchPattern)))
     .orderBy(asc(products.name))
     .limit(limit)
     .offset(offset);
@@ -111,12 +103,7 @@ export async function searchProducts(
   const countResult = await db
     .select({ count: sql<number>`count(*)` })
     .from(products)
-    .where(
-      or(
-        ilike(products.name, searchPattern),
-        ilike(products.notifNo, searchPattern)
-      )
-    );
+    .where(or(ilike(products.name, searchPattern), ilike(products.notifNo, searchPattern)));
 
   const total = Number(countResult[0]?.count ?? 0);
 
@@ -178,11 +165,11 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
  */
 export async function getSaferAlternatives(
   excludeId?: number,
-  limit: number = 3
+  limit: number = 3,
 ): Promise<ProductSummary[]> {
   const baseWhere = excludeId
-    ? and(eq(products.status, "Notified"), sql`${products.id} != ${excludeId}`)
-    : eq(products.status, "Notified");
+    ? and(eq(products.status, 'Notified'), sql`${products.id} != ${excludeId}`)
+    : eq(products.status, 'Notified');
 
   const results = await db
     .select({
@@ -227,9 +214,9 @@ export async function getAllCompanies() {
  * Get products by status
  */
 export async function getProductsByStatus(
-  status: "Notified" | "Cancelled",
+  status: 'Notified' | 'Cancelled',
   limit: number = 10,
-  offset: number = 0
+  offset: number = 0,
 ): Promise<{ products: ProductSummary[]; total: number }> {
   const results = await db
     .select({

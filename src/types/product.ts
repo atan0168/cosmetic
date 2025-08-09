@@ -1,12 +1,12 @@
 export enum ProductStatus {
   NOTIFIED = 'Notified',
-  CANCELLED = 'Cancelled'
+  CANCELLED = 'Cancelled',
 }
 
 export enum RiskLevel {
   SAFE = 'safe',
   UNSAFE = 'unsafe',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
 }
 
 export interface Company {
@@ -78,9 +78,9 @@ export interface BannedIngredientMetrics {
 }
 
 export interface SearchQuery {
-  query: string
-  limit?: number
-  offset?: number
+  query: string;
+  limit?: number;
+  offset?: number;
 }
 
 export interface ProductSummary {

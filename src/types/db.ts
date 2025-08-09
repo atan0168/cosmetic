@@ -16,5 +16,3 @@ export interface ProductFullTextRow {
 export interface CountRow {
   total: string | number;
 }
-
-

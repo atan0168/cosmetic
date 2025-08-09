@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchProducts, getSaferAlternatives } from '@/lib/db/queries';
 import { SearchQuerySchema, validationUtils } from '@/lib/validations';
-import { createErrorResponse, createSuccessResponse, getClientIP, checkRateLimit } from '@/lib/utils/api-helpers';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  getClientIP,
+  checkRateLimit,
+} from '@/lib/utils/api-helpers';
 import { ProductStatus, RiskLevel } from '@/types/product';
 
 /**
@@ -13,10 +18,13 @@ export async function GET(request: NextRequest) {
     // Rate limiting check
     const clientIP = getClientIP(request);
     if (!checkRateLimit(clientIP, 100, 60000)) {
-      return createErrorResponse({
-        error: 'Too many requests',
-        message: 'Rate limit exceeded. Please try again later.'
-      }, 429);
+      return createErrorResponse(
+        {
+          error: 'Too many requests',
+          message: 'Rate limit exceeded. Please try again later.',
+        },
+        429,
+      );
     }
 
     // Extract and validate search parameters
@@ -27,22 +35,25 @@ export async function GET(request: NextRequest) {
 
     // Validate required query parameter
     if (!rawQuery) {
-      return createErrorResponse({
-        error: 'Missing query parameter',
-        message: 'Query parameter is required'
-      }, 400);
+      return createErrorResponse(
+        {
+          error: 'Missing query parameter',
+          message: 'Query parameter is required',
+        },
+        400,
+      );
     }
 
     // Prepare validation data
     const validationData = {
       query: rawQuery,
       limit: rawLimit ? parseInt(rawLimit, 10) : 10,
-      offset: rawOffset ? parseInt(rawOffset, 10) : 0
+      offset: rawOffset ? parseInt(rawOffset, 10) : 0,
     };
 
     // Validate search parameters using Zod schema
     const validationResult = validationUtils.safeValidate(SearchQuerySchema, validationData);
-    
+
     if (!validationResult.success) {
       return createErrorResponse(validationResult.error, 400);
     }
@@ -53,24 +64,29 @@ export async function GET(request: NextRequest) {
     const searchResult = await searchProducts(query, limit, offset);
 
     // Transform products to include risk level based on status
-    const productsWithRiskLevel = searchResult.products.map(product => ({
+    const productsWithRiskLevel = searchResult.products.map((product) => ({
       ...product,
-      riskLevel: product.status === ProductStatus.CANCELLED ? RiskLevel.UNSAFE : 
-                 product.status === ProductStatus.NOTIFIED ? RiskLevel.SAFE : 
-                 RiskLevel.UNKNOWN
+      riskLevel:
+        product.status === ProductStatus.CANCELLED
+          ? RiskLevel.UNSAFE
+          : product.status === ProductStatus.NOTIFIED
+            ? RiskLevel.SAFE
+            : RiskLevel.UNKNOWN,
     }));
 
     // Get safer alternatives if any cancelled products are found
     let alternatives = undefined;
-    const hasCancelledProducts = productsWithRiskLevel.some(p => p.status === ProductStatus.CANCELLED);
-    
+    const hasCancelledProducts = productsWithRiskLevel.some(
+      (p) => p.status === ProductStatus.CANCELLED,
+    );
+
     if (hasCancelledProducts) {
       try {
         alternatives = await getSaferAlternatives(undefined, 3);
         // Add risk level to alternatives
-        alternatives = alternatives.map(alt => ({
+        alternatives = alternatives.map((alt) => ({
           ...alt,
-          riskLevel: alt.status === ProductStatus.NOTIFIED ? RiskLevel.SAFE : RiskLevel.UNKNOWN
+          riskLevel: alt.status === ProductStatus.NOTIFIED ? RiskLevel.SAFE : RiskLevel.UNKNOWN,
         }));
       } catch (error) {
         console.warn('Failed to fetch alternatives:', error);
@@ -82,33 +98,41 @@ export async function GET(request: NextRequest) {
     return createSuccessResponse({
       products: productsWithRiskLevel,
       total: searchResult.total,
-      alternatives
+      alternatives,
     });
-
   } catch (error) {
     console.error('Search API error:', error);
-    
+
     // Handle specific database connection errors
     if (error instanceof Error) {
       if (error.message.includes('connection') || error.message.includes('timeout')) {
-        return createErrorResponse({
-          error: 'Search unavailable. Please try again later.',
-          message: 'Database connection error'
-        }, 503);
+        return createErrorResponse(
+          {
+            error: 'Search unavailable. Please try again later.',
+            message: 'Database connection error',
+          },
+          503,
+        );
       }
-      
+
       if (error.message.includes('syntax') || error.message.includes('query')) {
-        return createErrorResponse({
-          error: 'Invalid search query',
-          message: 'Please check your search terms and try again'
-        }, 400);
+        return createErrorResponse(
+          {
+            error: 'Invalid search query',
+            message: 'Please check your search terms and try again',
+          },
+          400,
+        );
       }
     }
 
     // Generic error response
-    return createErrorResponse({
-      error: 'An unexpected error occurred',
-      message: 'Please try again later'
-    }, 500);
+    return createErrorResponse(
+      {
+        error: 'An unexpected error occurred',
+        message: 'Please try again later',
+      },
+      500,
+    );
   }
 }

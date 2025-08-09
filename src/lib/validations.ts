@@ -1,45 +1,51 @@
-import { z } from "zod";
+import { z } from 'zod';
 import { sanitizeInput, customRefinements } from '@/lib/utils/validation';
 
 // Company validation schema
 export const CompanySchema = z.object({
   id: z.number().int().positive(),
-  name: z.string()
-    .min(1, "Company name is required")
-    .max(255, "Company name too long")
+  name: z
+    .string()
+    .min(1, 'Company name is required')
+    .max(255, 'Company name too long')
     .transform(sanitizeInput.string)
-    .refine(customRefinements.companyName, "Invalid company name format"),
+    .refine(customRefinements.companyName, 'Invalid company name format'),
 });
 
 // Product validation schema with enhanced validation
 export const ProductSchema = z.object({
   id: z.number().int().positive(),
-  notifNo: z.string()
-    .min(1, "Notification number is required")
-    .max(255, "Notification number too long")
+  notifNo: z
+    .string()
+    .min(1, 'Notification number is required')
+    .max(255, 'Notification number too long')
     .transform(sanitizeInput.notificationNumber)
-    .refine(customRefinements.notificationNumber, "Invalid notification number format"),
-  name: z.string()
-    .min(1, "Product name is required")
-    .max(255, "Product name too long")
+    .refine(customRefinements.notificationNumber, 'Invalid notification number format'),
+  name: z
+    .string()
+    .min(1, 'Product name is required')
+    .max(255, 'Product name too long')
     .transform(sanitizeInput.string)
-    .refine(customRefinements.productName, "Invalid product name format"),
-  category: z.string()
-    .min(1, "Category is required")
-    .max(255, "Category name too long")
+    .refine(customRefinements.productName, 'Invalid product name format'),
+  category: z
+    .string()
+    .min(1, 'Category is required')
+    .max(255, 'Category name too long')
     .transform(sanitizeInput.string),
-  status: z.enum(["Notified", "Cancelled"] as const, {
+  status: z.enum(['Notified', 'Cancelled'] as const, {
     message: "Status must be either 'Notified' or 'Cancelled'",
   }),
-  riskLevel: z.enum(["safe", "unsafe", "unknown"] as const, {
+  riskLevel: z.enum(['safe', 'unsafe', 'unknown'] as const, {
     message: "Risk level must be 'safe', 'unsafe', or 'unknown'",
   }),
-  reasonForCancellation: z.string()
+  reasonForCancellation: z
+    .string()
     .optional()
-    .transform((val) => val ? sanitizeInput.string(val) : val),
-  dateNotified: z.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
-    .refine(customRefinements.pastDate, "Date cannot be in the future"),
+    .transform((val) => (val ? sanitizeInput.string(val) : val)),
+  dateNotified: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+    .refine(customRefinements.pastDate, 'Date cannot be in the future'),
   applicantCompany: CompanySchema.optional(),
   manufacturerCompany: CompanySchema.optional(),
   isVerticallyIntegrated: z.boolean(),
@@ -78,24 +84,25 @@ export const RecommendedAlternativeSchema = z.object({
 // Banned ingredient validation schema with enhanced validation
 export const BannedIngredientSchema = z.object({
   id: z.number().int().positive(),
-  name: z.string()
-    .min(1, "Ingredient name is required")
-    .max(255, "Ingredient name too long")
+  name: z
+    .string()
+    .min(1, 'Ingredient name is required')
+    .max(255, 'Ingredient name too long')
     .transform(sanitizeInput.string),
-  alternativeNames: z.string()
+  alternativeNames: z
+    .string()
     .optional()
-    .transform((val) => val ? sanitizeInput.string(val) : val),
-  healthRiskDescription: z.string()
-    .min(1, "Health risk description is required")
+    .transform((val) => (val ? sanitizeInput.string(val) : val)),
+  healthRiskDescription: z
+    .string()
+    .min(1, 'Health risk description is required')
     .transform(sanitizeInput.string),
-  regulatoryStatus: z.string()
-    .max(100, "Regulatory status too long")
+  regulatoryStatus: z
+    .string()
+    .max(100, 'Regulatory status too long')
     .optional()
-    .transform((val) => val ? sanitizeInput.string(val) : val),
-  sourceUrl: z.string()
-    .url("Invalid URL format")
-    .max(500, "URL too long")
-    .optional(),
+    .transform((val) => (val ? sanitizeInput.string(val) : val)),
+  sourceUrl: z.string().url('Invalid URL format').max(500, 'URL too long').optional(),
 });
 
 // Cancelled product ingredient validation schema
@@ -115,11 +122,12 @@ export const BannedIngredientMetricsSchema = z.object({
 
 // Enhanced search query validation schema with sanitization
 export const SearchQuerySchema = z.object({
-  query: z.string()
-    .min(3, "Please enter at least 3 characters")
-    .max(100, "Search query too long")
+  query: z
+    .string()
+    .min(3, 'Please enter at least 3 characters')
+    .max(100, 'Search query too long')
     .transform(sanitizeInput.searchQuery)
-    .refine(customRefinements.meaningfulSearch, "Search query must contain meaningful content"),
+    .refine(customRefinements.meaningfulSearch, 'Search query must contain meaningful content'),
   limit: z.number().int().min(1).max(50).default(10),
   offset: z.number().int().min(0).default(0),
 });

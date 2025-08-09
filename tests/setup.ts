@@ -44,17 +44,28 @@ beforeAll(async () => {
 
   // Seed minimal data if empty
   const productCount = await db.execute(sql`SELECT COUNT(*) as count FROM products`);
-  const count = Number((productCount as any)[0]?.count ?? (productCount as any).rows?.[0]?.count ?? 0);
+  const count = Number(
+    (productCount as any)[0]?.count ?? (productCount as any).rows?.[0]?.count ?? 0,
+  );
 
   if (count === 0) {
     // Seed companies
-    await db.execute(sql`INSERT INTO companies (name) VALUES ('Acme Co') ON CONFLICT (name) DO NOTHING`);
-    await db.execute(sql`INSERT INTO companies (name) VALUES ('Bravo Labs') ON CONFLICT (name) DO NOTHING`);
+    await db.execute(
+      sql`INSERT INTO companies (name) VALUES ('Acme Co') ON CONFLICT (name) DO NOTHING`,
+    );
+    await db.execute(
+      sql`INSERT INTO companies (name) VALUES ('Bravo Labs') ON CONFLICT (name) DO NOTHING`,
+    );
 
     // Get company ids
     const companiesRes = await db.execute(sql`SELECT id, name FROM companies`);
-    const acme = (companiesRes as any).rows?.find((r: any) => r.name === 'Acme Co') ?? (companiesRes as any)[0];
-    const bravo = (companiesRes as any).rows?.find((r: any) => r.name === 'Bravo Labs') ?? (companiesRes as any)[1] ?? acme;
+    const acme =
+      (companiesRes as any).rows?.find((r: any) => r.name === 'Acme Co') ??
+      (companiesRes as any)[0];
+    const bravo =
+      (companiesRes as any).rows?.find((r: any) => r.name === 'Bravo Labs') ??
+      (companiesRes as any)[1] ??
+      acme;
     const acmeId = acme.id;
     const bravoId = bravo.id;
 

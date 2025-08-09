@@ -1,9 +1,11 @@
 # Project Structure
 
 ## Current Status
+
 This workspace contains only the basic Kiro configuration structure.
 
 ## Current Structure
+
 ```
 .
 ├── .kiro/
@@ -14,9 +16,11 @@ This workspace contains only the basic Kiro configuration structure.
 ```
 
 ## Structure Guidelines
+
 When organizing the project structure:
 
 ### Common Patterns
+
 - Keep source code in a dedicated directory (src/, lib/, app/)
 - Separate configuration files at the root level
 - Group related functionality together
@@ -24,6 +28,7 @@ When organizing the project structure:
 - Maintain consistent naming conventions
 
 ### Recommended Organization
+
 ```
 project-root/
 ├── src/                # Source code
@@ -51,6 +56,7 @@ project-root/
 ```
 
 ### File Naming Conventions
+
 - Use kebab-case for file names (my-component.js)
 - Use PascalCase for component files (MyComponent.tsx)
 - Use lowercase for directories
@@ -61,14 +67,17 @@ project-root/
 - Be descriptive but concise
 
 ### Component Organization
+
 - **shadcn/ui components**: `src/components/ui/` (managed by CLI)
 - **Custom components**: `src/components/` (your application components)
 - **Page components**: `src/pages/` or `src/app/` (depending on framework)
 - **Layout components**: `src/components/layout/`
 
 ## Update Instructions
+
 Update this document as the actual project structure develops to reflect the chosen organization patterns.### Data
 base Structure Organization
+
 - **Schema definitions**: `src/lib/db/schema.ts` (all table definitions)
 - **Database connection**: `src/lib/db/index.ts` (Drizzle client setup)
 - **Query functions**: `src/lib/db/queries.ts` (reusable database queries)
@@ -76,6 +85,7 @@ base Structure Organization
 - **Types**: Export types from schema for use throughout the application
 
 ### Database Development Workflow
+
 1. Define tables in `src/lib/db/schema.ts`
 2. Generate migration: `npx drizzle-kit generate`
 3. Review generated SQL in `drizzle/` directory

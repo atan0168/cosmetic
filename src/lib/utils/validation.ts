@@ -35,8 +35,11 @@ export const sanitizeInput = {
    * Sanitize notification number format
    */
   notificationNumber: (input: string): string => {
-    return input.trim().toUpperCase().replace(/[^A-Z0-9\-\/]/g, '');
-  }
+    return input
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9\-\/]/g, '');
+  },
 };
 
 /**
@@ -49,24 +52,27 @@ export const validationUtils = {
   formatZodError: (error: z.ZodError): ErrorResponse => {
     // Access errors through the issues property
     const errors = error.issues || [];
-    
+
     if (errors.length === 0) {
       return {
         error: 'Validation failed',
-        message: 'Unknown validation error'
+        message: 'Unknown validation error',
       };
     }
-    
+
     const firstError = errors[0];
     return {
       error: firstError.message,
       message: `Validation failed for field: ${firstError.path.join('.')}`,
       code: firstError.code,
-      details: errors.reduce((acc, err) => {
-        const path = err.path.join('.');
-        acc[path] = err.message;
-        return acc;
-      }, {} as Record<string, string>)
+      details: errors.reduce(
+        (acc, err) => {
+          const path = err.path.join('.');
+          acc[path] = err.message;
+          return acc;
+        },
+        {} as Record<string, string>,
+      ),
     };
   },
 
@@ -75,7 +81,7 @@ export const validationUtils = {
    */
   safeValidate: <T>(
     schema: z.ZodSchema<T>,
-    data: unknown
+    data: unknown,
   ): { success: true; data: T } | { success: false; error: ErrorResponse } => {
     try {
       const result = schema.parse(data);
@@ -88,8 +94,8 @@ export const validationUtils = {
         success: false,
         error: {
           error: 'Validation failed',
-          message: error instanceof Error ? error.message : 'Unknown validation error'
-        }
+          message: error instanceof Error ? error.message : 'Unknown validation error',
+        },
       };
     }
   },
@@ -105,7 +111,7 @@ export const validationUtils = {
     return {
       query: query ? sanitizeInput.searchQuery(query) : '',
       limit: limit ? Math.min(Math.max(parseInt(limit, 10) || 10, 1), 50) : 10,
-      offset: offset ? Math.max(parseInt(offset, 10) || 0, 0) : 0
+      offset: offset ? Math.max(parseInt(offset, 10) || 0, 0) : 0,
     };
   },
 
@@ -115,17 +121,17 @@ export const validationUtils = {
   createErrorResponse: (
     message: string,
     code?: string,
-    details?: Record<string, any>
+    details?: Record<string, unknown>,
   ): ErrorResponse => ({
     error: message,
     code,
-    details
+    details,
   }),
 
   /**
    * Validate required fields are present
    */
-  validateRequired: (data: Record<string, any>, fields: string[]): string[] => {
+  validateRequired: (data: Record<string, unknown>, fields: string[]): string[] => {
     const missing: string[] = [];
     for (const field of fields) {
       if (!data[field] || (typeof data[field] === 'string' && !data[field].trim())) {
@@ -133,7 +139,7 @@ export const validationUtils = {
       }
     }
     return missing;
-  }
+  },
 };
 
 /**
@@ -144,7 +150,7 @@ export const validationPatterns = {
   productName: /^[a-zA-Z0-9\s\-\.\,\(\)]+$/,
   companyName: /^[a-zA-Z0-9\s\-\.\,\(\)&]+$/,
   dateFormat: /^\d{4}-\d{2}-\d{2}$/,
-  url: /^https?:\/\/.+/
+  url: /^https?:\/\/.+/,
 };
 
 /**
@@ -155,17 +161,17 @@ export const customRefinements = {
    * Validate notification number format - allow more flexible format
    */
   notificationNumber: (val: string) => val.length > 0 && val.length <= 255,
-  
+
   /**
    * Validate product name contains only allowed characters - more permissive
    */
   productName: (val: string) => val.length > 0 && val.length <= 255,
-  
+
   /**
    * Validate company name format - more permissive
    */
   companyName: (val: string) => val.length > 0 && val.length <= 255,
-  
+
   /**
    * Validate date is not in the future
    */
@@ -177,12 +183,12 @@ export const customRefinements = {
       return false;
     }
   },
-  
+
   /**
    * Validate search query has meaningful content
    */
   meaningfulSearch: (val: string) => {
     const cleaned = val.trim();
     return cleaned.length >= 3 && !/^\s*$/.test(cleaned);
-  }
+  },
 };
