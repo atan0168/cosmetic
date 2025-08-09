@@ -1,0 +1,142 @@
+'use client';
+
+import { Product } from '@/types/product';
+import { ProductCard } from '@/components/ui/product-card';
+import { LoadingSpinner, ProductCardSkeleton } from '@/components/ui/loading-spinner';
+import { ErrorMessage } from '@/components/ui/error-message';
+import { AlertCircle, Search } from 'lucide-react';
+
+interface SearchResultsProps {
+  products: Product[];
+  isLoading: boolean;
+  error: string | null;
+  query: string;
+  onProductClick?: (product: Product) => void;
+  className?: string;
+}
+
+export function SearchResults({
+  products,
+  isLoading,
+  error,
+  query,
+  onProductClick,
+  className,
+}: SearchResultsProps) {
+  // Loading state with skeleton screens
+  if (isLoading) {
+    return (
+      <div className={className} role="status" aria-label="Loading search results">
+        <div className="mb-4 flex items-center gap-2 text-muted-foreground">
+          <LoadingSpinner size="sm" />
+          <span className="text-sm">Searching for "{query}"...</span>
+        </div>
+        <ProductCardSkeleton />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className={className}>
+        <ErrorMessage
+          title="Search Error"
+          message={error}
+          icon={AlertCircle}
+          className="mt-4"
+        />
+      </div>
+    );
+  }
+
+  // Empty state - no query entered yet
+  if (!query.trim()) {
+    return (
+      <div className={className}>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Search className="mb-4 h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
+          <h3 className="mb-2 text-lg font-semibold text-muted-foreground">
+            Search for Products
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            Enter a product name or notification number to check safety status and find information
+            about cosmetic products.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty results state - query entered but no products found
+  if (products.length === 0) {
+    return (
+      <div className={className}>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <AlertCircle className="mb-4 h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
+          <h3 className="mb-2 text-lg font-semibold text-muted-foreground">
+            No Products Found
+          </h3>
+          <p className="text-sm text-muted-foreground max-w-md">
+            No products found for "{query}". Try a different name or notification number.
+          </p>
+          <div className="mt-4 text-xs text-muted-foreground">
+            <p>Search tips:</p>
+            <ul className="mt-2 space-y-1 text-left">
+              <li>• Try using fewer or different keywords</li>
+              <li>• Check the spelling of product names</li>
+              <li>• Use the full notification number if available</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Results state - display products
+  return (
+    <div className={className}>
+      {/* Results header */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold">
+            Search Results
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              ({products.length} {products.length === 1 ? 'product' : 'products'} found)
+            </span>
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Results for "{query}"
+          </p>
+        </div>
+      </div>
+
+      {/* Product list */}
+      <div className="space-y-4" role="list" aria-label="Search results">
+        {products.map((product) => (
+          <div key={product.id} role="listitem">
+            <ProductCard
+              product={product}
+              onClick={onProductClick ? () => onProductClick(product) : undefined}
+              className="transition-all duration-200 hover:shadow-sm"
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Results footer with additional info */}
+      <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="mt-0.5 h-4 w-4 text-blue-600 flex-shrink-0" aria-hidden="true" />
+          <div className="text-sm">
+            <p className="font-medium text-blue-900">Safety Information</p>
+            <p className="mt-1 text-blue-800">
+              Product safety status is based on official cosmetic notification databases. 
+              Always consult with healthcare professionals for specific safety concerns.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
