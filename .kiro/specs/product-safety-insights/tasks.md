@@ -42,7 +42,7 @@
   - Write unit tests for alternatives endpoint
   - _Requirements: 4.1, 4.2, 4.4_
 
-- [ ] 7. Implement core UI components with shadcn/ui
+- [x] 7. Implement core UI components with shadcn/ui
   - Create RiskIndicator component with color-coded safety status display
   - Build ProductCard component to display individual product information
   - Create LoadingSpinner and ErrorMessage components for user feedback

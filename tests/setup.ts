@@ -1,5 +1,10 @@
 // Test setup file for vitest
 import { vi, beforeAll, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
+
+// Make React available globally for JSX
+import React from 'react';
+global.React = React;
 
 // Set up environment variables for local Docker database
 // @ts-expect-error - This is a workaround for Vitest not recognizing process.env in this context

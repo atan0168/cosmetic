@@ -1,7 +1,9 @@
 import { NextRequest } from 'next/server';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GET } from '../route';
-import { RiskLevel } from '@/types/product';
+import { RiskLevel, ProductSummary } from '@/types/product';
+
+type Alternative = ProductSummary & { riskLevel: RiskLevel };
 
 // Mock only the API helpers, not the database
 vi.mock('@/lib/utils/api-helpers', async () => {
@@ -67,9 +69,8 @@ describe('/api/products/alternatives', () => {
 
       // Verify that the excluded product is not in the results
       if (data.data.alternatives.length > 0) {
-        const excludedProductFound = data.data.alternatives.some(
-          (alt: any) => alt.id === 123,
-        );
+        const alternatives = data.data.alternatives as Alternative[];
+        const excludedProductFound = alternatives.some((alt) => alt.id === 123);
         expect(excludedProductFound).toBe(false);
       }
     });
@@ -130,9 +131,9 @@ describe('/api/products/alternatives', () => {
       // If both requests return alternatives, they might be in different order
       // This test is probabilistic and might occasionally fail if the same order is returned
       if (data1.data.alternatives.length > 1 && data2.data.alternatives.length > 1) {
-        const ids1 = data1.data.alternatives.map((alt: any) => alt.id);
-        const ids2 = data2.data.alternatives.map((alt: any) => alt.id);
-        
+        const ids1 = (data1.data.alternatives as Alternative[]).map((alt) => alt.id);
+        const ids2 = (data2.data.alternatives as Alternative[]).map((alt) => alt.id);
+
         // At least check that we're getting valid results
         expect(ids1.length).toBeGreaterThan(0);
         expect(ids2.length).toBeGreaterThan(0);
@@ -255,7 +256,7 @@ describe('/api/products/alternatives', () => {
 
       if (data.data.alternatives.length > 0) {
         const alternative = data.data.alternatives[0];
-        
+
         // Required fields
         expect(alternative).toHaveProperty('id');
         expect(alternative).toHaveProperty('name');
@@ -263,11 +264,11 @@ describe('/api/products/alternatives', () => {
         expect(alternative).toHaveProperty('category');
         expect(alternative).toHaveProperty('status');
         expect(alternative).toHaveProperty('riskLevel');
-        
+
         // Optional fields
         expect(alternative).toHaveProperty('reasonForCancellation');
         expect(alternative).toHaveProperty('applicantCompany');
-        
+
         // Verify data types
         expect(typeof alternative.id).toBe('number');
         expect(typeof alternative.name).toBe('string');
@@ -286,7 +287,7 @@ describe('/api/products/alternatives', () => {
       expect(response.status).toBe(200);
 
       // All alternatives should be marked as safe since they're approved products
-      data.data.alternatives.forEach((alternative: any) => {
+      (data.data.alternatives as Alternative[]).forEach((alternative) => {
         expect(alternative.riskLevel).toBe(RiskLevel.SAFE);
         expect(alternative.status).toBe('Notified');
       });
@@ -302,12 +303,11 @@ describe('/api/products/alternatives', () => {
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
       expect(data.data.alternatives.length).toBeLessThanOrEqual(2);
-      
+
       // Verify excluded product is not in results
       if (data.data.alternatives.length > 0) {
-        const excludedProductFound = data.data.alternatives.some(
-          (alt: any) => alt.id === 1,
-        );
+        const alternatives = data.data.alternatives as Alternative[];
+        const excludedProductFound = alternatives.some((alt) => alt.id === 1);
         expect(excludedProductFound).toBe(false);
       }
     });
