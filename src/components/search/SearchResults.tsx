@@ -113,7 +113,7 @@ export function SearchResults({
         aria-labelledby="search-results-heading"
         aria-label={`${products.length} search results for ${query}`}
       >
-        {products.map((product, index) => (
+        {products.map((product) => (
           <div key={product.id} role="listitem">
             <ProductCard
               product={product}

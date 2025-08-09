@@ -8,10 +8,7 @@ import { Product } from '@/types/product';
 import { ErrorBoundaryWrapper } from '@/components/ui/error-boundary';
 
 export default function Home() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-
   const handleProductSelect = (product: Product) => {
-    setSelectedProduct(product);
     // Could navigate to product detail page or show modal
     console.log('Selected product:', product);
   };
