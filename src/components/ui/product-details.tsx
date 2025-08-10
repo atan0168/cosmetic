@@ -94,7 +94,7 @@ export function ProductDetails({
           {product.category && (
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Category:</span>
-              <span className="font-medium">{product.category}</span>
+              <span className="font-medium">{toTitleCase(product.category)}</span>
             </div>
           )}
         </div>

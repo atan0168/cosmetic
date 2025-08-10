@@ -6,17 +6,21 @@ import { SearchResults } from './SearchResults';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import { Product } from '@/types/product';
 import { ErrorBoundaryWrapper } from '@/components/ui/error-boundary';
+import { ProductDetailsModal } from '@/components/ui';
 
 interface SearchInterfaceProps {
   className?: string;
   onProductSelect?: (product: Product) => void;
+  showModal?: boolean;
 }
 
-export function SearchInterface({ className, onProductSelect }: SearchInterfaceProps) {
+export function SearchInterface({ className, onProductSelect, showModal = true }: SearchInterfaceProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentOffset, setCurrentOffset] = useState(0);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const limit = 10;
 
@@ -66,11 +70,15 @@ export function SearchInterface({ className, onProductSelect }: SearchInterfaceP
   // Handle product selection
   const handleProductClick = useCallback(
     (product: Product) => {
+      if (showModal) {
+        setSelectedProduct(product);
+        setIsModalOpen(true);
+      }
       if (onProductSelect) {
         onProductSelect(product);
       }
     },
-    [onProductSelect],
+    [onProductSelect, showModal],
   );
 
   // Calculate if there are more results to load
@@ -82,7 +90,7 @@ export function SearchInterface({ className, onProductSelect }: SearchInterfaceP
     <ErrorBoundaryWrapper>
       <div className={className}>
         {/* Search Input Section */}
-        <div className="mb-8">
+        <div className="mb-8 flex justify-center">
           <SearchInput
             onSearch={handleSearch}
             placeholder="Search by product name or notification number..."
@@ -104,6 +112,15 @@ export function SearchInterface({ className, onProductSelect }: SearchInterfaceP
           className="w-full"
         />
       </div>
+
+      {/* Product Details Modal */}
+      {showModal && (
+        <ProductDetailsModal
+          product={selectedProduct}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+        />
+      )}
     </ErrorBoundaryWrapper>
   );
 }

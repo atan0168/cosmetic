@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { SearchInterface } from '@/components/search';
 import { Product } from '@/types/product';
 import { ErrorBoundaryWrapper } from '@/components/ui/error-boundary';
+import Image from 'next/image';
 
 export default function Home() {
   const handleProductSelect = (product: Product) => {
@@ -57,21 +57,13 @@ export default function Home() {
             </h2>
             <div className="grid gap-4 px-2 sm:gap-6 sm:px-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:px-0">
               <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400">
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400">
+                  <Image 
+                    src="/safety.svg" 
+                    alt="Safety illustration" 
+                    width={86} 
+                    height={86}
+                  />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Safety Status</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -81,21 +73,13 @@ export default function Home() {
               </div>
 
               <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                  <Image 
+                    src="/information.svg" 
+                    alt="Information illustration" 
+                    width={96} 
+                    height={96}
+                  />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Detailed Information</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -105,21 +89,13 @@ export default function Home() {
               </div>
 
               <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6 md:col-span-2 lg:col-span-1">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
+                  <Image 
+                    src="/love.svg" 
+                    alt="Love illustration" 
+                    width={96} 
+                    height={96}
+                  />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Safer Alternatives</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">

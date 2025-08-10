@@ -5,11 +5,25 @@ export { Input } from './input';
 export { Badge } from './badge';
 export { Alert, AlertDescription, AlertTitle } from './alert';
 export { Skeleton } from './skeleton';
+export { ScrollArea, ScrollBar } from './scroll-area';
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from './dialog';
 
 // Custom Product Safety Components
 export { RiskIndicator } from './risk-indicator';
 export { ProductCard } from './product-card';
 export { ProductDetails } from './product-details';
+export { ProductDetailsModal } from './product-details-modal';
 export { AlternativesSection } from './alternatives-section';
 export { LoadingSpinner, ProductCardSkeleton } from './loading-spinner';
 export {

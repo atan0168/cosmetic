@@ -5,7 +5,8 @@ import { ProductCard } from '@/components/ui/product-card';
 import { LoadingSpinner, ProductCardSkeleton } from '@/components/ui/loading-spinner';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Search, ChevronDown } from 'lucide-react';
+import { AlertCircle, ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 
 interface SearchResultsProps {
   products: Product[];
@@ -58,10 +59,12 @@ export function SearchResults({
   if (!query.trim()) {
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center px-4 py-8 text-center sm:py-12">
-          <Search
-            className="text-muted-foreground/50 mb-4 h-10 w-10 sm:h-12 sm:w-12"
-            aria-hidden="true"
+        <div className="flex flex-col items-center justify-center px-4 pb-8 pt-4 text-center sm:py-12">
+          <Image
+            src="/search.svg"
+            alt="Search icon"
+            width={140}
+            height={140}
           />
           <h3 className="text-muted-foreground mb-2 text-base font-semibold sm:text-lg">
             Search for Products
