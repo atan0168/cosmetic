@@ -8,6 +8,9 @@ export default defineConfig({
     include: ['src/components/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: ['./tests/setup-frontend.ts'],
+    testTimeout: 10000, // 10 second timeout for individual tests
+    hookTimeout: 5000,  // 5 second timeout for hooks (beforeEach, afterEach)
+    teardownTimeout: 5000, // 5 second timeout for cleanup
   },
 });

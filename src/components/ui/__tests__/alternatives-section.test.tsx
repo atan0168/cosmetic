@@ -165,7 +165,7 @@ describe('AlternativesSection', () => {
       expect(screen.getByText('Unable to load alternatives')).toBeInTheDocument();
       expect(screen.getByText('Failed to fetch alternatives')).toBeInTheDocument();
 
-      const retryButton = screen.getByRole('button', { name: /try again/i });
+      const retryButton = screen.getByRole('button', { name: /retry alternatives/i });
       expect(retryButton).toBeInTheDocument();
 
       fireEvent.click(retryButton);

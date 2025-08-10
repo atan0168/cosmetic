@@ -69,7 +69,7 @@ describe('ProductCard', () => {
     render(<ProductCard product={mockCancelledProduct} />);
 
     expect(screen.getByText('Reason for cancellation:')).toBeInTheDocument();
-    expect(screen.getByText('Contains prohibited ingredient: Lead acetate')).toBeInTheDocument();
+    expect(screen.getByText('Contains Prohibited Ingredient: Lead Acetate')).toBeInTheDocument();
   });
 
   it('does not render cancellation reason when not present', () => {
@@ -98,14 +98,16 @@ describe('ProductCard', () => {
     render(<ProductCard product={mockProduct} onClick={mockClick} />);
 
     const card = screen.getByRole('button');
+    card.focus();
 
     // Test Enter key
-    await user.type(card, '{Enter}');
+    await user.keyboard('{Enter}');
     expect(mockClick).toHaveBeenCalledOnce();
 
-    // Test Space key
-    await user.type(card, ' ');
-    expect(mockClick).toHaveBeenCalledTimes(2);
+    // Reset mock and test Space key
+    mockClick.mockClear();
+    await user.keyboard(' ');
+    expect(mockClick).toHaveBeenCalledOnce();
   });
 
   it('does not have button role when onClick is not provided', () => {

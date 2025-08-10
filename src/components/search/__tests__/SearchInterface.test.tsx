@@ -30,22 +30,35 @@ const mockProduct: Product = {
   },
 };
 
-// Test wrapper with React Query
-function TestWrapper({ children }: { children: React.ReactNode }) {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+// Test wrapper with React Query - will use queryClient from describe block
+function TestWrapper({ children, client }: { children: React.ReactNode; client: QueryClient }) {
+  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
 describe('SearchInterface', () => {
+  let queryClient: QueryClient;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          staleTime: 0,
+          gcTime: 0,
+        },
+        mutations: {
+          retry: false,
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    // Clear all queries and mutations to prevent memory leaks
+    queryClient.clear();
+    queryClient.getQueryCache().clear();
+    queryClient.getMutationCache().clear();
   });
 
   it('renders search input and empty state initially', () => {
@@ -56,7 +69,7 @@ describe('SearchInterface', () => {
     } as unknown as ReturnType<typeof useProductSearch>);
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <SearchInterface />
       </TestWrapper>,
     );
@@ -73,7 +86,7 @@ describe('SearchInterface', () => {
     } as unknown as ReturnType<typeof useProductSearch>);
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <SearchInterface />
       </TestWrapper>,
     );
@@ -103,7 +116,7 @@ describe('SearchInterface', () => {
     });
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <SearchInterface />
       </TestWrapper>,
     );
@@ -111,6 +124,9 @@ describe('SearchInterface', () => {
     // First enter a search query to trigger the search
     const searchInput = screen.getByRole('textbox');
     fireEvent.change(searchInput, { target: { value: 'lipstick' } });
+
+    // Advance fake timers to trigger debounce
+    vi.advanceTimersByTime(500);
 
     // Wait for the results to appear
     await waitFor(() => {
@@ -127,7 +143,7 @@ describe('SearchInterface', () => {
     } as unknown as ReturnType<typeof useProductSearch>);
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <SearchInterface />
       </TestWrapper>,
     );
@@ -159,7 +175,7 @@ describe('SearchInterface', () => {
     });
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <SearchInterface onProductSelect={mockOnProductSelect} />
       </TestWrapper>,
     );
@@ -167,6 +183,9 @@ describe('SearchInterface', () => {
     // First enter a search query to trigger the search
     const searchInput = screen.getByRole('textbox');
     fireEvent.change(searchInput, { target: { value: 'lipstick' } });
+
+    // Advance fake timers to trigger debounce
+    vi.advanceTimersByTime(500);
 
     // Wait for the product to appear and then click it
     await waitFor(() => {
@@ -186,13 +205,16 @@ describe('SearchInterface', () => {
     } as unknown as ReturnType<typeof useProductSearch>);
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <SearchInterface />
       </TestWrapper>,
     );
 
     const searchInput = screen.getByRole('textbox');
     fireEvent.change(searchInput, { target: { value: 'lipstick' } });
+
+    // Advance fake timers to trigger debounce
+    vi.advanceTimersByTime(500);
 
     await waitFor(() => {
       expect(mockUseProductSearch).toHaveBeenCalledWith('lipstick');
@@ -212,7 +234,7 @@ describe('SearchInterface', () => {
     };
 
     render(
-      <TestWrapper>
+      <TestWrapper client={queryClient}>
         <ErrorBoundary>
           <ErrorComponent />
         </ErrorBoundary>

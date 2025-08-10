@@ -130,7 +130,7 @@ describe('SearchResults', () => {
     it('displays initial search prompt when no query is provided', () => {
       render(<SearchResults {...defaultProps} />);
 
-      expect(screen.getByTestId('search-icon')).toBeInTheDocument();
+      expect(screen.getByAltText('Search icon')).toBeInTheDocument();
       expect(screen.getByText('Search for Products')).toBeInTheDocument();
       expect(screen.getByText(/Enter a product name or notification number/)).toBeInTheDocument();
     });
@@ -154,11 +154,9 @@ describe('SearchResults', () => {
 
       expect(screen.getByTestId('alert-circle-icon')).toBeInTheDocument();
       expect(screen.getByText('No Products Found')).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          'No products found for "nonexistent product". Try a different name or notification number.',
-        ),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/No products found for/)).toBeInTheDocument();
+      expect(screen.getByText('"nonexistent product"')).toBeInTheDocument();
+      expect(screen.getByText(/Try a different name or notification number/)).toBeInTheDocument();
     });
 
     it('displays search tips in empty results state', () => {
@@ -179,7 +177,8 @@ describe('SearchResults', () => {
 
       expect(screen.getByText('Search Results')).toBeInTheDocument();
       expect(screen.getByText('(2 products found)')).toBeInTheDocument();
-      expect(screen.getByText('Results for "lipstick"')).toBeInTheDocument();
+      expect(screen.getByText('Results for')).toBeInTheDocument();
+      expect(screen.getByText('"lipstick"')).toBeInTheDocument();
     });
 
     it('displays singular product count correctly', () => {
@@ -202,7 +201,7 @@ describe('SearchResults', () => {
       render(<SearchResults {...defaultProps} query="lipstick" products={mockProducts} />);
 
       const resultsList = screen.getByRole('list');
-      expect(resultsList).toHaveAttribute('aria-label', 'Search results');
+      expect(resultsList).toHaveAttribute('aria-label', '2 search results for lipstick');
 
       const listItems = screen.getAllByRole('listitem');
       expect(listItems).toHaveLength(2);

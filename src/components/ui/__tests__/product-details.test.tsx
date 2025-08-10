@@ -356,7 +356,7 @@ describe('ProductDetails', () => {
 
   describe('Custom Props', () => {
     it('applies custom className', () => {
-      const { container } = render(
+      const { container } = renderWithQueryClient(
         <ProductDetails product={mockApprovedProduct} className="custom-class" />,
       );
 
