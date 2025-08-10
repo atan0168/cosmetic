@@ -16,7 +16,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:load": "NODE_ENV=development tsx --env-file .env.local scripts/parse_and_load.ts",
+    "db:load": "tsx scripts/parse_and_load.ts",
+    "db:load:dev": "NODE_ENV=development tsx scripts/parse_and_load_csv.ts",
+    "db:seed": "NODE_ENV=development tsx scripts/seed.ts",
     "db:setup": "NODE_ENV=development tsx scripts/setup_database.ts",
     "db:test": "NODE_ENV=development tsx scripts/test_database.ts"
   },
@@ -57,6 +59,7 @@
     "csv-parse": "^6.1.0",
     "dotenv": "^17.2.1",
     "drizzle-kit": "^0.31.4",
+    "drizzle-seed": "^0.3.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.5",
     "eslint-config-prettier": "^10.1.8",

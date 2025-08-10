@@ -16,9 +16,6 @@
  *   - Place the CSV files in the data/ directory.
  *   - npm run tsx scripts/parse_and_load.ts
  */
-import dotenv from 'dotenv';
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
-
 import { parse } from 'csv-parse';
 import fs from 'fs';
 import path from 'path';

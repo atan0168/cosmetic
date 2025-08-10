@@ -15,10 +15,6 @@
  *   - Ensure the database is populated by running 'parse_and_load.ts' first.
  *   - npm run tsx scripts/generate_recommendations.ts
  */
-import dotenv from 'dotenv';
-import path from 'path';
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
-
 import { db } from '../src/lib/db/index';
 import {
   products,
@@ -26,72 +22,124 @@ import {
   categoryMetrics,
   recommendedAlternatives,
 } from '../src/lib/db/schema';
-import { sql, eq, inArray, and, isNotNull } from 'drizzle-orm';
+import { sql, isNotNull } from 'drizzle-orm';
 
 const TOP_N_RECOMMENDATIONS = 5;
 const BATCH_SIZE = 500;
 
 type Product = typeof products.$inferSelect;
-type CompanyMetric = typeof companyMetrics.$inferSelect;
-type CategoryMetric = typeof categoryMetrics.$inferSelect;
 
 async function updateRecencyScores() {
   console.log('--- Step 1: Calculating and updating recency scores ---');
 
-  // Get min/max notification dates per category
-  const categoryDateRanges = await db
+  // Get all products with notification dates in one query
+  const allProductsWithDates = await db
     .select({
+      id: products.id,
       category: products.category,
-      minDate: sql<string>`MIN(${products.dateNotified})`.mapWith(String),
-      maxDate: sql<string>`MAX(${products.dateNotified})`.mapWith(String),
+      dateNotified: products.dateNotified,
     })
     .from(products)
-    .where(isNotNull(products.dateNotified))
-    .groupBy(products.category);
+    .where(isNotNull(products.dateNotified));
 
-  let updatedCount = 0;
-  for (const range of categoryDateRanges) {
-    if (!range.category || !range.minDate || !range.maxDate) continue;
+  if (allProductsWithDates.length === 0) {
+    console.log('No products with notification dates found.\n');
+    return;
+  }
 
-    const minEpoch = new Date(range.minDate).getTime() / 1000;
-    const maxEpoch = new Date(range.maxDate).getTime() / 1000;
-    const delta = maxEpoch - minEpoch;
+  console.log(`📊 Processing ${allProductsWithDates.length} products with notification dates...`);
 
-    // Avoid division by zero for categories with only one date
-    if (delta === 0) {
-      await db
-        .update(products)
-        .set({ recencyScore: '0.5' }) // Assign a neutral score
-        .where(eq(products.category, range.category));
-      continue;
+  // Group by category and calculate min/max dates locally
+  const categoryData = new Map<string, {
+    products: typeof allProductsWithDates,
+    minEpoch: number,
+    maxEpoch: number,
+    delta: number
+  }>();
+
+  for (const product of allProductsWithDates) {
+    if (!product.category || !product.dateNotified) continue;
+    
+    if (!categoryData.has(product.category)) {
+      categoryData.set(product.category, {
+        products: [],
+        minEpoch: Infinity,
+        maxEpoch: -Infinity,
+        delta: 0
+      });
     }
+    
+    const data = categoryData.get(product.category)!;
+    data.products.push(product);
+    
+    const epoch = new Date(product.dateNotified).getTime() / 1000;
+    data.minEpoch = Math.min(data.minEpoch, epoch);
+    data.maxEpoch = Math.max(data.maxEpoch, epoch);
+  }
 
-    // This approach updates products category by category.
-    // A raw SQL query could do this faster, but this is more readable.
-    const productsInCategory = await db
-      .select({ id: products.id, dateNotified: products.dateNotified })
-      .from(products)
-      .where(eq(products.category, range.category));
+  console.log(`📂 Found ${categoryData.size} categories to process`);
 
-    for (const p of productsInCategory) {
-      if (!p.dateNotified) continue;
-      const pEpoch = new Date(p.dateNotified).getTime() / 1000;
-      const score = (pEpoch - minEpoch) / delta;
-      await db
-        .update(products)
-        .set({ recencyScore: score.toFixed(4) })
-        .where(eq(products.id, p.id));
-      updatedCount++;
+  // Calculate deltas
+  for (const data of categoryData.values()) {
+    data.delta = data.maxEpoch - data.minEpoch;
+  }
+
+  // Prepare all updates locally first
+  const updates: { id: number; score: string }[] = [];
+  
+  for (const data of categoryData.values()) {
+    if (data.delta === 0) {
+      // All products in this category have the same date
+      for (const product of data.products) {
+        updates.push({ id: product.id, score: '0.5' });
+      }
+    } else {
+      // Calculate scores for each product
+      for (const product of data.products) {
+        const pEpoch = new Date(product.dateNotified!).getTime() / 1000;
+        const score = (pEpoch - data.minEpoch) / data.delta;
+        updates.push({ id: product.id, score: score.toFixed(4) });
+      }
     }
   }
-  console.log(`Updated recency scores for ${updatedCount} products.\n`);
+
+  console.log(`🧮 Calculated ${updates.length} recency scores locally`);
+
+  // Perform batch updates with progress tracking
+  if (updates.length > 0) {
+    const UPDATE_BATCH_SIZE = 1000; // Smaller batches for recency updates
+    const totalBatches = Math.ceil(updates.length / UPDATE_BATCH_SIZE);
+    
+    console.log(`📝 Updating recency scores in ${totalBatches} batches of ${UPDATE_BATCH_SIZE}...`);
+    
+    for (let i = 0; i < updates.length; i += UPDATE_BATCH_SIZE) {
+      const batch = updates.slice(i, i + UPDATE_BATCH_SIZE);
+      const batchNumber = Math.floor(i / UPDATE_BATCH_SIZE) + 1;
+      
+      const caseStatements = batch.map(u => `WHEN ${u.id} THEN ${u.score}`).join(' ');
+      const ids = batch.map(u => u.id).join(',');
+      
+      await db.execute(sql`
+        UPDATE products 
+        SET recency_score = CASE id 
+          ${sql.raw(caseStatements)}
+        END
+        WHERE id IN (${sql.raw(ids)})
+      `);
+      
+      const progress = ((batchNumber / totalBatches) * 100).toFixed(1);
+      console.log(`✅ Batch ${batchNumber}/${totalBatches} completed (${batch.length} records, ${progress}% done)`);
+    }
+    
+    console.log(`🎉 Updated recency scores for ${updates.length} products successfully!\n`);
+  }
 }
 
 async function main() {
   try {
-    console.log('--- Starting recommendation generation ---');
+    console.log('--- Starting optimized recommendation generation ---');
 
-    // 1. Update recency scores first
+    // 1. Update recency scores first (now optimized with bulk update)
     await updateRecencyScores();
 
     // 2. Clear existing recommendations
@@ -99,12 +147,15 @@ async function main() {
     await db.delete(recommendedAlternatives);
     console.log('Cleared `recommended_alternatives` table.\n');
 
-    // 3. Fetch all necessary data
+    // 3. Fetch all necessary data in parallel (minimize database round trips)
     console.log('--- Step 3: Fetching data for scoring ---');
-    const allProducts = await db.select().from(products);
-    const allCompanyMetrics = await db.select().from(companyMetrics);
-    const allCategoryMetrics = await db.select().from(categoryMetrics);
+    const [allProducts, allCompanyMetrics, allCategoryMetrics] = await Promise.all([
+      db.select().from(products),
+      db.select().from(companyMetrics),
+      db.select().from(categoryMetrics),
+    ]);
 
+    // 4. Precompute all mappings and groupings locally
     const companyMetricsMap = new Map(allCompanyMetrics.map((m) => [m.companyId, m]));
     const categoryMetricsMap = new Map(allCategoryMetrics.map((m) => [m.productCategory, m]));
 
@@ -121,8 +172,8 @@ async function main() {
     console.log(`Found ${cancelledProducts.length} cancelled products to process.`);
     console.log(`Found ${notifiedProducts.length} notified products available as alternatives.\n`);
 
-    // 4. Generate recommendations
-    console.log('--- Step 4: Generating and scoring recommendations ---');
+    // 5. Generate all recommendations locally (no database calls)
+    console.log('--- Step 4: Generating and scoring recommendations locally ---');
     const allRecommendations: (typeof recommendedAlternatives.$inferInsert)[] = [];
 
     for (const cancelledProduct of cancelledProducts) {
@@ -171,18 +222,20 @@ async function main() {
       const topN = scoredCandidates.slice(0, TOP_N_RECOMMENDATIONS);
       allRecommendations.push(...topN);
     }
-    console.log(`Generated ${allRecommendations.length} total recommendations.\n`);
+    console.log(`Generated ${allRecommendations.length} total recommendations locally.\n`);
 
-    // 5. Insert into database
+    // 6. Bulk insert all recommendations (single database operation)
     console.log(
-      `--- Step 5: Inserting ${allRecommendations.length} recommendations in batches ---`,
+      `--- Step 5: Bulk inserting ${allRecommendations.length} recommendations ---`,
     );
-    for (let i = 0; i < allRecommendations.length; i += BATCH_SIZE) {
-      const batch = allRecommendations.slice(i, i + BATCH_SIZE);
-      await db.insert(recommendedAlternatives).values(batch);
-      console.log(`Inserted batch ${Math.floor(i / BATCH_SIZE) + 1}...`);
+    if (allRecommendations.length > 0) {
+      for (let i = 0; i < allRecommendations.length; i += BATCH_SIZE) {
+        const batch = allRecommendations.slice(i, i + BATCH_SIZE);
+        await db.insert(recommendedAlternatives).values(batch);
+        console.log(`✅ Inserted batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} records)`);
+      }
     }
-    console.log('--- ✅ Done! Recommendation generation finished successfully. ---\n');
+    console.log('--- 🎉 Optimized recommendation generation completed successfully! ---\n');
   } catch (error) {
     console.error('❌ An error occurred during the recommendation generation process:', error);
     throw error;
