@@ -50,7 +50,7 @@ describe('SearchResults', () => {
       name: 'Test Lipstick',
       notifNo: 'CPNP-123456',
       category: 'Makeup',
-      status: ProductStatus.NOTIFIED,
+      status: ProductStatus.APPROVED,
       riskLevel: RiskLevel.SAFE,
       dateNotified: '2024-01-15',
       applicantCompany: { id: 1, name: 'Test Company' },

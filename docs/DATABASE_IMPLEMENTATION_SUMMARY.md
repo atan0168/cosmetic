@@ -110,7 +110,7 @@ Enhanced product responses now include:
   "notifNo": "NOT123456",
   "name": "Product Name",
   "category": "Product Category",
-  "status": "Notified|Cancelled",
+  "status": "Approved|Cancelled",
   "applicantCompany": {
     "id": 1,
     "name": "Company Name"

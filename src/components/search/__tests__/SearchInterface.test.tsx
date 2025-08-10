@@ -19,7 +19,7 @@ const mockProduct: Product = {
   name: 'Test Lipstick',
   notifNo: 'CPNP-123456',
   category: 'Lip Products',
-  status: ProductStatus.NOTIFIED,
+  status: ProductStatus.APPROVED,
   riskLevel: RiskLevel.SAFE,
   dateNotified: '2023-01-01',
   isVerticallyIntegrated: false,

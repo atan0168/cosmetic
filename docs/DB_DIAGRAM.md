@@ -39,7 +39,7 @@ Table products {
   applicant_company_id    int       [ref: > companies.id]
   manufacturer_company_id int       [ref: > companies.id, null]
   date_notified           date      [not null]
-  status                  varchar   [not null, note: "'Notified' or 'Cancelled'"]
+  status                  varchar   [not null, note: "'Approved' or 'Cancelled'"]
   reason_for_cancellation text      [null, note: "populated when status='Cancelled'"]
 
   is_vertically_integrated boolean  [not null, default: false, note: "applicant_company_id == manufacturer_company_id"]

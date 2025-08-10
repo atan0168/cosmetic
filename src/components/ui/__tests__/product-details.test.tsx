@@ -10,7 +10,7 @@ const mockApprovedProduct: Product = {
   name: 'Test Lipstick',
   notifNo: 'CPNP-123456',
   category: 'Lip Products',
-  status: ProductStatus.NOTIFIED,
+  status: ProductStatus.APPROVED,
   riskLevel: RiskLevel.SAFE,
   dateNotified: '2024-01-15',
   applicantCompany: {
@@ -76,9 +76,9 @@ const createTestWrapper = () => {
   const TestWrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-  
+
   TestWrapper.displayName = 'TestWrapper';
-  
+
   return TestWrapper;
 };
 
@@ -114,7 +114,7 @@ describe('ProductDetails', () => {
     it('renders status badge', () => {
       renderWithQueryClient(<ProductDetails product={mockApprovedProduct} />);
 
-      expect(screen.getByText('Notified')).toBeInTheDocument();
+      expect(screen.getByText('Approved')).toBeInTheDocument();
     });
   });
 
@@ -265,7 +265,7 @@ describe('ProductDetails', () => {
         <ProductDetails product={mockApprovedProduct} defaultExpanded={true} />,
       );
 
-      expect(screen.getByText('Date Notified:')).toBeInTheDocument();
+      expect(screen.getByText('Date Approved:')).toBeInTheDocument();
       expect(screen.getByText('January 15, 2024')).toBeInTheDocument();
     });
 
@@ -279,7 +279,7 @@ describe('ProductDetails', () => {
         <ProductDetails product={productWithInvalidDate} defaultExpanded={true} />,
       );
 
-      expect(screen.getByText('Date Notified:')).toBeInTheDocument();
+      expect(screen.getByText('Date Approved:')).toBeInTheDocument();
       // The component should display the invalid date as-is when it can't be parsed
       expect(screen.getByText('invalid-date')).toBeInTheDocument();
     });

@@ -197,7 +197,7 @@ export function ProductDetails({
                     aria-hidden="true"
                   />
                   <div>
-                    <span className="text-muted-foreground">Date Notified:</span>
+                    <span className="text-muted-foreground">Date Approved:</span>
                     <p className="font-medium">{formatDate(product.dateNotified)}</p>
                   </div>
                 </div>

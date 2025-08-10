@@ -50,28 +50,31 @@ async function updateRecencyScores() {
   console.log(`📊 Processing ${allProductsWithDates.length} products with notification dates...`);
 
   // Group by category and calculate min/max dates locally
-  const categoryData = new Map<string, {
-    products: typeof allProductsWithDates,
-    minEpoch: number,
-    maxEpoch: number,
-    delta: number
-  }>();
+  const categoryData = new Map<
+    string,
+    {
+      products: typeof allProductsWithDates;
+      minEpoch: number;
+      maxEpoch: number;
+      delta: number;
+    }
+  >();
 
   for (const product of allProductsWithDates) {
     if (!product.category || !product.dateNotified) continue;
-    
+
     if (!categoryData.has(product.category)) {
       categoryData.set(product.category, {
         products: [],
         minEpoch: Infinity,
         maxEpoch: -Infinity,
-        delta: 0
+        delta: 0,
       });
     }
-    
+
     const data = categoryData.get(product.category)!;
     data.products.push(product);
-    
+
     const epoch = new Date(product.dateNotified).getTime() / 1000;
     data.minEpoch = Math.min(data.minEpoch, epoch);
     data.maxEpoch = Math.max(data.maxEpoch, epoch);
@@ -86,7 +89,7 @@ async function updateRecencyScores() {
 
   // Prepare all updates locally first
   const updates: { id: number; score: string }[] = [];
-  
+
   for (const data of categoryData.values()) {
     if (data.delta === 0) {
       // All products in this category have the same date
@@ -109,16 +112,16 @@ async function updateRecencyScores() {
   if (updates.length > 0) {
     const UPDATE_BATCH_SIZE = 1000; // Smaller batches for recency updates
     const totalBatches = Math.ceil(updates.length / UPDATE_BATCH_SIZE);
-    
+
     console.log(`📝 Updating recency scores in ${totalBatches} batches of ${UPDATE_BATCH_SIZE}...`);
-    
+
     for (let i = 0; i < updates.length; i += UPDATE_BATCH_SIZE) {
       const batch = updates.slice(i, i + UPDATE_BATCH_SIZE);
       const batchNumber = Math.floor(i / UPDATE_BATCH_SIZE) + 1;
-      
-      const caseStatements = batch.map(u => `WHEN ${u.id} THEN ${u.score}`).join(' ');
-      const ids = batch.map(u => u.id).join(',');
-      
+
+      const caseStatements = batch.map((u) => `WHEN ${u.id} THEN ${u.score}`).join(' ');
+      const ids = batch.map((u) => u.id).join(',');
+
       await db.execute(sql`
         UPDATE products 
         SET recency_score = CASE id 
@@ -126,11 +129,13 @@ async function updateRecencyScores() {
         END
         WHERE id IN (${sql.raw(ids)})
       `);
-      
+
       const progress = ((batchNumber / totalBatches) * 100).toFixed(1);
-      console.log(`✅ Batch ${batchNumber}/${totalBatches} completed (${batch.length} records, ${progress}% done)`);
+      console.log(
+        `✅ Batch ${batchNumber}/${totalBatches} completed (${batch.length} records, ${progress}% done)`,
+      );
     }
-    
+
     console.log(`🎉 Updated recency scores for ${updates.length} products successfully!\n`);
   }
 }
@@ -160,7 +165,7 @@ async function main() {
     const categoryMetricsMap = new Map(allCategoryMetrics.map((m) => [m.productCategory, m]));
 
     const cancelledProducts = allProducts.filter((p) => p.status === 'Cancelled');
-    const notifiedProducts = allProducts.filter((p) => p.status === 'Notified');
+    const notifiedProducts = allProducts.filter((p) => p.status === 'Approved');
 
     const notifiedByCategory = new Map<string, Product[]>();
     for (const p of notifiedProducts) {
@@ -225,14 +230,14 @@ async function main() {
     console.log(`Generated ${allRecommendations.length} total recommendations locally.\n`);
 
     // 6. Bulk insert all recommendations (single database operation)
-    console.log(
-      `--- Step 5: Bulk inserting ${allRecommendations.length} recommendations ---`,
-    );
+    console.log(`--- Step 5: Bulk inserting ${allRecommendations.length} recommendations ---`);
     if (allRecommendations.length > 0) {
       for (let i = 0; i < allRecommendations.length; i += BATCH_SIZE) {
         const batch = allRecommendations.slice(i, i + BATCH_SIZE);
         await db.insert(recommendedAlternatives).values(batch);
-        console.log(`✅ Inserted batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} records)`);
+        console.log(
+          `✅ Inserted batch ${Math.floor(i / BATCH_SIZE) + 1} (${batch.length} records)`,
+        );
       }
     }
     console.log('--- 🎉 Optimized recommendation generation completed successfully! ---\n');

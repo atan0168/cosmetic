@@ -1,5 +1,5 @@
 export enum ProductStatus {
-  NOTIFIED = 'Notified',
+  APPROVED = 'Approved',
   CANCELLED = 'Cancelled',
 }
 

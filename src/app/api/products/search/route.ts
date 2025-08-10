@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       riskLevel:
         product.status === ProductStatus.CANCELLED
           ? RiskLevel.UNSAFE
-          : product.status === ProductStatus.NOTIFIED
+          : product.status === ProductStatus.APPROVED
             ? RiskLevel.SAFE
             : RiskLevel.UNKNOWN,
       dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         alternatives = await getSaferAlternatives(undefined, 3);
         alternatives = alternatives.map((alt) => ({
           ...alt,
-          riskLevel: alt.status === ProductStatus.NOTIFIED ? RiskLevel.SAFE : RiskLevel.UNKNOWN,
+          riskLevel: alt.status === ProductStatus.APPROVED ? RiskLevel.SAFE : RiskLevel.UNKNOWN,
           dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
           isVerticallyIntegrated: false, // Default value
           recencyScore: 0.5, // Default value

@@ -5,7 +5,7 @@ import { ProductStatus, RiskLevel } from '@/types/product';
  */
 export function calculateRiskLevel(status: ProductStatus): RiskLevel {
   switch (status) {
-    case ProductStatus.NOTIFIED:
+    case ProductStatus.APPROVED:
       return RiskLevel.SAFE;
     case ProductStatus.CANCELLED:
       return RiskLevel.UNSAFE;

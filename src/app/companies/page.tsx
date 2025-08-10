@@ -161,8 +161,7 @@ export default function CompaniesPage() {
 
                     {company.firstNotifiedDate && (
                       <div className="text-muted-foreground text-xs">
-                        First notification:{' '}
-                        {new Date(company.firstNotifiedDate).toLocaleDateString()}
+                        First approval: {new Date(company.firstNotifiedDate).toLocaleDateString()}
                       </div>
                     )}
                   </CardContent>

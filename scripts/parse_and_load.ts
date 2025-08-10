@@ -318,7 +318,7 @@ async function main() {
         applicantCompanyId,
         manufacturerCompanyId: null, // Not provided in notified products CSV
         dateNotified: p.date_notif || '1970-01-01',
-        status: 'Notified',
+        status: 'Approved',
         reasonForCancellation: null,
         isVerticallyIntegrated: false,
         recencyScore: '0.5', // Default score - can be computed later

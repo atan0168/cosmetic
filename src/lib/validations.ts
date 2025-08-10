@@ -34,7 +34,7 @@ export const ProductSchema = z.object({
     .max(255, 'Category name too long')
     .transform(sanitizeInput.string),
   status: z.nativeEnum(ProductStatus, {
-    message: "Status must be either 'Notified' or 'Cancelled'",
+    message: "Status must be either 'Approved' or 'Cancelled'",
   }),
   riskLevel: z.nativeEnum(RiskLevel, {
     message: "Risk level must be 'safe', 'unsafe', or 'unknown'",

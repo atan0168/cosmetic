@@ -205,7 +205,7 @@ export default function IngredientDetailsPage() {
                         </div>
 
                         <div className="text-muted-foreground mb-2 text-sm">
-                          Notified: {new Date(product.dateNotified).toLocaleDateString()}
+                          Approved: {new Date(product.dateNotified).toLocaleDateString()}
                         </div>
 
                         {product.reasonForCancellation && (

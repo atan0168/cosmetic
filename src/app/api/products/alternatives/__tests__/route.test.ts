@@ -53,7 +53,7 @@ describe('/api/products/alternatives', () => {
         expect(alternative).toHaveProperty('status');
         expect(alternative).toHaveProperty('riskLevel');
         expect(alternative.riskLevel).toBe(RiskLevel.SAFE);
-        expect(alternative.status).toBe('Notified'); // All alternatives should be approved/notified
+        expect(alternative.status).toBe('Approved'); // All alternatives should be approved
       }
     });
 
@@ -289,7 +289,7 @@ describe('/api/products/alternatives', () => {
       // All alternatives should be marked as safe since they're approved products
       (data.data.alternatives as Alternative[]).forEach((alternative) => {
         expect(alternative.riskLevel).toBe(RiskLevel.SAFE);
-        expect(alternative.status).toBe('Notified');
+        expect(alternative.status).toBe('Approved');
       });
     });
   });

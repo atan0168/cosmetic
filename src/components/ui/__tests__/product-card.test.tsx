@@ -10,7 +10,7 @@ const mockProduct: Product = {
   name: 'Test Lipstick',
   notifNo: 'CPNP-123456',
   category: 'Lip Products',
-  status: ProductStatus.NOTIFIED,
+  status: ProductStatus.APPROVED,
   riskLevel: RiskLevel.SAFE,
   dateNotified: '2024-01-15',
   applicantCompany: {
@@ -42,7 +42,7 @@ describe('ProductCard', () => {
     expect(screen.getByText('Notification: CPNP-123456')).toBeInTheDocument();
     expect(screen.getByText('Company:')).toBeInTheDocument();
     expect(screen.getByText('Beauty Corp Ltd')).toBeInTheDocument();
-    expect(screen.getByText('Notified:')).toBeInTheDocument();
+    expect(screen.getByText('Approved:')).toBeInTheDocument();
     expect(screen.getByText('1/15/2024')).toBeInTheDocument();
   });
 
@@ -56,7 +56,7 @@ describe('ProductCard', () => {
   it('renders status badge correctly for notified product', () => {
     render(<ProductCard product={mockProduct} />);
 
-    expect(screen.getByText('Notified')).toBeInTheDocument();
+    expect(screen.getByText('Approved')).toBeInTheDocument();
   });
 
   it('renders status badge correctly for cancelled product', () => {
@@ -146,7 +146,7 @@ describe('ProductCard', () => {
     const productWithoutDate = { ...mockProduct, dateNotified: '' };
     render(<ProductCard product={productWithoutDate} />);
 
-    expect(screen.queryByText('Notified:')).not.toBeInTheDocument();
+    expect(screen.queryByText('Approved:')).not.toBeInTheDocument();
   });
 
   it('has proper accessibility structure', () => {

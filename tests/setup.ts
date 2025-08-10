@@ -89,13 +89,13 @@ beforeAll(async () => {
     const acmeId = Number(acme?.['id']);
     const bravoId = Number(bravo?.['id']);
 
-    // Seed products (Notified)
+    // Seed products (Approved)
     await db.execute(sql`
       INSERT INTO products (notif_no, name, category, applicant_company_id, manufacturer_company_id, status, is_vertically_integrated, recency_score, search_vector)
       VALUES
-        ('N1001', 'lipstick rouge', 'Makeup', ${acmeId}, ${acmeId}, 'Notified', TRUE, 0.8, to_tsvector('english', 'lipstick rouge N1001')),
-        ('N1002', 'test serum', 'Skincare', ${acmeId}, ${bravoId}, 'Notified', FALSE, 0.6, to_tsvector('english', 'test serum N1002')),
-        ('N1003', 'test cream', 'Skincare', ${bravoId}, ${bravoId}, 'Notified', TRUE, 0.5, to_tsvector('english', 'test cream N1003'))
+        ('N1001', 'lipstick rouge', 'Makeup', ${acmeId}, ${acmeId}, 'Approved', TRUE, 0.8, to_tsvector('english', 'lipstick rouge N1001')),
+        ('N1002', 'test serum', 'Skincare', ${acmeId}, ${bravoId}, 'Approved', FALSE, 0.6, to_tsvector('english', 'test serum N1002')),
+        ('N1003', 'test cream', 'Skincare', ${bravoId}, ${bravoId}, 'Approved', TRUE, 0.5, to_tsvector('english', 'test cream N1003'))
       ON CONFLICT (notif_no) DO NOTHING
     `);
 

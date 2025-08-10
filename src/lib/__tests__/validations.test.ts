@@ -57,7 +57,7 @@ describe('Validation Schemas', () => {
       notifNo: 'CPNP-123456',
       name: 'Test Lipstick',
       category: 'Cosmetics',
-      status: 'Notified' as const,
+      status: 'Approved' as const,
       riskLevel: 'safe' as const,
       dateNotified: '2023-01-01',
       isVerticallyIntegrated: false,

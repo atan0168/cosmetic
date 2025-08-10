@@ -56,7 +56,7 @@ export const products = pgTable(
       .notNull(),
     manufacturerCompanyId: integer('manufacturer_company_id').references(() => companies.id),
     dateNotified: date('date_notified').notNull(),
-    status: varchar('status', { length: 50 }).notNull(), // 'Notified' or 'Cancelled'
+    status: varchar('status', { length: 50 }).notNull(), // 'Approved' or 'Cancelled'
     reasonForCancellation: text('reason_for_cancellation'), // populated when status='Cancelled'
     isVerticallyIntegrated: boolean('is_vertically_integrated').notNull().default(false), // applicant_company_id == manufacturer_company_id
     recencyScore: decimal('recency_score', {

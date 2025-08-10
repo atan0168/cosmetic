@@ -186,8 +186,8 @@ export async function getSaferAlternatives(
   limit: number = 3,
 ): Promise<ProductSummary[]> {
   const baseWhere = excludeId
-    ? and(eq(products.status, 'Notified'), sql`${products.id} != ${excludeId}`)
-    : eq(products.status, 'Notified');
+    ? and(eq(products.status, 'Approved'), sql`${products.id} != ${excludeId}`)
+    : eq(products.status, 'Approved');
 
   const results = await db
     .select({
@@ -232,7 +232,7 @@ export async function getAllCompanies() {
  * Get products by status
  */
 export async function getProductsByStatus(
-  status: 'Notified' | 'Cancelled',
+  status: 'Approved' | 'Cancelled',
   limit: number = 10,
   offset: number = 0,
 ): Promise<{ products: ProductSummary[]; total: number }> {

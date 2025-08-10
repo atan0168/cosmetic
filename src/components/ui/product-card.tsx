@@ -63,7 +63,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
         {product.dateNotified && (
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="text-muted-foreground h-4 w-4" aria-hidden="true" />
-            <span className="text-muted-foreground">Notified:</span>
+            <span className="text-muted-foreground">Approved:</span>
             <span>{new Date(product.dateNotified).toLocaleDateString()}</span>
           </div>
         )}
