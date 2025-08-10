@@ -59,13 +59,8 @@ export function SearchResults({
   if (!query.trim()) {
     return (
       <div className={className}>
-        <div className="flex flex-col items-center justify-center px-4 pb-8 pt-4 text-center sm:py-12">
-          <Image
-            src="/search.svg"
-            alt="Search icon"
-            width={140}
-            height={140}
-          />
+        <div className="flex flex-col items-center justify-center px-4 pt-4 pb-8 text-center sm:py-12">
+          <Image src="/search.svg" alt="Search icon" width={140} height={140} />
           <h3 className="text-muted-foreground mb-2 text-base font-semibold sm:text-lg">
             Search for Products
           </h3>

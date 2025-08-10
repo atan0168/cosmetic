@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Search } from 'lucide-react';
+import { Shield, Search, Building2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 interface HeaderProps {
@@ -35,6 +35,30 @@ export function Header({ className }: HeaderProps) {
               >
                 <Search className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden sm:inline">Search</span>
+              </Link>
+
+              {/* Separator */}
+              <div className="bg-border h-4 w-px" aria-hidden="true" />
+
+              <Link
+                href="/companies"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted focus:ring-ring flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:gap-2 sm:px-3"
+                aria-label="View companies"
+              >
+                <Building2 className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Companies</span>
+              </Link>
+
+              {/* Separator */}
+              <div className="bg-border h-4 w-px" aria-hidden="true" />
+
+              <Link
+                href="/ingredients"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted focus:ring-ring flex items-center gap-1 rounded-md px-2 py-2 text-sm font-medium transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none sm:gap-2 sm:px-3"
+                aria-label="View banned ingredients"
+              >
+                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Ingredients</span>
               </Link>
             </div>
           </nav>

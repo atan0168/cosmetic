@@ -25,7 +25,7 @@ export { ProductCard } from './product-card';
 export { ProductDetails } from './product-details';
 export { ProductDetailsModal } from './product-details-modal';
 export { AlternativesSection } from './alternatives-section';
-export { LoadingSpinner, ProductCardSkeleton } from './loading-spinner';
+export { LoadingSpinner, CosmeticLoadingAnimation, ProductCardSkeleton } from './loading-spinner';
 export {
   ErrorMessage,
   SearchErrorMessage,

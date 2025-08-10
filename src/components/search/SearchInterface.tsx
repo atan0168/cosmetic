@@ -14,7 +14,11 @@ interface SearchInterfaceProps {
   showModal?: boolean;
 }
 
-export function SearchInterface({ className, onProductSelect, showModal = true }: SearchInterfaceProps) {
+export function SearchInterface({
+  className,
+  onProductSelect,
+  showModal = true,
+}: SearchInterfaceProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentOffset, setCurrentOffset] = useState(0);
   const [allProducts, setAllProducts] = useState<Product[]>([]);

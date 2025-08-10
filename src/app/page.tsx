@@ -58,12 +58,7 @@ export default function Home() {
             <div className="grid gap-4 px-2 sm:gap-6 sm:px-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:px-0">
               <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6">
                 <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400">
-                  <Image 
-                    src="/safety.svg" 
-                    alt="Safety illustration" 
-                    width={86} 
-                    height={86}
-                  />
+                  <Image src="/safety.svg" alt="Safety illustration" width={86} height={86} />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Safety Status</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -74,10 +69,10 @@ export default function Home() {
 
               <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6">
                 <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                  <Image 
-                    src="/information.svg" 
-                    alt="Information illustration" 
-                    width={96} 
+                  <Image
+                    src="/information.svg"
+                    alt="Information illustration"
+                    width={96}
                     height={96}
                   />
                 </div>
@@ -90,12 +85,7 @@ export default function Home() {
 
               <div className="hover:bg-muted/50 rounded-lg p-4 text-center transition-colors sm:p-6 md:col-span-2 lg:col-span-1">
                 <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-lg bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
-                  <Image 
-                    src="/love.svg" 
-                    alt="Love illustration" 
-                    width={96} 
-                    height={96}
-                  />
+                  <Image src="/love.svg" alt="Love illustration" width={96} height={96} />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold">Safer Alternatives</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">

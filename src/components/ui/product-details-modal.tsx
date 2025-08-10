@@ -17,28 +17,20 @@ interface ProductDetailsModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ProductDetailsModal({
-  product,
-  open,
-  onOpenChange,
-}: ProductDetailsModalProps) {
+export function ProductDetailsModal({ product, open, onOpenChange }: ProductDetailsModalProps) {
   if (!product) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
+      <DialogContent className="max-h-[90vh] max-w-2xl p-0">
         <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-xl font-semibold">
-            Product Details
-          </DialogTitle>
-          <DialogDescription>
-            Detailed information about {product.name}
-          </DialogDescription>
+          <DialogTitle className="text-xl font-semibold">Product Details</DialogTitle>
+          <DialogDescription>Detailed information about {product.name}</DialogDescription>
         </DialogHeader>
-        
-        <ScrollArea className="px-6 pb-6 max-h-[calc(90vh-120px)]">
-          <ProductDetails 
-            product={product} 
+
+        <ScrollArea className="max-h-[calc(90vh-120px)] px-6 pb-6">
+          <ProductDetails
+            product={product}
             defaultExpanded={true}
             className="border-0 shadow-none"
           />
