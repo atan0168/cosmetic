@@ -33,7 +33,9 @@ async function fetchAlternatives(
     throw new Error(errorData.error || 'Failed to fetch alternatives');
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return 'data' in data && data.data ? data.data : data;
 }
 
 export function useAlternatives({

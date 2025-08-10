@@ -10,6 +10,7 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import { Building2, Calendar, TrendingUp, AlertTriangle, Package } from 'lucide-react';
 import Link from 'next/link';
 import { useCompanyDetails } from '@/hooks/useCompanyDetails';
+import { toTitleCase } from '@/lib/utils/product';
 
 export default function CompanyDetailsPage() {
   const params = useParams();
@@ -96,7 +97,7 @@ export default function CompanyDetailsPage() {
         <div className="mb-8">
           <div className="mb-4 flex items-center gap-3">
             <Building2 className="text-primary h-8 w-8" />
-            <h1 className="text-3xl font-bold">{company.name}</h1>
+            <h1 className="text-3xl font-bold">{toTitleCase(company.name)}</h1>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-muted-foreground">Reputation:</span>
@@ -177,7 +178,7 @@ export default function CompanyDetailsPage() {
                   <div key={product.id} className="rounded-lg border p-4">
                     <div className="mb-2 flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold">{product.name}</h3>
+                        <h3 className="font-semibold">{toTitleCase(product.name)}</h3>
                         <p className="text-muted-foreground text-sm">
                           {product.notifNo} • {product.category}
                         </p>

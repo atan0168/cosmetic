@@ -9,6 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ErrorMessage } from '@/components/ui/error-message';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Search, AlertTriangle, Calendar, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useIngredients } from '@/hooks/useIngredients';
@@ -100,23 +107,25 @@ export default function IngredientsPage() {
           </form>
 
           <div className="flex flex-wrap gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-background rounded-md border px-3 py-2"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="ewgRating">Sort by EWG Rating</option>
-              <option value="occurrencesCount">Sort by Occurrences</option>
-            </select>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="bg-background rounded-md border px-3 py-2"
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Sort by Name</SelectItem>
+                <SelectItem value="ewgRating">Sort by EWG Rating</SelectItem>
+                <SelectItem value="occurrencesCount">Sort by Occurrences</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sortOrder} onValueChange={setSortOrder}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Order..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="asc">Ascending</SelectItem>
+                <SelectItem value="desc">Descending</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

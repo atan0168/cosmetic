@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { companies, companyMetrics } from '@/lib/db/schema';
-import { eq, desc, asc, ilike } from 'drizzle-orm';
+import { eq, desc, asc, ilike, and, gt, isNotNull } from 'drizzle-orm';
 import {
   createErrorResponse,
   createSuccessResponse,
@@ -44,6 +44,17 @@ export async function GET(request: NextRequest) {
             ? companyMetrics.cancelledCount
             : companies.name;
 
+    const conditions = [];
+
+    if (query) {
+      conditions.push(ilike(companies.name, `%${query}%`));
+    }
+
+    // Exclude those with no totalNotifs
+    conditions.push(and(isNotNull(companyMetrics.totalNotifs), gt(companyMetrics.totalNotifs, 0)));
+
+    const whereCondition = conditions.length > 1 ? and(...conditions) : conditions[0];
+
     // Build the query with all conditions
     const results = await db
       .select({
@@ -56,7 +67,7 @@ export async function GET(request: NextRequest) {
       })
       .from(companies)
       .leftJoin(companyMetrics, eq(companies.id, companyMetrics.companyId))
-      .where(query ? ilike(companies.name, `%${query}%`) : undefined)
+      .where(whereCondition)
       .orderBy(sortOrder === 'desc' ? desc(orderColumn) : asc(orderColumn))
       .limit(limit)
       .offset(offset);

@@ -9,9 +9,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { ErrorMessage } from '@/components/ui/error-message';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Search, Building2, TrendingUp, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { useCompanies } from '@/hooks/useCompanies';
+import { toTitleCase } from '@/lib/utils/product';
 
 export default function CompaniesPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,24 +97,26 @@ export default function CompaniesPage() {
           </form>
 
           <div className="flex flex-wrap gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-background rounded-md border px-3 py-2"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="totalNotifs">Sort by Total Notifications</option>
-              <option value="reputationScore">Sort by Reputation</option>
-              <option value="cancelledCount">Sort by Cancelled Products</option>
-            </select>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="bg-background rounded-md border px-3 py-2"
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Sort by Name</SelectItem>
+                <SelectItem value="totalNotifs">Sort by Total Notifications</SelectItem>
+                <SelectItem value="reputationScore">Sort by Reputation</SelectItem>
+                <SelectItem value="cancelledCount">Sort by Cancelled Products</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sortOrder} onValueChange={setSortOrder}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Order..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="asc">Ascending</SelectItem>
+                <SelectItem value="desc">Descending</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -123,7 +133,7 @@ export default function CompaniesPage() {
               <Link key={company.id} href={`/companies/${company.id}`}>
                 <Card className="cursor-pointer transition-shadow hover:shadow-md">
                   <CardHeader>
-                    <CardTitle className="text-lg">{company.name}</CardTitle>
+                    <CardTitle className="text-lg">{toTitleCase(company.name)}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center justify-between">

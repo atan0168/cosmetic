@@ -25,6 +25,7 @@ export function SearchInterface({
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [navigationHistory, setNavigationHistory] = useState<Product[]>([]);
 
   const limit = 10;
 
@@ -71,12 +72,13 @@ export function SearchInterface({
     }
   }, [data?.total, allProducts.length, isLoading, isLoadingMore, limit]);
 
-  // Handle product selection
+  // Handle product selection (from search results - clears navigation history)
   const handleProductClick = useCallback(
     (product: Product) => {
       if (showModal) {
         setSelectedProduct(product);
         setIsModalOpen(true);
+        setNavigationHistory([]); // Clear history for new product selection
       }
       if (onProductSelect) {
         onProductSelect(product);
@@ -84,6 +86,39 @@ export function SearchInterface({
     },
     [onProductSelect, showModal],
   );
+
+  // Handle alternative product selection (adds to navigation history)
+  const handleAlternativeClick = useCallback(
+    (alternativeProduct: Product) => {
+      if (showModal && selectedProduct) {
+        setNavigationHistory((prev) => [...prev, selectedProduct]);
+        setSelectedProduct(alternativeProduct);
+      }
+      if (onProductSelect) {
+        onProductSelect(alternativeProduct);
+      }
+    },
+    [onProductSelect, showModal, selectedProduct],
+  );
+
+  // Handle navigation back to previous product
+  const handleNavigateBack = useCallback(() => {
+    if (navigationHistory.length > 0) {
+      const previousProduct = navigationHistory[navigationHistory.length - 1];
+      const newHistory = navigationHistory.slice(0, -1);
+
+      setSelectedProduct(previousProduct);
+      setNavigationHistory(newHistory);
+    }
+  }, [navigationHistory]);
+
+  // Handle modal close - clear navigation history
+  const handleModalOpenChange = useCallback((open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      setNavigationHistory([]);
+    }
+  }, []);
 
   // Calculate if there are more results to load
   const hasMoreResults = useMemo(() => {
@@ -122,7 +157,10 @@ export function SearchInterface({
         <ProductDetailsModal
           product={selectedProduct}
           open={isModalOpen}
-          onOpenChange={setIsModalOpen}
+          onOpenChange={handleModalOpenChange}
+          onAlternativeClick={handleAlternativeClick}
+          navigationHistory={navigationHistory}
+          onNavigateBack={handleNavigateBack}
         />
       )}
     </ErrorBoundaryWrapper>

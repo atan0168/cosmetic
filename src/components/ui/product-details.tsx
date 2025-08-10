@@ -17,18 +17,21 @@ import {
   Factory,
 } from 'lucide-react';
 import { RiskIndicator } from '@/components/ui/risk-indicator';
+import { AlternativesSection } from '@/components/ui/alternatives-section';
 import { toTitleCase } from '@/lib/utils/product';
 
 interface ProductDetailsProps {
   product: Product;
   className?: string;
   defaultExpanded?: boolean;
+  onAlternativeClick?: (product: Product) => void;
 }
 
 export function ProductDetails({
   product,
   className,
   defaultExpanded = false,
+  onAlternativeClick,
 }: ProductDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
@@ -67,7 +70,9 @@ export function ProductDetails({
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <CardTitle className="text-xl leading-tight font-semibold">{product.name}</CardTitle>
+            <CardTitle className="text-xl leading-tight font-semibold">
+              {toTitleCase(product.name)}
+            </CardTitle>
             <div className="text-muted-foreground mt-2 flex items-center gap-2 text-sm">
               <FileText className="h-4 w-4" aria-hidden="true" />
               <span>Notification: {product.notifNo}</span>
@@ -122,7 +127,7 @@ export function ProductDetails({
           <CollapsibleTrigger asChild>
             <Button
               variant="ghost"
-              className="h-auto w-full justify-between p-0 text-sm font-normal hover:bg-transparent"
+              className="h-auto w-full justify-between !p-0 text-sm font-normal hover:bg-transparent"
               aria-expanded={isExpanded}
               aria-controls="product-details-content"
             >
@@ -243,6 +248,13 @@ export function ProductDetails({
             </div>
           </CollapsibleContent>
         </Collapsible>
+
+        {/* Alternative Products Section for Banned/Cancelled Products */}
+        <AlternativesSection
+          currentProduct={product}
+          onAlternativeClick={onAlternativeClick}
+          className="mt-4"
+        />
       </CardContent>
     </Card>
   );
