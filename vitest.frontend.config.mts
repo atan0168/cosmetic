@@ -10,7 +10,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./tests/setup-frontend.ts'],
     testTimeout: 10000, // 10 second timeout for individual tests
-    hookTimeout: 5000,  // 5 second timeout for hooks (beforeEach, afterEach)
+    hookTimeout: 5000, // 5 second timeout for hooks (beforeEach, afterEach)
     teardownTimeout: 5000, // 5 second timeout for cleanup
   },
 });

@@ -209,7 +209,9 @@ describe('Accessibility Tests', () => {
       render(<ProductCard product={longNameProduct} />);
 
       // Check that text wrapping classes are applied
-      const productName = screen.getByText('This Is A Very Long Product Name That Should Wrap Properly On Smaller Screens And Not Break The Layout');
+      const productName = screen.getByText(
+        'This Is A Very Long Product Name That Should Wrap Properly On Smaller Screens And Not Break The Layout',
+      );
       expect(productName).toHaveClass('break-words');
 
       const notificationText = screen.getByText(/Notification:/);

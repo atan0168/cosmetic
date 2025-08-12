@@ -15,9 +15,11 @@ import {
   AlertTriangle,
   Info,
   Factory,
+  HelpCircle,
 } from 'lucide-react';
 import { RiskIndicator } from '@/components/ui/risk-indicator';
 import { AlternativesSection } from '@/components/ui/alternatives-section';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { toTitleCase } from '@/lib/utils/product';
 
 interface ProductDetailsProps {
@@ -240,7 +242,21 @@ export function ProductDetails({
                 </div>
                 {product.recencyScore !== undefined && (
                   <div className="flex justify-between">
-                    <span>Recency Score:</span>
+                    <div className="flex items-center gap-1">
+                      <span>Recency Score:</span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="text-muted-foreground h-3 w-3 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="text-xs">
+                            Measures how recent this product's approval date is compared to other
+                            products in the same category. Score ranges from 0 (oldest) to 1
+                            (newest). More recent approvals may indicate updated safety standards.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                     <span className="font-mono">{product.recencyScore.toFixed(2)}</span>
                   </div>
                 )}
