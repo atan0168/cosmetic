@@ -27,6 +27,9 @@ export interface Product {
   manufacturerCompany?: Company;
   isVerticallyIntegrated: boolean;
   recencyScore: number;
+  brandScore?: number;
+  manufacturerScore?: number;
+  categoryScore?: number;
 }
 
 export interface CompanyMetrics {
@@ -92,4 +95,8 @@ export interface ProductSummary {
   reasonForCancellation: string | null;
   applicantCompany?: Company;
   manufacturerCompany?: Company;
+  brandScore?: number;
+  manufacturerScore?: number;
+  categoryScore?: number;
+  recencyScore: number;
 }

@@ -1,5 +1,5 @@
 import { db } from './index';
-import { products, companies } from './schema';
+import { products, companies, companyMetrics, categoryMetrics } from './schema';
 import { eq, ilike, or, sql, asc, and } from 'drizzle-orm';
 import { ProductSummary, ProductStatus } from '@/types/product';
 import { ProductFullTextRow, CountRow } from '@/types/db';
@@ -22,14 +22,21 @@ export async function searchProducts(
         p.category,
         p.status,
         p.reason_for_cancellation,
+        p.recency_score,
         ac.id as applicant_company_id,
         ac.name as applicant_company_name,
         mc.id as manufacturer_company_id,
         mc.name as manufacturer_company_name,
+        acm.reputation_score as brand_score,
+        mcm.reputation_score as manufacturer_score,
+        cm.risk_score as category_score,
         ts_rank(p.search_vector, plainto_tsquery('english', ${query})) as rank
       FROM products p
       LEFT JOIN companies ac ON p.applicant_company_id = ac.id
       LEFT JOIN companies mc ON p.manufacturer_company_id = mc.id
+      LEFT JOIN company_metrics acm ON ac.id = acm.company_id
+      LEFT JOIN company_metrics mcm ON mc.id = mcm.company_id
+      LEFT JOIN category_metrics cm ON p.category = cm.product_category
       WHERE p.search_vector @@ plainto_tsquery('english', ${query})
       ORDER BY rank DESC, p.name ASC
       LIMIT ${limit} OFFSET ${offset}
@@ -54,6 +61,10 @@ export async function searchProducts(
         category: row.category,
         status: row.status as ProductStatus,
         reasonForCancellation: row.reason_for_cancellation,
+        recencyScore: Number(row.recency_score),
+        brandScore: row.brand_score ? Number(row.brand_score) : undefined,
+        manufacturerScore: row.manufacturer_score ? Number(row.manufacturer_score) : undefined,
+        categoryScore: row.category_score ? Number(row.category_score) : undefined,
         applicantCompany:
           row.applicant_company_id && row.applicant_company_name
             ? {
@@ -87,6 +98,7 @@ export async function searchProducts(
       category: products.category,
       status: products.status,
       reasonForCancellation: products.reasonForCancellation,
+      recencyScore: products.recencyScore,
       applicantCompany: {
         id: companies.id,
         name: companies.name,
@@ -95,10 +107,16 @@ export async function searchProducts(
         id: sql<number | null>`mc.id`,
         name: sql<string | null>`mc.name`,
       },
+      brandScore: sql<string | null>`acm.reputation_score`,
+      manufacturerScore: sql<string | null>`mcm.reputation_score`,
+      categoryScore: sql<string | null>`cm.risk_score`,
     })
     .from(products)
     .leftJoin(companies, eq(products.applicantCompanyId, companies.id))
     .leftJoin(sql`companies mc`, sql`products.manufacturer_company_id = mc.id`)
+    .leftJoin(sql`company_metrics acm`, sql`companies.id = acm.company_id`)
+    .leftJoin(sql`company_metrics mcm`, sql`mc.id = mcm.company_id`)
+    .leftJoin(sql`category_metrics cm`, sql`products.category = cm.product_category`)
     .where(or(ilike(products.name, searchPattern), ilike(products.notifNo, searchPattern)))
     .orderBy(asc(products.name))
     .limit(limit)
@@ -119,6 +137,10 @@ export async function searchProducts(
     category: row.category,
     status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
+    recencyScore: Number(row.recencyScore),
+    brandScore: row.brandScore ? Number(row.brandScore) : undefined,
+    manufacturerScore: row.manufacturerScore ? Number(row.manufacturerScore) : undefined,
+    categoryScore: row.categoryScore ? Number(row.categoryScore) : undefined,
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,
@@ -143,6 +165,7 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
       category: products.category,
       status: products.status,
       reasonForCancellation: products.reasonForCancellation,
+      recencyScore: products.recencyScore,
       applicantCompany: {
         id: companies.id,
         name: companies.name,
@@ -151,10 +174,16 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
         id: sql<number | null>`mc.id`,
         name: sql<string | null>`mc.name`,
       },
+      brandScore: sql<string | null>`acm.reputation_score`,
+      manufacturerScore: sql<string | null>`mcm.reputation_score`,
+      categoryScore: sql<string | null>`cm.risk_score`,
     })
     .from(products)
     .leftJoin(companies, eq(products.applicantCompanyId, companies.id))
     .leftJoin(sql`companies mc`, sql`products.manufacturer_company_id = mc.id`)
+    .leftJoin(sql`company_metrics acm`, sql`companies.id = acm.company_id`)
+    .leftJoin(sql`company_metrics mcm`, sql`mc.id = mcm.company_id`)
+    .leftJoin(sql`category_metrics cm`, sql`products.category = cm.product_category`)
     .where(eq(products.id, id))
     .limit(1);
 
@@ -168,6 +197,10 @@ export async function getProductById(id: number): Promise<ProductSummary | null>
     category: row.category,
     status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
+    recencyScore: Number(row.recencyScore),
+    brandScore: row.brandScore ? Number(row.brandScore) : undefined,
+    manufacturerScore: row.manufacturerScore ? Number(row.manufacturerScore) : undefined,
+    categoryScore: row.categoryScore ? Number(row.categoryScore) : undefined,
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,
@@ -197,6 +230,7 @@ export async function getSaferAlternatives(
       category: products.category,
       status: products.status,
       reasonForCancellation: products.reasonForCancellation,
+      recencyScore: products.recencyScore,
       applicantCompany: {
         id: companies.id,
         name: companies.name,
@@ -215,6 +249,7 @@ export async function getSaferAlternatives(
     category: row.category,
     status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
+    recencyScore: Number(row.recencyScore),
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,
@@ -244,6 +279,7 @@ export async function getProductsByStatus(
       category: products.category,
       status: products.status,
       reasonForCancellation: products.reasonForCancellation,
+      recencyScore: products.recencyScore,
       applicantCompany: {
         id: companies.id,
         name: companies.name,
@@ -270,6 +306,7 @@ export async function getProductsByStatus(
     category: row.category,
     status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
+    recencyScore: Number(row.recencyScore),
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,

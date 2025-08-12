@@ -7,10 +7,14 @@ export interface ProductFullTextRow {
   category: string;
   status: string;
   reason_for_cancellation: string | null;
+  recency_score: string | number;
   applicant_company_id: number | null;
   applicant_company_name: string | null;
   manufacturer_company_id: number | null;
   manufacturer_company_name: string | null;
+  brand_score: string | number | null;
+  manufacturer_score: string | number | null;
+  category_score: string | number | null;
 }
 
 export interface CountRow {

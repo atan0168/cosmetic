@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
             : RiskLevel.UNKNOWN,
       dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
       isVerticallyIntegrated: false, // Default value
-      recencyScore: 0.5, // Default value
+      recencyScore: product.recencyScore ? product.recencyScore : 0.5, // Default value
     }));
 
     // Get safer alternatives if any cancelled products are found

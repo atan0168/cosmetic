@@ -230,6 +230,87 @@ export function ProductDetails({
               </div>
             )}
 
+            {/* Brand & Safety Scores */}
+            {(product.brandScore !== undefined ||
+              product.manufacturerScore !== undefined ||
+              product.categoryScore !== undefined) && (
+              <div className="space-y-3">
+                <h4 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+                  Safety & Quality Scores
+                </h4>
+                <div className="text-muted-foreground grid gap-2 text-xs">
+                  {product.brandScore !== undefined && (
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Brand Score:</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="text-muted-foreground h-3 w-3 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-sm">
+                            <div className="space-y-2 text-xs">
+                              <p>
+                                Brand reputation score based on the applicant company&apos;s track
+                                record. Score ranges from 0 (poor) to 1 (excellent).
+                              </p>
+                              <div className="text-muted-foreground text-xs">
+                                <p className="font-medium">Calculation:</p>
+                                <p>• 50% - Notification volume (log-scaled)</p>
+                                <p>• 30% - Company tenure in market</p>
+                                <p>• 20% - Clean record (1 - cancellation rate)</p>
+                              </div>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <span className="font-mono">{product.brandScore.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {product.manufacturerScore !== undefined && (
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Manufacturer Score:</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="text-muted-foreground h-3 w-3 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-sm">
+                            <div className="space-y-2 text-xs">
+                              <p>
+                                Manufacturing company&apos;s reputation score. Same calculation as
+                                brand score but for the manufacturer.
+                              </p>
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <span className="font-mono">{product.manufacturerScore.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {product.categoryScore !== undefined && (
+                    <div className="flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Category Risk Score:</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="text-muted-foreground h-3 w-3 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-xs">
+                              Risk level for this product category based on historical cancellation
+                              rate. Score ranges from 0 (safest) to 1 (highest risk). Calculated as
+                              cancelled products ÷ total products in category.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <span className="font-mono">{product.categoryScore.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Metadata */}
             <div className="space-y-3">
               <h4 className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
@@ -250,8 +331,8 @@ export function ProductDetails({
                         </TooltipTrigger>
                         <TooltipContent className="max-w-xs">
                           <p className="text-xs">
-                            Measures how recent this product's approval date is compared to other
-                            products in the same category. Score ranges from 0 (oldest) to 1
+                            Measures how recent this product&apos;s approval date is compared to
+                            other products in the same category. Score ranges from 0 (oldest) to 1
                             (newest). More recent approvals may indicate updated safety standards.
                           </p>
                         </TooltipContent>
