@@ -12,6 +12,8 @@ import Link from 'next/link';
 import { useIngredientDetails } from '@/hooks/useIngredientDetails';
 import { toTitleCase } from '@/lib/utils/product';
 
+const cutoffDate = new Date('2016-01-01');
+
 export default function IngredientDetailsPage() {
   const params = useParams();
   const ingredientId = params.id as string;
@@ -244,29 +246,31 @@ export default function IngredientDetailsPage() {
                   <div className="text-2xl font-bold">{ingredient.occurrencesCount || 0}</div>
                 </div>
 
-                {/* {ingredient.firstAppearanceDate && ( */}
-                {/*   <div> */}
-                {/*     <div className="mb-1 flex items-center gap-2"> */}
-                {/*       <Calendar className="h-4 w-4 text-blue-500" /> */}
-                {/*       <span className="text-sm font-medium">First Detected</span> */}
-                {/*     </div> */}
-                {/*     <div className="text-sm"> */}
-                {/*       {new Date(ingredient.firstAppearanceDate).toLocaleDateString()} */}
-                {/*     </div> */}
-                {/*   </div> */}
-                {/* )} */}
-                {/**/}
-                {/* {ingredient.lastAppearanceDate && ( */}
-                {/*   <div> */}
-                {/*     <div className="mb-1 flex items-center gap-2"> */}
-                {/*       <Calendar className="h-4 w-4 text-purple-500" /> */}
-                {/*       <span className="text-sm font-medium">Last Detected</span> */}
-                {/*     </div> */}
-                {/*     <div className="text-sm"> */}
-                {/*       {new Date(ingredient.lastAppearanceDate).toLocaleDateString()} */}
-                {/*     </div> */}
-                {/*   </div> */}
-                {/* )} */}
+                {ingredient.firstAppearanceDate &&
+                  new Date(ingredient.firstAppearanceDate) > cutoffDate && (
+                    <div>
+                      <div className="mb-1 flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-blue-500" />
+                        <span className="text-sm font-medium">First Detected</span>
+                      </div>
+                      <div className="text-sm">
+                        {new Date(ingredient.firstAppearanceDate).toLocaleDateString()}
+                      </div>
+                    </div>
+                  )}
+
+                {ingredient.lastAppearanceDate &&
+                  new Date(ingredient.lastAppearanceDate) > cutoffDate && (
+                    <div>
+                      <div className="mb-1 flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-purple-500" />
+                        <span className="text-sm font-medium">Last Detected</span>
+                      </div>
+                      <div className="text-sm">
+                        {new Date(ingredient.lastAppearanceDate).toLocaleDateString()}
+                      </div>
+                    </div>
+                  )}
               </CardContent>
             </Card>
 
