@@ -10,6 +10,7 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import { AlertTriangle, ExternalLink, Calendar, TrendingUp, Shield, Info } from 'lucide-react';
 import Link from 'next/link';
 import { useIngredientDetails } from '@/hooks/useIngredientDetails';
+import { toTitleCase } from '@/lib/utils/product';
 
 export default function IngredientDetailsPage() {
   const params = useParams();
@@ -148,20 +149,20 @@ export default function IngredientDetailsPage() {
                   </Badge>
                 </div>
 
-                {ingredient.sourceUrl && (
-                  <div>
-                    <span className="font-medium">Source:</span>
-                    <a
-                      href={ingredient.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-800"
-                    >
-                      View Regulation
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                )}
+                {/* {ingredient.sourceUrl && ( */}
+                {/*   <div> */}
+                {/*     <span className="font-medium">Source:</span> */}
+                {/*     <a */}
+                {/*       href={ingredient.sourceUrl} */}
+                {/*       target="_blank" */}
+                {/*       rel="noopener noreferrer" */}
+                {/*       className="ml-2 inline-flex items-center gap-1 text-blue-600 hover:text-blue-800" */}
+                {/*     > */}
+                {/*       View Regulation */}
+                {/*       <ExternalLink className="h-3 w-3" /> */}
+                {/*     </a> */}
+                {/*   </div> */}
+                {/* )} */}
 
                 {ingredient.pubchemUrl && (
                   <div>
@@ -196,7 +197,7 @@ export default function IngredientDetailsPage() {
                       <div key={product.id} className="rounded-lg border p-4">
                         <div className="mb-2 flex items-start justify-between">
                           <div>
-                            <h3 className="font-semibold">{product.name}</h3>
+                            <h3 className="font-semibold">{toTitleCase(product.name)}</h3>
                             <p className="text-muted-foreground text-sm">
                               {product.notifNo} • {product.category}
                             </p>
@@ -212,7 +213,10 @@ export default function IngredientDetailsPage() {
                           <div className="text-sm">
                             <span className="font-medium text-red-600">Cancellation reason:</span>
                             <p className="text-muted-foreground mt-1">
-                              {product.reasonForCancellation}
+                              Product contains{' '}
+                              <span className="font-bold text-red-500">
+                                {toTitleCase(product.reasonForCancellation)}
+                              </span>
                             </p>
                           </div>
                         )}
@@ -240,29 +244,29 @@ export default function IngredientDetailsPage() {
                   <div className="text-2xl font-bold">{ingredient.occurrencesCount || 0}</div>
                 </div>
 
-                {ingredient.firstAppearanceDate && (
-                  <div>
-                    <div className="mb-1 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-medium">First Detected</span>
-                    </div>
-                    <div className="text-sm">
-                      {new Date(ingredient.firstAppearanceDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                )}
-
-                {ingredient.lastAppearanceDate && (
-                  <div>
-                    <div className="mb-1 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-purple-500" />
-                      <span className="text-sm font-medium">Last Detected</span>
-                    </div>
-                    <div className="text-sm">
-                      {new Date(ingredient.lastAppearanceDate).toLocaleDateString()}
-                    </div>
-                  </div>
-                )}
+                {/* {ingredient.firstAppearanceDate && ( */}
+                {/*   <div> */}
+                {/*     <div className="mb-1 flex items-center gap-2"> */}
+                {/*       <Calendar className="h-4 w-4 text-blue-500" /> */}
+                {/*       <span className="text-sm font-medium">First Detected</span> */}
+                {/*     </div> */}
+                {/*     <div className="text-sm"> */}
+                {/*       {new Date(ingredient.firstAppearanceDate).toLocaleDateString()} */}
+                {/*     </div> */}
+                {/*   </div> */}
+                {/* )} */}
+                {/**/}
+                {/* {ingredient.lastAppearanceDate && ( */}
+                {/*   <div> */}
+                {/*     <div className="mb-1 flex items-center gap-2"> */}
+                {/*       <Calendar className="h-4 w-4 text-purple-500" /> */}
+                {/*       <span className="text-sm font-medium">Last Detected</span> */}
+                {/*     </div> */}
+                {/*     <div className="text-sm"> */}
+                {/*       {new Date(ingredient.lastAppearanceDate).toLocaleDateString()} */}
+                {/*     </div> */}
+                {/*   </div> */}
+                {/* )} */}
               </CardContent>
             </Card>
 
