@@ -15,6 +15,7 @@ interface SearchInputProps {
   disabled?: boolean;
   initialValue?: string;
   debounceMs?: number;
+  onClear?: () => void;
 }
 
 export function SearchInput({
@@ -24,6 +25,7 @@ export function SearchInput({
   disabled = false,
   initialValue = '',
   debounceMs = 300,
+  onClear = () => {},
 }: SearchInputProps) {
   const [query, setQuery] = useState(initialValue);
   const [error, setError] = useState<string>('');
@@ -50,8 +52,11 @@ export function SearchInput({
     }
 
     // Only trigger search if query has minimum length
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
     if (value.length >= 3) {
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
       setIsTyping(true);
       debounceTimerRef.current = setTimeout(() => {
         setIsTyping(false);
@@ -66,8 +71,8 @@ export function SearchInput({
           }
         }
       }, debounceMs);
-    } else if (value.length === 0) {
-      // Clear results when input is empty
+    } else {
+      // Clear results if query is too short
       setIsTyping(false);
       onSearch('');
     }
@@ -79,6 +84,7 @@ export function SearchInput({
     setError('');
     setIsTyping(false);
     onSearch('');
+    onClear();
   };
 
   // Handle form submission (Enter key)
@@ -87,6 +93,8 @@ export function SearchInput({
 
     if (query.length < 3) {
       setError('Please enter at least 3 characters');
+      setIsTyping(false);
+      onClear();
       return;
     }
 

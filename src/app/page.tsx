@@ -6,6 +6,7 @@ import { SearchInterface } from '@/components/search';
 import { Product } from '@/types/product';
 import { ErrorBoundaryWrapper } from '@/components/ui/error-boundary';
 import Image from 'next/image';
+import { Scene3D } from '@/components/3d/scene';
 
 export default function Home() {
   const handleProductSelect = (product: Product) => {
@@ -37,7 +38,11 @@ export default function Home() {
           {/* Hero Section */}
           <div className="mb-6 text-center sm:mb-8 lg:mb-12">
             <h1 className="text-foreground mb-3 text-2xl leading-tight font-bold tracking-tight sm:mb-4 sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
-              Check Product Safety
+              Check Product{' '}
+              <span className="bg-gradient-to-r from-pink-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
+                {' '}
+                Safety
+              </span>
             </h1>
             <p className="text-muted-foreground mx-auto max-w-2xl px-4 text-sm leading-relaxed sm:text-base md:text-lg lg:max-w-3xl lg:text-xl">
               Search for cosmetic products to check their safety status, understand risks, and

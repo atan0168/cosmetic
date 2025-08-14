@@ -33,7 +33,6 @@ const riskConfig = {
 };
 
 export function RiskIndicator({ riskLevel, className }: RiskIndicatorProps) {
-  console.log('riskLevel', riskLevel);
   const config = riskConfig[riskLevel];
   const Icon = config.icon;
 

@@ -39,12 +39,10 @@ export function SearchInterface({
     statusFilter,
   );
 
-  // Reset pagination when search query or status filter changes
+  // Reset state when search query or status filter changes
   useEffect(() => {
-    if (searchQuery.length >= 3) {
-      setCurrentOffset(0);
-      setAllProducts([]);
-    }
+    setCurrentOffset(0);
+    setAllProducts([]);
   }, [searchQuery, statusFilter]);
 
   // Accumulate products when new data arrives
@@ -147,11 +145,17 @@ export function SearchInterface({
               onSearch={handleSearch}
               placeholder="Search by product name or notification number..."
               className="w-full"
+              onClear={() => {
+                setSearchQuery('');
+                setAllProducts([]);
+                setCurrentOffset(0);
+                setStatusFilter(undefined);
+              }}
             />
           </div>
 
           {/* Status Filter Section */}
-          {allProducts.length > 0 && (
+          {allProducts.length > 0 ? (
             <div className="flex justify-center">
               <StatusFilter
                 value={statusFilter}
@@ -159,7 +163,7 @@ export function SearchInterface({
                 className="flex w-full max-w-2xl justify-between"
               />
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Search Results Section */}
