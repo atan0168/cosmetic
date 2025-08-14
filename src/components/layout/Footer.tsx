@@ -85,18 +85,6 @@ export function Footer({ className }: FooterProps) {
                     Terms of Service
                   </Link>
                 </li>
-                <li>
-                  <a
-                    href="https://www.gov.uk/guidance/cosmetic-product-notifications"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-foreground focus:ring-ring flex items-center gap-1 rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
-                    aria-label="Official UK cosmetic regulations (opens in new tab)"
-                  >
-                    UK Regulations
-                    <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                  </a>
-                </li>
               </ul>
             </nav>
           </div>
