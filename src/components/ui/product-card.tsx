@@ -63,7 +63,11 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="text-muted-foreground h-4 w-4" aria-hidden="true" />
             <span className="text-muted-foreground">Approved:</span>
-            <span>{new Date(product.dateNotified).toLocaleDateString()}</span>
+            {new Date(product.dateNotified).toISOString().slice(0, 10) === '2016-01-01' ? (
+              <span className="text-sm">No information available</span>
+            ) : (
+              <span>{new Date(product.dateNotified).toLocaleDateString()}</span>
+            )}
           </div>
         )}
         {/* Status Badge */}
