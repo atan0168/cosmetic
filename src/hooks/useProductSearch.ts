@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Product } from '@/types/product';
+import { Product, ProductStatus } from '@/types/product';
 
 interface SearchResponse {
   products: Product[];
@@ -18,12 +18,14 @@ interface SearchParams {
   query: string;
   limit?: number;
   offset?: number;
+  status?: ProductStatus;
 }
 
 const searchProducts = async ({
   query,
   limit = 10,
   offset = 0,
+  status,
 }: SearchParams): Promise<SearchResponse> => {
   if (!query || query.length < 3) {
     return { products: [], total: 0 };
@@ -34,6 +36,10 @@ const searchProducts = async ({
     limit: limit.toString(),
     offset: offset.toString(),
   });
+
+  if (status) {
+    searchParams.append('status', status);
+  }
 
   const response = await fetch(`/api/products/search?${searchParams}`);
 
@@ -47,10 +53,15 @@ const searchProducts = async ({
   return 'data' in data && data.data ? data.data : data;
 };
 
-export function useProductSearch(query: string, limit: number = 10, offset: number = 0) {
+export function useProductSearch(
+  query: string,
+  limit: number = 10,
+  offset: number = 0,
+  status?: ProductStatus,
+) {
   return useQuery({
-    queryKey: ['products', 'search', query, limit, offset],
-    queryFn: () => searchProducts({ query, limit, offset }),
+    queryKey: ['products', 'search', query, limit, offset, status],
+    queryFn: () => searchProducts({ query, limit, offset, status }),
     enabled: query.length >= 3,
     refetchOnWindowFocus: false,
     refetchInterval: false,

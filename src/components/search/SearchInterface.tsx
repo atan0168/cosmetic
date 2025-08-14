@@ -3,8 +3,9 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { SearchInput } from './SearchInput';
 import { SearchResults } from './SearchResults';
+import { StatusFilter } from './StatusFilter';
 import { useProductSearch } from '@/hooks/useProductSearch';
-import { Product } from '@/types/product';
+import { Product, ProductStatus } from '@/types/product';
 import { ErrorBoundaryWrapper } from '@/components/ui/error-boundary';
 import { ProductDetailsModal } from '@/components/ui';
 
@@ -20,6 +21,7 @@ export function SearchInterface({
   showModal = true,
 }: SearchInterfaceProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<ProductStatus | undefined>(undefined);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -30,15 +32,20 @@ export function SearchInterface({
   const limit = 10;
 
   // Use React Query for search functionality
-  const { data, isLoading, error } = useProductSearch(searchQuery, limit, currentOffset);
+  const { data, isLoading, error } = useProductSearch(
+    searchQuery,
+    limit,
+    currentOffset,
+    statusFilter,
+  );
 
-  // Reset pagination when search query changes
+  // Reset pagination when search query or status filter changes
   useEffect(() => {
     if (searchQuery.length >= 3) {
       setCurrentOffset(0);
       setAllProducts([]);
     }
-  }, [searchQuery]);
+  }, [searchQuery, statusFilter]);
 
   // Accumulate products when new data arrives
   useEffect(() => {
@@ -62,6 +69,11 @@ export function SearchInterface({
   // Handle search input changes
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query.trim());
+  }, []);
+
+  // Handle status filter changes
+  const handleStatusFilterChange = useCallback((status?: ProductStatus) => {
+    setStatusFilter(status);
   }, []);
 
   // Handle loading more results
@@ -129,12 +141,25 @@ export function SearchInterface({
     <ErrorBoundaryWrapper>
       <div className={className}>
         {/* Search Input Section */}
-        <div className="mb-8 flex justify-center">
-          <SearchInput
-            onSearch={handleSearch}
-            placeholder="Search by product name or notification number..."
-            className="w-full"
-          />
+        <div className="mb-8 space-y-4">
+          <div className="flex justify-center">
+            <SearchInput
+              onSearch={handleSearch}
+              placeholder="Search by product name or notification number..."
+              className="w-full"
+            />
+          </div>
+
+          {/* Status Filter Section */}
+          {allProducts.length > 0 && (
+            <div className="flex justify-center">
+              <StatusFilter
+                value={statusFilter}
+                onValueChange={handleStatusFilterChange}
+                className="flex w-full max-w-2xl justify-between"
+              />
+            </div>
+          )}
         </div>
 
         {/* Search Results Section */}
@@ -148,7 +173,7 @@ export function SearchInterface({
           onLoadMore={handleLoadMore}
           hasMoreResults={hasMoreResults}
           totalResults={data?.total || 0}
-          className="w-full"
+          className="mx-auto w-full max-w-2xl"
         />
       </div>
 

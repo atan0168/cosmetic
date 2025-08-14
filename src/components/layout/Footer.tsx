@@ -33,7 +33,7 @@ export function Footer({ className }: FooterProps) {
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link
-                    href="#"
+                    href="/data-sources"
                     className="text-muted-foreground hover:text-foreground focus:ring-ring rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     aria-label="About our safety data sources"
                   >
@@ -42,7 +42,7 @@ export function Footer({ className }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/how-it-works"
                     className="text-muted-foreground hover:text-foreground focus:ring-ring rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     aria-label="How to use this tool"
                   >
@@ -51,11 +51,20 @@ export function Footer({ className }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/faq"
                     className="text-muted-foreground hover:text-foreground focus:ring-ring rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     aria-label="Frequently asked questions"
                   >
                     FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/mission"
+                    className="text-muted-foreground hover:text-foreground focus:ring-ring rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                    aria-label="Our mission and goals"
+                  >
+                    Our Mission
                   </Link>
                 </li>
               </ul>
@@ -69,7 +78,7 @@ export function Footer({ className }: FooterProps) {
               <ul className="space-y-2 text-sm">
                 <li>
                   <Link
-                    href="#"
+                    href="/privacy"
                     className="text-muted-foreground hover:text-foreground focus:ring-ring rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     aria-label="Privacy policy"
                   >
@@ -78,7 +87,7 @@ export function Footer({ className }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/terms"
                     className="text-muted-foreground hover:text-foreground focus:ring-ring rounded-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
                     aria-label="Terms of service"
                   >

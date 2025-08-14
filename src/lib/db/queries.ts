@@ -11,9 +11,11 @@ export async function searchProducts(
   query: string,
   limit: number = 10,
   offset: number = 0,
+  status?: string,
 ): Promise<{ products: ProductSummary[]; total: number }> {
   try {
     // First try full-text search if the search_vector column exists
+    const statusCondition = status ? sql`AND p.status = ${status}` : sql``;
     const fullTextResults = await db.execute(sql`
       SELECT 
         p.id,
@@ -38,7 +40,7 @@ export async function searchProducts(
       LEFT JOIN company_metrics acm ON ac.id = acm.company_id
       LEFT JOIN company_metrics mcm ON mc.id = mcm.company_id
       LEFT JOIN category_metrics cm ON p.category = cm.product_category
-      WHERE p.search_vector @@ plainto_tsquery('english', ${query})
+      WHERE p.search_vector @@ plainto_tsquery('english', ${query}) ${statusCondition}
       ORDER BY rank DESC, p.name ASC
       LIMIT ${limit} OFFSET ${offset}
     `);
@@ -49,7 +51,7 @@ export async function searchProducts(
       const countResult = await db.execute(sql`
         SELECT COUNT(*) as total
         FROM products p
-        WHERE p.search_vector @@ plainto_tsquery('english', ${query})
+        WHERE p.search_vector @@ plainto_tsquery('english', ${query}) ${statusCondition}
       `);
 
       const totalRows = countResult.rows as unknown as Array<CountRow>;
@@ -92,6 +94,15 @@ export async function searchProducts(
   // Fallback to ILIKE search
   const searchPattern = `%${query}%`;
 
+  // Build where conditions
+  const searchConditions = or(
+    ilike(products.name, searchPattern),
+    ilike(products.notifNo, searchPattern),
+  );
+  const whereConditions = status
+    ? and(searchConditions, eq(products.status, status))
+    : searchConditions;
+
   const results = await db
     .select({
       id: products.id,
@@ -119,7 +130,7 @@ export async function searchProducts(
     .leftJoin(sql`company_metrics acm`, sql`companies.id = acm.company_id`)
     .leftJoin(sql`company_metrics mcm`, sql`mc.id = mcm.company_id`)
     .leftJoin(sql`category_metrics cm`, sql`products.category = cm.product_category`)
-    .where(or(ilike(products.name, searchPattern), ilike(products.notifNo, searchPattern)))
+    .where(whereConditions)
     .orderBy(asc(products.name))
     .limit(limit)
     .offset(offset);
@@ -128,7 +139,7 @@ export async function searchProducts(
   const countResult = await db
     .select({ count: sql<number>`count(*)` })
     .from(products)
-    .where(or(ilike(products.name, searchPattern), ilike(products.notifNo, searchPattern)));
+    .where(whereConditions);
 
   const total = Number(countResult[0]?.count ?? 0);
 

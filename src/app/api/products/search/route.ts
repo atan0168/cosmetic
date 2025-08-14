@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
     const rawQuery = searchParams.get('query');
     const rawLimit = searchParams.get('limit');
     const rawOffset = searchParams.get('offset');
+    const rawStatus = searchParams.get('status');
 
     // Validate required query parameter
     if (!rawQuery) {
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
       query: rawQuery,
       limit: rawLimit ? parseInt(rawLimit, 10) : 10,
       offset: rawOffset ? parseInt(rawOffset, 10) : 0,
+      status: rawStatus || undefined,
     };
 
     // Validate search parameters using Zod schema
@@ -58,10 +60,10 @@ export async function GET(request: NextRequest) {
       return createErrorResponse(validationResult.error, 400);
     }
 
-    const { query, limit, offset } = validationResult.data;
+    const { query, limit, offset, status } = validationResult.data;
 
     // Perform database search
-    const searchResult = await searchProducts(query, limit, offset);
+    const searchResult = await searchProducts(query, limit, offset, status);
 
     // Transform products to include risk level and missing fields
     const productsWithRiskLevel = searchResult.products.map((product) => ({

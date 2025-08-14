@@ -131,6 +131,7 @@ export const SearchQuerySchema = z.object({
     .refine(customRefinements.meaningfulSearch, 'Search query must contain meaningful content'),
   limit: z.number().int().min(1).max(50).default(10),
   offset: z.number().int().min(0).default(0),
+  status: z.nativeEnum(ProductStatus).optional(),
 });
 
 // Search response validation schema
