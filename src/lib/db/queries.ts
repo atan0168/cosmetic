@@ -23,6 +23,7 @@ export async function searchProducts(
         p.status,
         p.reason_for_cancellation,
         p.recency_score,
+        p.date_notified,
         ac.id as applicant_company_id,
         ac.name as applicant_company_name,
         mc.id as manufacturer_company_id,
@@ -65,6 +66,7 @@ export async function searchProducts(
         brandScore: row.brand_score ? Number(row.brand_score) : undefined,
         manufacturerScore: row.manufacturer_score ? Number(row.manufacturer_score) : undefined,
         categoryScore: row.category_score ? Number(row.category_score) : undefined,
+        dateNotified: row.date_notified ? new Date(row.date_notified) : undefined,
         applicantCompany:
           row.applicant_company_id && row.applicant_company_name
             ? {
@@ -231,6 +233,7 @@ export async function getSaferAlternatives(
       status: products.status,
       reasonForCancellation: products.reasonForCancellation,
       recencyScore: products.recencyScore,
+      dateNotified: products.dateNotified,
       applicantCompany: {
         id: companies.id,
         name: companies.name,
@@ -250,6 +253,7 @@ export async function getSaferAlternatives(
     status: row.status as ProductStatus,
     reasonForCancellation: row.reasonForCancellation,
     recencyScore: Number(row.recencyScore),
+    dateNotified: row.dateNotified ? new Date(row.dateNotified) : undefined,
     applicantCompany: row.applicantCompany
       ? { id: row.applicantCompany.id, name: row.applicantCompany.name }
       : undefined,

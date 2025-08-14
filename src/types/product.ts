@@ -99,4 +99,5 @@ export interface ProductSummary {
   manufacturerScore?: number;
   categoryScore?: number;
   recencyScore: number;
+  dateNotified?: Date;
 }

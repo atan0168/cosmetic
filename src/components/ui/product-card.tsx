@@ -34,7 +34,7 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
       tabIndex={isClickable ? 0 : undefined}
       aria-label={isClickable ? `View details for ${product.name}` : undefined}
     >
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <CardTitle className="text-lg leading-tight font-semibold break-words">
             {toTitleCase(product.name)}
@@ -58,7 +58,6 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
             <span className="font-medium">{toTitleCase(product.applicantCompany.name)}</span>
           </div>
         )}
-
         {/* Date Information */}
         {product.dateNotified && (
           <div className="flex items-center gap-2 text-sm">
@@ -67,23 +66,26 @@ export function ProductCard({ product, onClick, className }: ProductCardProps) {
             <span>{new Date(product.dateNotified).toLocaleDateString()}</span>
           </div>
         )}
-
         {/* Status Badge */}
         <div className="flex items-center gap-2">
           <Badge
-            variant={product.status === ProductStatus.CANCELLED ? 'destructive' : 'default'}
+            variant={product.status === ProductStatus.CANCELLED ? 'destructive' : 'success'}
             className="text-xs"
           >
             {product.status}
           </Badge>
         </div>
-
         {/* Cancellation Reason */}
         {product.reasonForCancellation && (
           <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
             <p className="text-sm text-red-800">
-              <span className="font-medium">Reason for cancellation:</span>{' '}
-              {toTitleCase(product.reasonForCancellation)}
+              <span className="font-medium">Reason for cancellation:</span>
+            </p>
+            <p className="text-sm">
+              <span className="font-medium">Product contains dangerous/banned substance </span>
+              <span className="font-bold text-red-600">
+                {toTitleCase(product.reasonForCancellation)}
+              </span>
             </p>
           </div>
         )}

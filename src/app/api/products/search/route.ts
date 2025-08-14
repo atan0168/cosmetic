@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
           : product.status === ProductStatus.APPROVED
             ? RiskLevel.SAFE
             : RiskLevel.UNKNOWN,
-      dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
+      dateNotified: product.dateNotified, // Default to today's date
       isVerticallyIntegrated: false, // Default value
       recencyScore: product.recencyScore ? product.recencyScore : 0.5, // Default value
     }));
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
         alternatives = alternatives.map((alt) => ({
           ...alt,
           riskLevel: alt.status === ProductStatus.APPROVED ? RiskLevel.SAFE : RiskLevel.UNKNOWN,
-          dateNotified: new Date().toISOString().split('T')[0], // Default to today's date
+          dateNotified: alt.dateNotified,
           isVerticallyIntegrated: false, // Default value
           recencyScore: 0.5, // Default value
         }));

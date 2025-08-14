@@ -15,6 +15,7 @@ export interface ProductFullTextRow {
   brand_score: string | number | null;
   manufacturer_score: string | number | null;
   category_score: string | number | null;
+  date_notified: string;
 }
 
 export interface CountRow {
